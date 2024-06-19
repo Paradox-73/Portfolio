@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>CodePen - Transitional Music Player</title>
+  
+  <script src="https://unpkg.com/ionicons@5.4.0/dist/ionicons.js"></script><link rel="stylesheet" href="CSS/musicstyle.css">
+  <link rel="stylesheet" href="CSS/nav.css">
+  <style>
+
+</style>
+</head>
+<body>
+
+  <div class="header-wrapper">
+    <nav>
+        <input type="checkbox" id="menu-toggle">
+        <label for="menu-toggle">
+          Music
+          <div id="menu-icon"></div>
+        </label>
+        <div id="overlay"></div>
+        <ul>
+            <li><a href="./Home Page.html">Home</a></li>
+            <li><a href="./Music.html">Music</a></li>
+            <li><a href="./MoviesTV.html">Movies & TV</a></li>
+            <li><a href="./Games.html">Games</a></li>
+            <li><a href="./Travel.html">Travel</a></li>
+            <li><a href="./Food.html">Food</a></li>
+            <li><a href="./Literature.html & TV.html">Literature</a></li>
+            <li><a href="./art.html">Art</a></li>
+            <ul id="social-media">
+              <li><a href="https://www.facebook.com/" target="_blank"><i class="fab fa-facebook-f"></i><p>help</p>help</a></li>
+              <li><a href="https://www.twitter.com/" target="_blank"><i class="fab fa-twitter"></i></a></li>
+              <li><a href="https://www.instagram.com/" target="_blank"><i class="fab fa-instagram"></i></a></li>
+              <li><a href="https://www.linkedin.com/" target="_blank"><i class="fab fa-linkedin-in"></i></a></li>
+            </ul>
+        </ul>
+    </nav>
+  </div>
+
+  <div class="recently-played">
+    <p style="color:black">Recently Played</p>
+    <div class="songs-list" id="scrollable-songs">
+        <div class="song">
+            <img src="Images/Clancy.jpg" alt="Song 1">
+            <div class="song-info">
+                <h4>Song 1</h4>
+                <p>Artist 1</p>
+                <p class="duration">3:30</p>
+            </div>
+        </div>
+        <div class="song">
+            <img src="Images/Atavista.png" alt="Song 2">
+            <div class="song-info">
+                <h4>Song 2</h4>
+                <p>Artist 2</p>
+                <p class="duration">4:15</p>
+            </div>
+        </div>
+        <div class="song">
+            <img src="Images/nectar.png" alt="Song 3">
+            <div class="song-info">
+                <h4>Song 3</h4>
+                <p>Artist 3</p>
+                <p class="duration">2:45</p>
+            </div>
+        </div>
+        <div class="song">
+            <img src="Images/blonde.jpg" alt="Song 4">
+            <div class="song-info">
+                <h4>Song 4</h4>
+                <p>Artist 4</p>
+                <p class="duration">3:50</p>
+            </div>
+        </div>
+        <div class="song">
+            <img src="cover5.jpg" alt="Song 5">
+            <div class="song-info">
+                <h4>Song 5</h4>
+                <p>Artist 5</p>
+                <p class="duration">5:00</p>
+            </div>
+        </div>
+        <div class="song">
+            <img src="cover6.jpg" alt="Song 6">
+            <div class="song-info">
+                <h4>Song 6</h4>
+                <p>Artist 6</p>
+                <p class="duration">3:10</p>
+            </div>
+        </div>
+        <div class="song">
+            <img src="cover7.jpg" alt="Song 7">
+            <div class="song-info">
+                <h4>Song 7</h4>
+                <p>Artist 7</p>
+                <p class="duration">4:25</p>
+            </div>
+        </div>
+        <div class="song">
+            <img src="cover8.jpg" alt="Song 8">
+            <div class="song-info">
+                <h4>Song 8</h4>
+                <p>Artist 8</p>
+                <p class="duration">3:35</p>
+            </div>
+        </div>
+        <div class="song">
+            <img src="cover9.jpg" alt="Song 9">
+            <div class="song-info">
+                <h4>Song 9</h4>
+                <p>Artist 9</p>
+                <p class="duration">2:55</p>
+            </div>
+        </div>
+        <div class="song">
+            <img src="cover10.jpg" alt="Song 10">
+            <div class="song-info">
+                <h4>Song 10</h4>
+                <p>Artist 10</p>
+                <p class="duration">4:45</p>
+            </div>
+        </div>
+    </div>
+</div>
+<main>
+<div class="player-wrapper">
+  <header>
+    <p1>Playlist</p1>
+    <p>Catch a Vibeeee</p>
+  </header>
+  <div class="album"></div>
+  <div class="song-info">
+    <h id="h">All Girls Are the Same</h>
+    <p id="p">Juice WRLD</p>
+    <div class="progress-bar">
+      <div id="progress"></div>
+    </div>
+    <div class="controls">
+      <ion-icon name="play-back" id="prev"></ion-icon>
+      <ion-icon name="play-circle" id="play"></ion-icon>
+      <ion-icon name="play-forward" id="next"></ion-icon>
+    </div>
+    <audio id="audio">
+      <source src="https://pl.meln.top/mr/fcda85c63ebcd2dc1a582cff8ee61a15.mp3?session_key=1c4df4798b923579413fc5b02b9f6183" type="audio/mpeg">
+    </audio>
+  </div>
+</div>
+<div class="albumslist">
+    <h1>Albums</h1>
+    <img src="Images/a1.jpg"  alt="Album 1">
+        <img src="https://via.placeholder.com/100" alt="Album 2">
+        <img src="https://via.placeholder.com/100" alt="Album 3">
+        <img src="https://via.placeholder.com/100" alt="Album 4">
+        <img src="https://via.placeholder.com/100" alt="Album 5">
+        <img src="https://via.placeholder.com/100" alt="Album 6">
+        <img src="https://via.placeholder.com/100" alt="Album 7">
+        <img src="https://via.placeholder.com/100" alt="Album 8">
+        <img src="https://via.placeholder.com/100" alt="Album 9">
+        <img src="https://via.placeholder.com/100" alt="Album 10">
+        <img src="https://via.placeholder.com/100" alt="Album 11">
+        <img src="https://via.placeholder.com/100" alt="Album 12">
+        <img src="https://via.placeholder.com/100" alt="Album 13">
+        <img src="https://via.placeholder.com/100" alt="Album 14">
+        <img src="https://via.placeholder.com/100" alt="Album 15">
+        <img src="https://via.placeholder.com/100" alt="Album 16">
+        <img src="https://via.placeholder.com/100" alt="Album 17">
+        <img src="https://via.placeholder.com/100" alt="Album 18">
+        <img src="https://via.placeholder.com/100" alt="Album 19">
+        <img src="https://via.placeholder.com/100" alt="Album 20">
+        <img src="https://via.placeholder.com/100" alt="Album 21">
+        <img src="https://via.placeholder.com/100" alt="Album 22">
+        <img src="https://via.placeholder.com/100" alt="Album 23">
+        <img src="https://via.placeholder.com/100" alt="Album 24">
+        <img src="https://via.placeholder.com/100" alt="Album 25">
+        <img src="https://via.placeholder.com/100" alt="Album 26">
+        <img src="https://via.placeholder.com/100" alt="Album 27">
+        <img src="https://via.placeholder.com/100" alt="Album 28">
+        <img src="https://via.placeholder.com/100" alt="Album 29">
+        <img src="https://via.placeholder.com/100" alt="Album 30">
+        
+    </div>
+</div>
+<div class="artistlist">
+    <h1>Artists</h1>
+    <div class="carousel" id="carousel">
+        <img src="Images/a1.jpg" alt="Artist 1">
+        <img src="Images/a10.jpg" alt="Artist 2">
+        <img src="Images/a11.jpg" alt="Artist 3">
+        <img src="Images/a12.jpg" alt="Artist 4">
+        <img src="Images/a13.jpg" alt="Artist 5">
+        <img src="Images/a14.jpg" alt="Artist 6">
+        <img src="Images/a15.jpg" alt="Artist 7">
+        
+    </div>
+</div>
+</main>
+  <script  src="JavaScript/musicscript.js"></script>
+
+</body>
+</html>

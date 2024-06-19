@@ -1,0 +1,289 @@
+@import url('https://fonts.googleapis.com/css2?family=Oxygen&display=swap');
+:root {
+  --cubic: .4s cubic-bezier(0.1, 0.7, 1.0, 0.1);
+  
+  --bg: #ddd;
+  --player-bg: #eef5f989;
+  --navy: #3d415b;
+  --black: #000000;
+  --icon: #99acb7;
+  --lightgrey: #ced3e2;
+  --bold-text: #4e5068;
+  
+  --song1: #d1a1d8;
+}
+ body {
+  padding:0;
+  margin:0;
+  height: 100vh;
+  width: 100vw;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  background-image: url('https://lastfm.freetls.fastly.net/i/u/ar0/bdee2dc210888c8d26826607a3e825da');
+  font-family: 'Oxygen', sans-serif;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px); 
+  overflow: hidden;   
+
+}
+ ion-icon {
+  font-size: 2em;
+  color: var(--icon);
+  margin: 5px;
+  transition: .4s;
+  cursor: pointer;
+}
+#play {
+  font-size: 2.5em;
+  color: var(--navy);
+}
+h, p, p1 {
+  transform: var(--cubic);
+}
+h {
+  font-size: 1em;
+  color: var(--bold-text);
+  font-weight: 600;
+  text-transform: capitalize;
+}
+p {
+  color: var(--black);
+  font-size: 0.8em;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+p1 {
+  color: var(--black);
+  font-size: 0.7em;
+  text-transform: uppercase;
+}
+.player-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 500px;
+  width: 300px;
+  border-radius: 15px;
+  background: var(--player-bg);
+  z-index: 1;
+  box-shadow: inset 1px 1px 2px rgb(0 0 0 / 27%), 1px 1px 1px rgb(255 255 255 / 71%);
+  position: fixed;
+  bottom: -100px;
+  right: 0;
+  margin: 20px; /* optional margin to keep some space from the edges */
+}
+
+header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+}
+
+.player-wrapper .album::before {
+    position: absolute;
+    z-index: -1 !important;
+    transform: translate(-2px,0px) scaleY(1.0125);
+    filter: brightness(0.94) blur(0.2px) saturate(0.9);
+    content: "";
+    width: calc(100% + 6px);
+    height: calc(100% + 4px);
+    margin: auto !important;
+    background: inherit;
+    opacity: 0.75;
+    display: flex;
+    border-radius: 7px;
+}
+
+.player-wrapper .album::after {
+     background: url(https://pudding.cool/2020/12/judge-my-spotify/assets/images/plastic-small.jpg);
+     mix-blend-mode: screen;
+     mix-blend-mode: difference;
+     opacity: 0.3;
+     content: "";
+     position: absolute;
+     display: flex;
+     z-index: 
+1 !important;
+     background-size: cover;
+     background-repeat: no-repeat;
+     height: 240px;
+     width: 240px;
+     background-position: 50% 50%;
+     transform: 
+translate(-1px, 0px);
+}
+
+.player-wrapper .album {
+     height: 240px;
+     width: 240px;
+     border-radius: 5px;
+     background-repeat: no-repeat;
+     background-position: center;
+     background-size: cover;
+     background-image: url("https://lastfm.freetls.fastly.net/i/u/ar0/bdee2dc210888c8d26826607a3e825da");
+     background-size: 104%;
+     border: 2.25px solid hsl(229deg 24% 26% / 0%);
+     background-repeat: repeat;
+     box-shadow: rgb(16 26 64 / 0%) 0px 0px 1px, rgb(16 26 64 / 10%) -4px 0px 3px, rgb(16 26 64 / 10%) -12px 2px 6px, rgb(16 26 64 / 10%) -23px 4px 10px, rgb(16 26 64 / 10%) -39px 8px 15px, rgb(16 26 64 / 10%) -60px 12px 21px;
+  
+  box-shadow: 0px 1px 0px 0px rgb(255 255 255 / 50%) inset, 0px 3px 2px -1px rgb(13 13 13 / 65%), 0px 6px 6px 0px rgb(0 0 0 / 15%), 0px -4px 4px 0px rgb(0 0 0 / 15%) inset, 0px 2px 4px 2px rgb(255 255 255 / 55%) inset, 0px 0px 1px 2px rgb(0 0 0 / 10%), 0 0.0625em 0.1875em  rgb(0 0 0 / 500%);
+     position: relative;
+     opacity: 1;
+}
+
+
+
+
+.player-wrapper .song-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 10px;
+}
+.progress-bar {
+  width: 200px;
+  height: 5px;
+  border-radius: 15px;
+  background: var(--bg);
+}
+#progress {
+  border-radius: 5px;
+  width: 40%;
+  height: 5px;
+  background: var(--song1);
+}
+.controls {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 60%;
+}
+
+
+.recently-played {
+  position: absolute;
+  top: 80px;
+  right: 20px;
+  width: 298px;
+  height:195px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: var(--player-bg);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+.recently-played .song {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  
+}
+.recently-played .song img {
+  width: 50px;
+  height: 50px;
+  margin-right: 10px;
+  border-radius: 4px;
+}
+.recently-played .song-info {
+  flex: 1;
+}
+.recently-played .song-info h4, .song-info p {
+  margin: 0;
+  padding: 0;
+}
+.recently-played .song-info p {
+  font-size: 0.9em;
+  color: #555;
+}
+.recently-played .song-info .duration {
+  text-align: right;
+}
+.recently-played .songs-list {
+  max-height: 150px;
+  overflow-y: scroll;
+  
+  
+}
+/* Hide scrollbar for Chrome, Safari and Opera */
+.songs-list::-webkit-scrollbar {
+      display: none;
+  }
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .songs-list {
+      -ms-overflow-style: none;  /* IE and Edge */
+      scrollbar-width: none;  /* Firefox */
+  }
+
+
+  .albumslist {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 500px;
+    width: 1175px;
+    border-radius: 15px;
+    background: var(--player-bg);
+    z-index: 1;
+    box-shadow: inset 1px 1px 2px rgb(0 0 0 / 27%), 1px 1px 1px rgb(255 255 255 / 71%);
+    position: fixed;
+    bottom: -100px;
+    left: 0;
+    margin: 20px; /* optional margin to keep some space from the edges */
+    display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            grid-template-rows: repeat(5, 1fr);
+            gap: 5px;
+  }
+
+  .albumslist img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+}
+.albumslist h1 {
+  grid-column: span 10;
+  text-align: center;
+  margin: 0;
+  padding: 10px 0;
+}
+
+  .artistlist {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 195px;
+    width: 1175px;
+    border-radius: 15px;
+    background: var(--player-bg);
+    z-index: 1;
+    box-shadow: inset 1px 1px 2px rgb(0 0 0 / 27%), 1px 1px 1px rgb(255 255 255 / 71%);
+    position: fixed;
+    bottom: 400px;
+    left: 0;
+    margin: 20px; /* optional margin to keep some space from the edges */
+  }
+  .artistlist .carousel {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* IE 10+ */
+}
+.artistlist .carousel::-webkit-scrollbar {
+    display: none; /* Safari and Chrome */
+}
+.artistlist .carousel img {
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    padding-left: 20px;
+    padding-right: 20px;
+    transition: transform 0.3s;
+}
+.artistlist .carousel img:hover {
+    transform: scale(1.2);
+}

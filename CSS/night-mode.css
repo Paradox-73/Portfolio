@@ -1,0 +1,20 @@
+.night-mode-toggle {
+    content: url("Images/moon.png");
+  }
+  
+  html.dark .night-mode-toggle {
+    content: url("Images/sun.png");
+  }
+
+.night-mode .content {
+    color: #fff;
+}
+
+.night-mode .footer {
+    background-color: #44444475;
+    color: #fff;
+}
+
+.night-mode .social-icons img {
+    filter: invert(1);
+}

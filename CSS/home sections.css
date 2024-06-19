@@ -1,0 +1,44 @@
+.content {
+    padding: 20px;
+    
+}
+
+.section {
+    margin: 40px 0;
+    padding: 20px;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    animation: fadeIn 1s ease-in-out;
+    width: 100%;
+    height: 100vh;
+}
+.section h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    text-decoration: none;
+}
+.section .image-container {
+    display: flex;
+    justify-content: space-around;
+    position: relative;
+}
+.section .image-container img {
+    width: 30%;
+    cursor: pointer;
+    transition: opacity 0.3s;
+    position: relative;
+}
+.section .image-container .text-box {
+    display: none;
+    position: relative;
+    width: 30%;
+    top: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 20px;
+    box-sizing: border-box;
+    z-index: 1;
+}

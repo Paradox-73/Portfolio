@@ -1,0 +1,194 @@
+@import url(https://use.fontawesome.com/releases/v5.0.6/css/all.css);
+@import url(https://fonts.googleapis.com/css?family=Oswald:400|Raleway:400,700,400italic,700italic);
+
+.header-wrapper * {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.header-wrapper h1 {
+    font-family: 'Oswald', sans-serif;
+    text-align: center;
+}
+
+.header-wrapper a {
+    color: #000000;
+    text-decoration: none;
+}
+
+.header-wrapper a:hover {
+    color: #800080;
+    text-decoration: none;
+}
+
+.header-wrapper .container {
+    margin: 0 auto;
+    max-width: 80em;
+}
+
+.header-wrapper nav #logo {
+    width: 4.5em;
+    margin-right: 1em;
+  }
+
+.header-wrapper nav {
+    background: #82828279;
+    color: #000000;
+    left: 0;
+    position: relative;
+    top: 0;
+    width: 100%;
+    z-index: 9999;
+    transition: top 0.3s ease-in-out; ;
+}
+
+/*** INPUT ***/
+.header-wrapper nav input {
+    opacity: 0;
+    position: absolute;
+    z-index: -1;
+}
+
+/*** LABEL ***/
+.header-wrapper nav label {
+    cursor: pointer;
+    display: block;
+    font: 2em/1 'Oswald', sans-serif;
+    padding: 0.5em;
+}
+
+/* Hamburger Icon */
+.header-wrapper #menu-icon,
+.header-wrapper #menu-icon:before,
+.header-wrapper #menu-icon:after {
+    background: #000000;
+    border-radius: 0.05em;
+    height: 0.2em;
+    transition: all 0.2s ease-in-out;
+    width: 100%;
+}
+
+.header-wrapper #menu-icon {
+    display: inline-block;
+    margin: 0.4em 0;
+    max-width: 1em;
+    position: relative;
+}
+
+.header-wrapper nav label #menu-icon {
+    float: right;
+}
+
+.header-wrapper #menu-icon:before,
+.header-wrapper #menu-icon:after {
+    content: '';
+    left: 0;
+    position: absolute;
+}
+
+.header-wrapper #menu-icon:before {
+  
+  top: -0.4em;
+}
+
+.header-wrapper #menu-icon:after {
+    bottom: -0.4em;
+}
+
+
+
+/* Close Icon */
+.header-wrapper nav input[type=checkbox]:checked + label #menu-icon {
+    background: transparent;
+}
+
+.header-wrapper nav input[type=checkbox]:checked + label #menu-icon:before {
+    top: 0;
+    transform: rotate(-45deg);
+    background: #ffffff;
+}
+
+.header-wrapper nav input[type=checkbox]:checked + label #menu-icon:after {
+    bottom: 0;
+    transform: rotate(45deg);
+    background: #ffffff;
+}
+.header-wrapper nav input:checked + label + nav {
+  top: 0; /* Move the nav down to its original position */
+}
+/*** MENU ***/
+/* Overlay */
+.header-wrapper nav input:checked ~ #overlay {
+  
+    background-attachment: fixed;
+		background-image: url("../Images/bg9.gif");
+		background-position: center;
+		background-repeat: none;
+		background-size: cover;
+    bottom: 0;
+    left: 0;
+    height: 100vh;
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 100vw;
+    z-index: -1;
+    box-shadow: inset 0 0 0 1000px #82828279;
+}
+
+/* List */
+.header-wrapper nav ul {
+    font-size: 1.5em;
+    list-style: none;
+    margin: 0;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    padding: 0;
+    text-align: center;
+}
+
+.header-wrapper nav input:checked ~ ul {
+    margin: 1em;
+    max-height: inherit;
+    opacity: 1;
+}
+
+.header-wrapper nav ul > li {
+    margin: 0.5em 0;
+}
+
+.header-wrapper nav ul a {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.header-wrapper nav ul a:hover {
+  color: #800080;
+}
+
+
+
+/* Social Media */
+.social-media {
+  display: flex;
+  justify-content: center;
+  margin: 1em 0;
+}
+
+.social-media a {
+  color: #ffffff;
+  font-size: 2em;
+  margin: 0 0.5em;
+  transition: color 0.2s ease-in-out;
+}
+
+.social-media a:hover {
+  color: #800080;
+}
