@@ -89,11 +89,11 @@ input, select, textarea {
 
 	html {
 		background-color: #313a3d;
-		background-attachment: fixed,						fixed;
-		background-image: url("images/overlay.png"), url("../Images/bg9.gif");
-		background-position: top left,					center center;
-		background-repeat: repeat,						none;
-		background-size: auto,						cover;
+		background-attachment: fixed;
+		background-image: url("../Images/bg9.gif");
+		background-position: center center;
+		background-repeat: none;
+		background-size: cover;
 		
 	}
 

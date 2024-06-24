@@ -1,159 +1,204 @@
-//get values
-var prev = document.querySelector("#prev");
-var next = document.querySelector("#next");
-var play = document.querySelector("#play");
-var progress = document.querySelector("#progress");
-var album = document.querySelector(".album");
-var audio = document.querySelector("#audio");
-var body = document.body;
-var counter = 0;
+const navItems = document.querySelectorAll(".nav-item");
 
-//object contains song info
-var songs = [
-  {
-    name: 'New Magic Wand',
-    artist: 'Tyler, The Creator',
-    bg: "../Images/igor.jpg",
-    src: '../NEW MAGIC WAND.mp3'
-  },
-  
-  {
-    name: 'Slide Away',
-    artist: 'Miley Cyrus',
-    bg: 'https://i.imgur.com/TE0sDrm.jpeg',
-    src: 'https://pl.meln.top/mr/fcda85c63ebcd2dc1a582cff8ee61a15.mp3?session_key=1c4df4798b923579413fc5b02b9f6183'
-  },
-  
-  {
-    name: 'King Kunta',
-    artist: 'Kendrick Lamar',
-    bg: 'https://assets.codepen.io/4927073/icon-124.jpg',
-    src: 'https://pl.meln.top/mr/01eba40b70a8069147886c14b39c4654.mp3?session_key=6c9ac65d4a9832ac19bfce1d004081b3'
-  },
-  
-  {
-    name: "Can't Tell Me Nothing",
-    artist: 'Kanye West',
-    bg: 'https://lastfm.freetls.fastly.net/i/u/ar0/ec93136e9d7f5aed02ebbd4ae5200453',
-    src: 'https://pl.meln.top/mr/01eba40b70a8069147886c14b39c4654.mp3?session_key=6c9ac65d4a9832ac19bfce1d004081b3'
-  },
-  {
-    name: 'Ghost',
-    artist: 'Justin Bieber',
-    bg: 'https://images.genius.com/82474db689b7894a66cf5bc4cd35575c.2048x2048x1.jpg',
-    src: 'https://pl.meln.top/mr/01eba40b70a8069147886c14b39c4654.mp3?session_key=6c9ac65d4a9832ac19bfce1d004081b3'
-  },
-  {
-    name: 'Reborn',
-    artist: 'KIDS SEE GHOSTS',
-    bg: 'https://i.pinimg.com/originals/04/ae/d4/04aed4d147be4b9d004deedaf6cb4f6c.jpg',
-    src: 'https://pl.meln.top/mr/01eba40b70a8069147886c14b39c4654.mp3?session_key=6c9ac65d4a9832ac19bfce1d004081b3'
-  },
-  
-  {
-    name: 'HOTEL LOBBY (Unc & Phew)',
-    artist: 'Quavo',
-    bg: 'https://is2-ssl.mzstatic.com/image/thumb/Music126/v4/e3/e0/e7/e3e0e70f-3dae-0c98-9428-679529fa405f/22UMGIM51309.rgb.jpg/3000x3000bb.jpg',
-    src: 'https://pl.meln.top/mr/242971d39dd4abd59c0d7a2d5c144f73.mp3?session_key=18351301869fbafe1e0ee5a7609f3245'
-  },
-  
-  {
-    name: 'Rich Spirit',
-    artist: 'Kendrick Lamar',
-    bg: 'https://arc-anglerfish-washpost-prod-washpost.s3.amazonaws.com/public/JY77VEGS2UI6ZI5PJMVZM3G3CI.jpg',
-    src: 'https://pl.meln.top/mr/9e9ab510f8588f30a012974ea36820ff.mp3?session_key=46c75a331f370e60f481006a13f22536'
-  },
-  
-  {
-    name: 'Paranoid',
-    artist: 'Post Malone',
-    bg: 'https://assets.codepen.io/4927073/icon-125_1.jpg',
-    src: 'https://pl.meln.top/mr/01eba40b70a8069147886c14b39c4654.mp3?session_key=6c9ac65d4a9832ac19bfce1d004081b3'
-  },
-  
-  {
-    name: 'Miss My Dawgs (with Lil Wayne)',
-    artist: 'YG, Lil Wayne',
-    bg: 'https://lastfm.freetls.fastly.net/i/u/ar0/be5717623e79655cc4e333b5ce640926.jpg',
-    src: 'https://pl.meln.top/mr/242971d39dd4abd59c0d7a2d5c144f73.mp3?session_key=18351301869fbafe1e0ee5a7609f3245'
-  },
-  
-  {
-    name: 'Cinderella',
-    artist: 'Metro Boomin, Future',
-    bg: 'https://assets.codepen.io/4927073/433452617_952539916241903_4937267218052324278_n.jpg',
-    src: 'https://assets.codepen.io/4927073/433452617_952539916241903_4937267218052324278_n.jpg'
-  },
-  
-  {
-    name: 'What Goes Around... Comes Around',
-    artist: 'Justin Timberlake',
-    bg: 'https://lastfm.freetls.fastly.net/i/u/ar0/5a4c913910cd9c3a7a4bd931a3c16591',
-    src: 'https://pl.meln.top/mr/242971d39dd4abd59c0d7a2d5c144f73.mp3?session_key=18351301869fbafe1e0ee5a7609f3245'
-  },
-  {
-    name: 'Erase Your Social',
-    artist: 'Lil Uzi Vert',
-    bg: 'https://images-na.ssl-images-amazon.com/images/I/71bGDcqdC0L.jpg',
-    src: 'https://pl.meln.top/mr/01eba40b70a8069147886c14b39c4654.mp3?session_key=6c9ac65d4a9832ac19bfce1d004081b3'
-  }
-];
-
-
-play.addEventListener('click', function(){
-  if(audio.paused){
-    audio.play();
-    play.setAttribute("name", "pause-circle");
-  } else {
-    audio.pause();
-    play.setAttribute("name", "play-circle");
-  }
-});
-
-next.addEventListener('click', function(){
-  if(counter < songs.length-1)
-    {
-      counter++;
-      audio.setAttribute("src", songs[counter].src);
-      album.setAttribute("style", "background-image: url(" + songs[counter].bg + ")");
-      h.innerHTML = songs[counter].name;
-      p.innerHTML = songs[counter].artist;
-      body.setAttribute("style", "background-image: url(" + songs[counter].bg + ")");
-    } else {
-      audio.setAttribute("src", songs[0].src);
-      album.setAttribute("style", "background-image: url(" + songs[0].bg + ")");
-      h.innerHTML = songs[0].name;
-      p.innerHTML = songs[0].artist;
-      body.setAttribute("style", "background-image: url(" + songs[0].bg + ")");
-    }
-});
-
-prev.addEventListener('click', function(){
-  if(counter == 0)
-    {
-      audio.setAttribute("src", songs[0].src);
-      album.setAttribute("style", "background-image: url(" + songs[0].bg + ")");
-      h.innerHTML = songs[0].name;
-      p.innerHTML = songs[0].artist;
-      body.setAttribute("style", "background-image: url(" + songs[0].bg + ")");
-    } else {
-      counter--;
-      audio.setAttribute("src", songs[counter].src);
-      album.setAttribute("style", "background-image: url(" + songs[counter].bg + ")");
-      h.innerHTML = songs[counter].name;
-      p.innerHTML = songs[counter].artist;
-      body.setAttribute("style", "background-image: url(" + songs[counter].bg + ")");
-    }
-});
-
-document.addEventListener('DOMContentLoaded', () => {
-  const audio = document.getElementById('audio');
-  const progress = document.getElementById('progress');
-
-  audio.addEventListener('timeupdate', () => {
-    const duration = audio.duration;
-    const currentTime = audio.currentTime;
-    const progressPercent = (currentTime / duration) * 100;
-    progress.style.width = progressPercent + '%';
+navItems.forEach((navItem, i) => {
+  navItem.addEventListener("click", () => {
+    navItems.forEach((item, j) => {
+      item.className = "nav-item";
+    });
+    navItem.className = "nav-item active";
   });
 });
+
+const containers = document.querySelectorAll(".containers");
+
+containers.forEach((container) => {
+  let isDragging = false;
+  let startX;
+  let scrollLeft;
+
+  container.addEventListener("mousedown", (e) => {
+    isDragging = true;
+    startX = e.pageX - container.offsetLeft;
+    scrollLeft = container.scrollLeft;
+  });
+
+  container.addEventListener("mousemove", (e) => {
+    if (!isDragging) return;
+    e.preventDefault();
+
+    const x = e.pageX - container.offsetLeft;
+    const step = (x - startX) * 0.6;
+    container.scrollLeft = scrollLeft - step;
+  });
+
+  container.addEventListener("mouseup", () => {
+    isDragging = false;
+  });
+
+  container.addEventListener("mouseleave", () => {
+    isDragging = false;
+  });
+});
+
+const progress = document.getElementById("progress");
+const song = document.getElementById("song");
+const controlIcon = document.getElementById("controlIcon");
+const playPauseButton = document.querySelector(".play-pause-btn");
+const forwardButton = document.querySelector(".controls button.forward");
+const backwardButton = document.querySelector(".controls button.backward");
+const rotatingImage = document.getElementById("rotatingImage");
+const songName = document.querySelector(".music-player h2");
+const artistName = document.querySelector(".music-player p");
+
+let rotating = false;
+let currentRotation = 0;
+let rotationInterval;
+
+const songs = [
+  {
+    title: "NEW MAGIC WAND",
+    name: "Tyler, the Creator",
+    source:
+      "NEW MAGIC WAND.mp3",
+    cover:
+      "Images/igor.jpg",
+  },
+  {
+    title: "What's The Problem?",
+    name: "OSKI",
+    source:
+      "https://github.com/ecemgo/mini-samples-great-tricks/raw/main/song-list/OSKI-Whats-The-Problem.mp3",
+    cover:
+      "https://github.com/ecemgo/mini-samples-great-tricks/assets/13468728/810d1ddc-1168-4990-8d43-a0ffee21fb8c",
+  },
+  {
+    title: "Control",
+    name: "Unknown Brain x Rival",
+    source:
+      "https://github.com/ecemgo/mini-samples-great-tricks/raw/main/song-list/Unknown-BrainxRival-Control.mp3",
+    cover:
+      "https://github.com/ecemgo/mini-samples-great-tricks/assets/13468728/7bd23b84-d9b0-4604-a7e3-872157a37b61",
+  },
+];
+
+let currentSongIndex = 0;
+
+function startRotation() {
+  if (!rotating) {
+    rotating = true;
+    rotationInterval = setInterval(rotateImage, 40);
+  }
+}
+
+function pauseRotation() {
+  clearInterval(rotationInterval);
+  rotating = false;
+}
+
+function rotateImage() {
+  currentRotation += 1;
+  rotatingImage.style.transform = `rotate(${currentRotation}deg)`;
+}
+
+function updateSongInfo() {
+  songName.textContent = songs[currentSongIndex].title;
+  artistName.textContent = songs[currentSongIndex].name;
+  song.src = songs[currentSongIndex].source;
+  rotatingImage.src = songs[currentSongIndex].cover;
+
+  song.addEventListener("loadeddata", function () {});
+}
+
+song.addEventListener("loadedmetadata", function () {
+  progress.max = song.duration;
+  progress.value = song.currentTime;
+});
+
+song.addEventListener("ended", function () {
+  currentSongIndex = (currentSongIndex + 1) % songs.length;
+  updateSongInfo();
+  playPause();
+});
+
+song.addEventListener("timeupdate", function () {
+  
+  if (!song.paused) {
+    progress.value = song.currentTime;
+  }
+});
+
+function playPause() {
+  if (song.paused) {
+    song.play();
+    controlIcon.classList.add("fa-pause");
+    controlIcon.classList.remove("fa-play");
+    startRotation();
+  } else {
+    song.pause();
+    controlIcon.classList.remove("fa-pause");
+    controlIcon.classList.add("fa-play");
+    pauseRotation();
+  }
+}
+
+playPauseButton.addEventListener("click", playPause);
+
+progress.addEventListener("input", function () {
+  song.currentTime = progress.value;
+  let rotation = (progress.value / progress.max) * 3600;
+  if (rotation > currentRotation) {
+    startRotation();
+  } else {
+    pauseRotation();
+    currentRotation = rotation;
+    rotatingImage.style.transform = `rotate(${currentRotation}deg)`;
+  }
+});
+
+progress.addEventListener("change", function () {
+  song.play();
+  controlIcon.classList.add("fa-pause");
+  controlIcon.classList.remove("fa-play");
+  startRotation();
+});
+
+forwardButton.addEventListener("click", function () {
+  currentSongIndex = (currentSongIndex + 1) % songs.length;
+  updateSongInfo();
+  playPause();
+});
+
+backwardButton.addEventListener("click", function () {
+  currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
+  updateSongInfo();
+  playPause();
+});
+
+updateSongInfo();
+
+var swiper = new Swiper(".swiper", {
+  effect: "coverflow",
+  grabCursor: true,
+  centeredSlides: true,
+  loop: true,
+  speed: 600,
+  slidesPerView: "auto",
+  initialSlide: 2,
+  coverflowEffect: {
+    rotate: 10,
+    stretch: 120,
+    depth: 200,
+    modifier: 1,
+    slideShadows: false,
+  },
+   on: {
+    click(event) {
+      swiper.slideTo(this.clickedIndex);
+    },
+  },
+  pagination: {
+    el: ".swiper-pagination",
+  },
+});
+
+

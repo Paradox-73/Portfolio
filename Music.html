@@ -2,201 +2,467 @@
 <html lang="en" >
 <head>
   <meta charset="UTF-8">
-  <title>CodePen - Transitional Music Player</title>
-  
-  <script src="https://unpkg.com/ionicons@5.4.0/dist/ionicons.js"></script><link rel="stylesheet" href="CSS/musicstyle.css">
-  <link rel="stylesheet" href="CSS/nav.css">
-  <style>
+  <title>Music</title>
+  <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css'>
+<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css'><link rel="stylesheet" href="CSS/musicstyle.css">
 
-</style>
 </head>
 <body>
+<!-- partial:index.partial.html -->
+<body>
+  
+    <main>
+      
+      <nav class="main-menu">
+        <div>
+          <div class="user-info">
+            <img
+              src="Images/profile.jpg"
+              alt="user" />
+            <p>Kanav Bhardwaj</p>
+          </div>
+          <ul>
 
-  <div class="header-wrapper">
-    <nav>
-        <input type="checkbox" id="menu-toggle">
-        <label for="menu-toggle">
-          Music
-          <div id="menu-icon"></div>
-        </label>
-        <div id="overlay"></div>
-        <ul>
-            <li><a href="./Home Page.html">Home</a></li>
-            <li><a href="./Music.html">Music</a></li>
-            <li><a href="./MoviesTV.html">Movies & TV</a></li>
-            <li><a href="./Games.html">Games</a></li>
-            <li><a href="./Travel.html">Travel</a></li>
-            <li><a href="./Food.html">Food</a></li>
-            <li><a href="./Literature.html & TV.html">Literature</a></li>
-            <li><a href="./art.html">Art</a></li>
-            <ul id="social-media">
-              <li><a href="https://www.facebook.com/" target="_blank"><i class="fab fa-facebook-f"></i><p>help</p>help</a></li>
-              <li><a href="https://www.twitter.com/" target="_blank"><i class="fab fa-twitter"></i></a></li>
-              <li><a href="https://www.instagram.com/" target="_blank"><i class="fab fa-instagram"></i></a></li>
-              <li><a href="https://www.linkedin.com/" target="_blank"><i class="fab fa-linkedin-in"></i></a></li>
-            </ul>
-        </ul>
-    </nav>
-  </div>
+            <li class="nav-item">
+              <a href="index.html">
+                <i class="fa fa-home nav-icon"></i>
+                <span class="nav-text">Home</span>
+              </a>
+            </li>
 
-  <div class="recently-played">
-    <p style="color:black">Recently Played</p>
-    <div class="songs-list" id="scrollable-songs">
-        <div class="song">
-            <img src="Images/Clancy.jpg" alt="Song 1">
-            <div class="song-info">
-                <h4>Song 1</h4>
-                <p>Artist 1</p>
-                <p class="duration">3:30</p>
-            </div>
+            <li class="nav-item active">
+              <a href="Music.html">
+                <i class="fa fa-compact-disc nav-icon"></i>
+                <span class="nav-text">Music</span>
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a href="MoviesTV.html">
+                <i class="fa fa-film nav-icon"></i>
+                <span class="nav-text">Movies&TV</span>
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a href="Games.html">
+                <i class="fa fa-gamepad nav-icon"></i>
+                <span class="nav-text">Games</span>
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a href="Travel.html">
+                <i class="fa fa-suitcase nav-icon"></i>
+                <span class="nav-text">Travel</span>
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a href="Food.html">
+                <i class="fa fa-cutlery nav-icon"></i>
+                <span class="nav-text">Food</span>
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a href="Literature.html">
+                <i class="fa fa-book nav-icon"></i>
+                <span class="nav-text">Literature</span>
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a href="art.html">
+                <i class="fa fa-paint-brush nav-icon"></i>
+                <span class="nav-text">Art</span>
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a href="sport.html">
+                <i class="fa fa-futbol nav-icon"></i>
+                <span class="nav-text">Sport</span>
+              </a>
+            </li>
+          </ul>
         </div>
-        <div class="song">
-            <img src="Images/Atavista.png" alt="Song 2">
-            <div class="song-info">
-                <h4>Song 2</h4>
-                <p>Artist 2</p>
-                <p class="duration">4:15</p>
-            </div>
-        </div>
-        <div class="song">
-            <img src="Images/nectar.png" alt="Song 3">
-            <div class="song-info">
-                <h4>Song 3</h4>
-                <p>Artist 3</p>
-                <p class="duration">2:45</p>
-            </div>
-        </div>
-        <div class="song">
-            <img src="Images/blonde.jpg" alt="Song 4">
-            <div class="song-info">
-                <h4>Song 4</h4>
-                <p>Artist 4</p>
-                <p class="duration">3:50</p>
-            </div>
-        </div>
-        <div class="song">
-            <img src="cover5.jpg" alt="Song 5">
-            <div class="song-info">
-                <h4>Song 5</h4>
-                <p>Artist 5</p>
-                <p class="duration">5:00</p>
-            </div>
-        </div>
-        <div class="song">
-            <img src="cover6.jpg" alt="Song 6">
-            <div class="song-info">
-                <h4>Song 6</h4>
-                <p>Artist 6</p>
-                <p class="duration">3:10</p>
-            </div>
-        </div>
-        <div class="song">
-            <img src="cover7.jpg" alt="Song 7">
-            <div class="song-info">
-                <h4>Song 7</h4>
-                <p>Artist 7</p>
-                <p class="duration">4:25</p>
-            </div>
-        </div>
-        <div class="song">
-            <img src="cover8.jpg" alt="Song 8">
-            <div class="song-info">
-                <h4>Song 8</h4>
-                <p>Artist 8</p>
-                <p class="duration">3:35</p>
-            </div>
-        </div>
-        <div class="song">
-            <img src="cover9.jpg" alt="Song 9">
-            <div class="song-info">
-                <h4>Song 9</h4>
-                <p>Artist 9</p>
-                <p class="duration">2:55</p>
-            </div>
-        </div>
-        <div class="song">
-            <img src="cover10.jpg" alt="Song 10">
-            <div class="song-info">
-                <h4>Song 10</h4>
-                <p>Artist 10</p>
-                <p class="duration">4:45</p>
-            </div>
-        </div>
-    </div>
-</div>
-<main>
-<div class="player-wrapper">
-  <header>
-    <p1>Playlist</p1>
-    <p>Catch a Vibeeee</p>
-  </header>
-  <div class="album"></div>
-  <div class="song-info">
-    <h id="h">All Girls Are the Same</h>
-    <p id="p">Juice WRLD</p>
-    <div class="progress-bar">
-      <div id="progress"></div>
-    </div>
-    <div class="controls">
-      <ion-icon name="play-back" id="prev"></ion-icon>
-      <ion-icon name="play-circle" id="play"></ion-icon>
-      <ion-icon name="play-forward" id="next"></ion-icon>
-    </div>
-    <audio id="audio">
-      <source src="https://pl.meln.top/mr/fcda85c63ebcd2dc1a582cff8ee61a15.mp3?session_key=1c4df4798b923579413fc5b02b9f6183" type="audio/mpeg">
-    </audio>
-  </div>
-</div>
-<div class="albumslist">
-    <h1>Albums</h1>
-    <img src="Images/a1.jpg"  alt="Album 1">
-        <img src="https://via.placeholder.com/100" alt="Album 2">
-        <img src="https://via.placeholder.com/100" alt="Album 3">
-        <img src="https://via.placeholder.com/100" alt="Album 4">
-        <img src="https://via.placeholder.com/100" alt="Album 5">
-        <img src="https://via.placeholder.com/100" alt="Album 6">
-        <img src="https://via.placeholder.com/100" alt="Album 7">
-        <img src="https://via.placeholder.com/100" alt="Album 8">
-        <img src="https://via.placeholder.com/100" alt="Album 9">
-        <img src="https://via.placeholder.com/100" alt="Album 10">
-        <img src="https://via.placeholder.com/100" alt="Album 11">
-        <img src="https://via.placeholder.com/100" alt="Album 12">
-        <img src="https://via.placeholder.com/100" alt="Album 13">
-        <img src="https://via.placeholder.com/100" alt="Album 14">
-        <img src="https://via.placeholder.com/100" alt="Album 15">
-        <img src="https://via.placeholder.com/100" alt="Album 16">
-        <img src="https://via.placeholder.com/100" alt="Album 17">
-        <img src="https://via.placeholder.com/100" alt="Album 18">
-        <img src="https://via.placeholder.com/100" alt="Album 19">
-        <img src="https://via.placeholder.com/100" alt="Album 20">
-        <img src="https://via.placeholder.com/100" alt="Album 21">
-        <img src="https://via.placeholder.com/100" alt="Album 22">
-        <img src="https://via.placeholder.com/100" alt="Album 23">
-        <img src="https://via.placeholder.com/100" alt="Album 24">
-        <img src="https://via.placeholder.com/100" alt="Album 25">
-        <img src="https://via.placeholder.com/100" alt="Album 26">
-        <img src="https://via.placeholder.com/100" alt="Album 27">
-        <img src="https://via.placeholder.com/100" alt="Album 28">
-        <img src="https://via.placeholder.com/100" alt="Album 29">
-        <img src="https://via.placeholder.com/100" alt="Album 30">
+
         
-    </div>
-</div>
-<div class="artistlist">
-    <h1>Artists</h1>
-    <div class="carousel" id="carousel">
-        <img src="Images/a1.jpg" alt="Artist 1">
-        <img src="Images/a10.jpg" alt="Artist 2">
-        <img src="Images/a11.jpg" alt="Artist 3">
-        <img src="Images/a12.jpg" alt="Artist 4">
-        <img src="Images/a13.jpg" alt="Artist 5">
-        <img src="Images/a14.jpg" alt="Artist 6">
-        <img src="Images/a15.jpg" alt="Artist 7">
-        
-    </div>
-</div>
-</main>
-  <script  src="JavaScript/musicscript.js"></script>
+      </nav>
+
+      <section class="content">
+        <div class="left-content">
+          <div class="slider-container">
+            <h1>Popular Playlist</h1>
+            <div class="swiper">
+              <div class="swiper-wrapper">
+                <div class="swiper-slide">
+                  <img
+                    src="Images/indie.gif" />
+                  <div class="slide-overlay">
+                    <h2>The Summer I Turned Indie</h2>
+                    <button>
+                      <a href="https://open.spotify.com/playlist/2BK2pEyh0wvc02SO8yxrXX?si=rpw9RbpSRZSRkeMCpbCzUA&pi=a-a480hixwQnms">Listen Now <i class="fa-solid fa-circle-play"></i></a>
+                    </button>
+                  </div>
+                </div>
+                <div class="swiper-slide">
+                  <img
+                    src="Images/lofi-music-lofiartwork.gif" />
+                  <div class="slide-overlay">
+                    <h2>Midnight Moods</h2>
+                    <button>
+                      Listen Now <i class="fa-solid fa-circle-play"></i>
+                    </button>
+                  </div>
+                </div>
+                
+                <div class="swiper-slide">
+                  <img
+                    src="Images/car.gif" />
+                  <div class="slide-overlay">
+                    <h2>Driving</h2>
+                    <button>
+                      Listen Now <i class="fa-solid fa-circle-play"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="swiper-slide">
+                  <img
+                    src="Images/comp.gif" />
+                  <div class="slide-overlay">
+                    <h2>Coding</h2>
+                    <button>
+                      Listen Now <i class="fa-solid fa-circle-play"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="swiper-slide">
+                  <img
+                    src="Images/rain.gif" />
+                  <div class="slide-overlay">
+                    <h2>Rainy Days</h2>
+                    <button>
+                      Listen Now <i class="fa-solid fa-circle-play"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="swiper-pagination"></div>
+            </div>
+          </div>
+
+          <div class="artists">
+            <h1>Featured Artists</h1>
+            <div class="artist-container containers">
+              <div class="artist">
+                <img
+                  src="Images/tyler.jpg"
+                  alt="" />
+                <p>Tyler, the Creator</p>
+              </div>
+
+              <div class="artist">
+                <img
+                  src="Images/kendrick.jpg"
+                  alt="" />
+                <p>Kendrick Lamar</p>
+              </div>
+
+              <div class="artist">
+                <img
+                  src="Images/top.avif"
+                  alt="" />
+                <p>Twenty One Pilots</p>
+              </div>
+
+              <div class="artist">
+                <img
+                  src="Images/nectar.png"
+                  alt="" />
+                <p>Joji</p>
+              </div>
+
+              <div class="artist">
+                <img
+                  src="Images/nirvana.jpg"
+                  alt="" />
+                <p>Nirvana</p>
+              </div>
+
+              <div class="artist">
+                <img
+                  src="Images/strokes.jpg"
+                  alt="" />
+                <p>The Strokes</p>
+              </div>
+
+              <div class="artist">
+                <img
+                  src="Images/halfalive.jpg"
+                  alt="" />
+                <p>Half Alive</p>
+              </div>
+
+              <div class="artist">
+                <img
+                  src="Images/blonde.jpg"
+                  alt="" />
+                <p>Frank Ocean</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="albums">
+            <h1>Recommended Albums</h1>
+            <div class="album-container containers">
+              <div class="album">
+                <div class="album-frame">
+                  <img
+                    src="Images/blonde.jpg"
+                    alt="" />
+                </div>
+                <div>
+                  <h2>Blond</h2>
+                  <p>Frank Ocean</p>
+                </div>
+              </div>
+
+              <div class="album">
+                <div class="album-frame">
+                  <img
+                    src="Images/igor.jpg"
+                    alt="" />
+                </div>
+                <div>
+                  <h2>IGOR</h2>
+                  <p>Tyler, the Creator</p>
+                </div>
+              </div>
+
+              <div class="album">
+                <div class="album-frame">
+                  <img
+                    src="Images/Clancy.jpg"
+                    alt="" />
+                </div>
+                <div>
+                  <h2>Self Titled</h2>
+                  <p>Twenty One Pilots</p>
+                </div>
+              </div>
+
+              <div class="album">
+                <div class="album-frame">
+                  <img
+                    src="Images/nectar.png"
+                    alt="" />
+                </div>
+                <div>
+                  <h2>Nectar</h2>
+                  <p>Joji</p>
+                </div>
+              </div>
+
+              <div class="album">
+                <div class="album-frame">
+                  <img
+                    src="Images/gkmc.jpeg"
+                    alt="" />
+                </div>
+                <div>
+                  <h2>good kid, m.A.A.d city</h2>
+                  <p>Kendrick Lamar</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="right-content">
+          <div class="recommended-songs">
+            <h1>Recommended Songs</h1>
+            <div class="song-container">
+              <div class="song">
+                <div class="song-img">
+                  <img
+                    src="https://images.genius.com/86341c9161e1648e786dd5abc33d5287.640x640x1.jpg"
+                    alt="" />
+                  <div class="overlay">
+                    <i class="fa-solid fa-play"></i>
+                  </div>
+                </div>
+                <div class="song-title">
+                  <h2>Battle Cry</h2>
+                  <p>Nujabes</p>
+                </div>
+                <span>3:22</span>
+              </div>
+
+              <div class="song">
+                <div class="song-img">
+                  <img
+                    src="https://upload.wikimedia.org/wikipedia/en/6/61/Kendrick_Lamar_-_Not_Like_Us.png"
+                    alt="" />
+                  <div class="overlay">
+                    <i class="fa-solid fa-play"></i>
+                  </div>
+                </div>
+                <div class="song-title">
+                  <h2>Not Like Us</h2>
+                  <p>kendrick Lamar</p>
+                </div>
+                <span>4:34</span>
+              </div>
+
+              <div class="song">
+                <div class="song-img">
+                  <img
+                    src="https://i1.sndcdn.com/artworks-HGuVseU3x3LE-0-t500x500.jpg"
+                    alt="" />
+                  <div class="overlay">
+                    <i class="fa-solid fa-play"></i>
+                  </div>
+                </div>
+                <div class="song-title">
+                  <h2>Étouffée</h2>
+                  <p>Vince Staples</p>
+                </div>
+                <span>4:28</span>
+              </div>
+
+              <div class="song">
+                <div class="song-img">
+                  <img
+                    src="https://i1.wp.com/cornellsun.com/wp-content/uploads/2018/02/V-CA-_npJZ0bktrbw-U6aS8J1EafqdG2mn03CTHjwk1B_xPOKh6y_sePG8uj8icyzZkBfQOyflS6gOZIH2pdPvRorSVEGnwqLNc_IMimjm9TRvti4025BSP0M0v0z-wZWH86IIKM.jpeg?fit=628%2C629&ssl=1"
+                    alt="" />
+                  <div class="overlay">
+                    <i class="fa-solid fa-play"></i>
+                  </div>
+                </div>
+                <div class="song-title">
+                  <h2>Little Dark Age</h2>
+                  <p>MGMT</p>
+                </div>
+                <span>4:59</span>
+              </div>
+
+              <div class="song">
+                <div class="song-img">
+                  <img
+                    src="https://upload.wikimedia.org/wikipedia/en/9/90/TheMelodicBlueCover.jpeg"
+                    alt="" />
+                  <div class="overlay">
+                    <i class="fa-solid fa-play"></i>
+                  </div>
+                </div>
+                <div class="song-title">
+                  <h2>Family Ties</h2>
+                  <p>Baby Keem</p>
+                </div>
+                <span>4:12</span>
+              </div>
+
+              <div class="song">
+                <div class="song-img">
+                  <img
+                    src="Images/Clancy.jpg"
+                    alt="" />
+                  <div class="overlay">
+                    <i class="fa-solid fa-play"></i>
+                  </div>
+                </div>
+                <div class="song-title">
+                  <h2>Oh Ms Believer</h2>
+                  <p>Twenty One Pilots</p>
+                </div>
+                <span>3:37</span>
+              </div>
+
+              <div class="song">
+                <div class="song-img">
+                  <img
+                    src="Images/blonde.jpg"
+                    alt="" />
+                  <div class="overlay">
+                    <i class="fa-solid fa-play"></i>
+                  </div>
+                </div>
+                <div class="song-title">
+                  <h2>Nights</h2>
+                  <p>Frank Ocean</p>
+                </div>
+                <span>5:07</span>
+              </div>
+
+              <div class="song">
+                <div class="song-img">
+                  <img
+                    src="Images/nectar.png"
+                    alt="" />
+                  <div class="overlay">
+                    <i class="fa-solid fa-play"></i>
+                  </div>
+                </div>
+                <div class="song-title">
+                  <h2>Ew</h2>
+                  <p>Joji</p>
+                </div>
+                <span>3:27</span>
+              </div>
+
+              <div class="song">
+                <div class="song-img">
+                  <img
+                    src="Images/igor.jpg"
+                    alt="" />
+                  <div class="overlay">
+                    <i class="fa-solid fa-play"></i>
+                  </div>
+                </div>
+                <div class="song-title">
+                  <h2>GONE, GONE / THANK YOU</h2>
+                  <p>Tyler, the Creator</p>
+                </div>
+                <span>6:15</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="music-player">
+            <div class="album-cover">
+              <img src="Images/igor.jpg" id="rotatingImage" alt="" />
+              <span class="point"></span>
+            </div>
+
+            <h2>NEW MAGIC WAND</h2>
+            <p>Tyler, the Creator</p>
+
+            <audio id="song">
+              <source src="NEW MAGIC WAND.mp3" type="audio/mpeg" />
+            </audio>
+
+            <input type="range" value="0" id="progress" />
+
+            <div class="controls">
+              <button class="backward">
+                <i class="fa-solid fa-backward"></i>
+              </button>
+              <button class="play-pause-btn">
+                <i class="fa-solid fa-play" id="controlIcon"></i>
+              </button>
+              <button class="forward">
+                <i class="fa-solid fa-forward"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+<!-- partial -->
+  <script src='https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js'></script><script  src="JavaScript/musicscript.js"></script>
 
 </body>
 </html>
