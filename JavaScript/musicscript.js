@@ -49,6 +49,7 @@ const backwardButton = document.querySelector(".controls button.backward");
 const rotatingImage = document.getElementById("rotatingImage");
 const songName = document.querySelector(".music-player h2");
 const artistName = document.querySelector(".music-player p");
+const progressBar = document.getElementById("progress");
 
 let rotating = false;
 let currentRotation = 0;
@@ -162,6 +163,11 @@ progress.addEventListener("change", function () {
   startRotation();
 });
 
+progressBar.addEventListener('input', function() {
+  const value = (progressBar.value - progressBar.min) / (progressBar.max - progressBar.min) * 100;
+  progressBar.style.background = `linear-gradient(to right, rgb(77, 58, 162) 0%, rgb(77, 58, 162) ${value}%, rgba(200, 187, 255, 0.6) ${value}%, rgba(200, 187, 255, 0.6) 100%)`;
+});
+
 forwardButton.addEventListener("click", function () {
   currentSongIndex = (currentSongIndex + 1) % songs.length;
   updateSongInfo();
@@ -191,10 +197,8 @@ var swiper = new Swiper(".swiper", {
     modifier: 1,
     slideShadows: false,
   },
-   on: {
-    click(event) {
-      swiper.slideTo(this.clickedIndex);
-    },
+  mousewheel: {
+    invert: false,
   },
   pagination: {
     el: ".swiper-pagination",

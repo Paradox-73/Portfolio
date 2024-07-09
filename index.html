@@ -1,275 +1,497 @@
 <!DOCTYPE HTML>
 <html>
-	<head>
-		<title>Kanav here</title>
-		<meta charset="utf-8" />
+    <head>
+        <title>Kanav here</title>
+        <meta charset="utf-8" />
 		<link rel="icon" type="image/x-icon" href="Images/profile.jpg">
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<link rel="stylesheet" href="CSS/main.css" >
-		<link rel="stylesheet" href="CSS/carousel.css">
-		<style>
-		::-webkit-scrollbar {
-			display: none;
-		  }
-		  </style>
-	</head>
-	<body class="is-preload">
+        <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css'>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@300;400;700&display=swap');
 
-		<!--NAV-->
-		
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-		<!-- Header -->
-			<section id="header">
-				<header class="major">
-					<h1>Hi, I'm Kanav Bhardwaj</h1>
-					<p>I'm a CSE student in IIIT Bangalore. <br>
-						This website is dedicated to my interests and goals.<br>
-						Enjoy.</p>
-				</header>
-				<div class="container">
-					<ul class="actions special">
-						<li><a href="#one" class="button primary scrolly">What I'm up to right now</a></li>
-					</ul>
-				</div>
-			</section>
+html, body {
+    height: 100%;
+    overflow: hidden;
+}
 
-		<!-- Music -->
-			<section id="one" class="main special">
-				<div class="container">
-					<span class="image fit primary"><img src="Images/musicbganimeated.jpg" alt="" /></span>
-					<div class="content">
-						<header class="major">
-							<h2><a href="Music.html">Music</a></h2>
-						</header>
-						<div class="carousel-container">
-            				<div class="carousel" id="carousel-1">
+body {
+    font-family: 'Comic Neue', cursive;
+    
+}
 
-                				<div class="carousel-item active" data-index="0">
-                    				<img src="Images/Clancy.jpg" alt="Image 1"> 
-                				</div>
+.container {
+    height: 100vh;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;
+}
+.container::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, and Opera */
+}
 
-							<div class="carousel-item" data-index="1">
-								<img src="Images/Atavista.png" alt="Image 2">
-							</div>
+.container #hero {
+    cursor: url('Images/cursor.png'), auto;
+    
+}
+.container #music {
+    cursor: url('Images/music.png'), auto;
+    
+}
+.container #movies {
+    cursor: url('Images/movie.png'), auto;
+    
+}
+.container #games {
+    cursor: url('Images/game.png'), auto;
+    
+}
+.container #travel {
+    cursor: url('Images/travel.png'), auto;
+    
+}
+.container #food {
+    cursor: url('Images/food.png'), auto;
+    
+}
+.container #literature {
+    cursor: url('Images/book.png'), auto;
+    
+}
+.container #sport {
+    cursor: url('Images/sport.png'), auto;
+    
+}
+.container #art {
+    cursor: url('Images/art.png'), auto;
+    
+}
 
-							<div class="carousel-item" data-index="2">
-								<img src="Images/nectar.png" alt="Image 3">
-							</div>					
-							
-            </div>
-        </div>
-					</div>
-					<a href="#two" class="goto-next scrolly">Next</a>
-				</div>
-			</section>
+section {
+    height: 100vh;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-size: cover;
+    background-position: center;
+    color: #fff;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.5s ease;
+}
 
-		<!-- Movies & TV -->
-		<section id="two" class="main special">
-			<div class="container">
-				<span class="image fit primary"><img src="Images/moviebg.avif" alt="" /></span>
-				<div class="content">
-					<header class="major">
-						<h2><a href="MoviesTV.html">Movies & TV</a></h2>
-					</header>
-					<div class="carousel-container">
-						<div class="carousel" id="carousel-2">
+section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    
+}
 
-							<div class="carousel-item active" data-index="4">
-								<img src="Images/daw.webp" alt="Image 4"> 
-							</div>
+section > * {
+    position: relative;
+    z-index: 2;
+}
 
-						<div class="carousel-item" data-index="5">
-							<img src="Images/pulp fiction.jpg" alt="Image 5">
-						</div>
+h1 {
+    font-family: 'Bangers', cursive;
+    font-size: 5rem;
+    margin-bottom: 1rem;
+    text-shadow: 5px 5px 0 #000;
+    
+}
 
-						<div class="carousel-item" data-index="6">
-							<img src="Images/infinity war.jpg" alt="Image 6">
-						</div>					
-					    </div>
-					</div>
-				</div>
-				<a href="#three" class="goto-next scrolly">Next</a>
-			</div>
-		</section>			
+p {
+    font-size: 1.5rem;
+    max-width: 80%;
+    text-shadow: 2px 2px 0 #000;
 
-		<!-- Games -->
-		<section id="three" class="main special">
-			<div class="container">
-				<span class="image fit primary"><img src="Images/game.jpg" alt="" /></span>
-				<div class="content">
-					<header class="major">
-						<h2><a href="Games.html">Games</a></h2>
-					</header>
-						<div class="carousel-container">
-            				<div class="carousel" id="carousel-3">
+}
 
-                				<div class="carousel-item active" data-index="0">
-                    				<img src="Images/GoW.jpg" alt="Image 1"> 
-								</div>
+a {
+    color: #fff;
+    text-decoration: none;
+    transition: all 0.3s ease;
 
-							<div class="carousel-item" data-index="1">
-								<img src="Images/Spider_Man.avif" alt="Image 2">
-							</div>
+}
 
-							<div class="carousel-item" data-index="2">
-								<img src="Images/Spider_Man_Miles_Morales.avif" alt="Image 3">
-							</div>					
-							
-            </div>
-        </div>
-					</div>
-				<a href="#four" class="goto-next scrolly">Next</a>
-			</div>
-		</section>		
-
-		<!-- Travel -->
-		<section id="four" class="main special">
-			<div class="container">
-				<span class="image fit primary"><img src="Images/travelbg.avif" alt="" /></span>
-				<div class="content">
-					<header class="major">
-						<h2><a href="Travel.html">Travel</a></h2>
-					</header>
-					<div class="carousel-container">
-						<div class="carousel" id="carousel-4">
-
-							<div class="carousel-item active" data-index="0">
-								<img src="Images/pondi.jpg" alt="Image 1"> 
-							</div>
-
-						<div class="carousel-item" data-index="1">
-							<img src="Images/coorg.jpg" alt="Image 2">
-						</div>
-
-						<div class="carousel-item" data-index="2">
-							<img src="Images/khajjiar.jpg" alt="Image 3">
-						</div>					
-						
-		</div>
-	</div>
-					</div>
-				<a href="#five" class="goto-next scrolly">Next</a>
-			</div>
-		</section>
-
-		<!-- Food -->
-		<section id="five" class="main special">
-			<div class="container">
-				<span class="image fit primary"><img src="Images/foodbg.jpg" alt="" /></span>
-				<div class="content">
-					<header class="major">
-						<h2><a href="Food.html">Food</a></h2>
-					</header>
-					<div class="carousel-container">
-						<div class="carousel" id="carousel-5">
-
-							<div class="carousel-item active" data-index="0">
-								<img src="Images/breakfast.jpg" alt="Image 1"> 
-							</div>
-
-						<div class="carousel-item" data-index="1">
-							<img src="Images/cake.jpg" alt="Image 2">
-						</div>
-
-						<div class="carousel-item" data-index="2">
-							<img src="Images/fish.jpg" alt="Image 3">
-						</div>					
-						
-		</div>
-	</div>
-				</div>
-				<a href="#six" class="goto-next scrolly">Next</a>
-			</div>
-		</section>
-
-		<!-- Literature -->
-		<section id="six" class="main special">
-			<div class="container">
-				<span class="image fit primary"><img src="Images/litbg.jpg" alt="" /></span>
-				<div class="content">
-					<header class="major">
-						<h2><a href="Literature.html">Literature</a></h2>
-					</header>
-					<div class="carousel-container">
-						<div class="carousel" id="carousel-6">
-
-							<div class="carousel-item active" data-index="0">
-								<img src="Images/book1.jpg" alt="Image 1"> 
-							</div>
-
-						<div class="carousel-item" data-index="1">
-							<img src="Images/raavan.jpg" alt="Image 2">
-						</div>
-
-						<div class="carousel-item" data-index="2">
-							<img src="Images/book3.jpg" alt="Image 3">
-						</div>					
-						
-		</div>
-	</div>
-					</div>
-				<a href="#seven" class="goto-next scrolly">Next</a>
-			</div>
-		</section>
-
-		<!-- Art -->
-		<section id="seven" class="main special">
-			<div class="container">
-				<span class="image fit primary"><img src="Images/art.jpg" alt="" /></span>
-				<div class="content">
-					<header class="major">
-						<h2><a href="Art.html">Art</a></h2>
-					</header>
-					<div class="carousel-container">
-						<div class="carousel" id="carousel-7">
-
-							<div class="carousel-item active" data-index="0">
-								<img src="Images/a1.jpg" alt="Image 1"> 
-							</div>
-
-						<div class="carousel-item" data-index="1">
-							<img src="Images/a2.jpg" alt="Image 2">
-						</div>
-
-						<div class="carousel-item" data-index="2">
-							<img src="Images/a3.jpg" alt="Image 3">
-						</div>					
-						
-		</div>
-	</div>
-					</div>
-				<a href="#header" class="goto-next scrolly">Next</a>
-			</div>
-		</section>
-
-		<!-- Footer -->
-			<section id="footer">
-					<p style="padding-top: 249px; font-size: 24px; font-style: italic; color: rgb(255, 255, 255);">
-						
-						“I am not sure that I exist, actually. <br> I am all the writers that I have read, <br>all the people that I have met, <br>all the art that I have consumed, <br>all the cities I have visited.”
-					</p>
-				<footer>
-					<ul class="icons">
-						<li><a href="https://www.youtube.com/channel/UCuYDSLvrnAi-2p7B13eX8Ng" target="_blank" class="icon brands alt fa-youtube"><span class="label">Youtube</span></a></li>
-						<li><a href="https://www.instagram.com/kanavbhardwaj_73/" target="_blank" class="icon brands alt fa-instagram"><span class="label">Instagram</span></a></li>
-						<li><a href="https://www.linkedin.com/in/kanav-bhardwaj-a25940281" target="_blank" class="icon brands alt fa-linkedin"><span class="label">LinkedIn</span></a></li>
-					</ul>
-				</footer>
-			</section>
-
-			
+a:hover {
+    color: #ffffff;
+    text-decoration: none;
+    transition: all 0.3s ease;
+ 
+}
 
 
-		<!-- Scripts -->
+#hero a:hover {
+    color: #800080;
+    transform: scale(1.1);
+}
 
-			<script src="JavaScript/jquery.min.js"></script>
-			<script src="JavaScript/jquery.scrollex.min.js"></script>
-			<script src="JavaScript/jquery.scrolly.min.js"></script>
-			<script src="JavaScript/browser.min.js"></script>
-			<script src="JavaScript/breakpoints.min.js"></script>
-			<script src="JavaScript/util.js"></script>
-			<script src="JavaScript/main.js"></script>
-			<script src='JavaScript/carousel.js'></script>
+#music a:hover {
+    color: #00ff00;
+    transform: scale(1.1);
+}
+#movies a:hover {
+    color: #ff0000;
+    transform: scale(1.1);
+}
+#games a:hover {
+    color: #0000ff;
+    transform: scale(1.1);
+}
+#travel a:hover {
+    color: #a52a2a;
+    transform: scale(1.1);
+}
+#food a:hover {
+    color: #ff00ff;
+    transform: scale(1.1);
+}
+#literature a:hover {
+    color: #ffdab9;
+    transform: scale(1.1);
+}
+#art a:hover {
+    color: #ffa500;
+    transform: scale(1.1);
+}
+#sport a:hover {
+    color: #ffff00;
+    transform: scale(1.1);
+}
+#credit a:hover {
+    color: #808080;
+    transform: scale(1.1);
+}
 
-	</body>
-</html>
+
+
+footer {
+    position:fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1rem;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    z-index: 1000;
+}
+
+.social-icon {
+    width: 40px;
+    height: 40px;
+    transition: all 0.3s ease;
+}
+
+.social-icon:hover {
+    transform: scale(1.2);
+}
+
+
+.section-indicator {
+    position: fixed;
+    top: 50%;
+    right: 5px;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 1000;
+    
+}
+
+.section-indicator a {
+    transition: all 0.3s ease;
+    opacity: 0.25;
+}
+
+.section-indicator a.active {
+    transform: scale(1.5);
+    opacity: 1;
+}
+
+.nav-icon {
+  width: 20px;
+  height: 10px;
+  font-size: 1.1rem;
+}
+
+
+/* Hide the vertical scrollbar */
+.container {
+    overflow-y: scroll;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+.container::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, and Opera */
+}
+.speech-bubble {
+  --arrow-w: 0.5em;
+  --arrow-h: 1em;
+  --bubble-corners: 1;
+  --w: 12em;
+  --border-size: 3px;
+  --text-color: #800080;
+  --bubble-color: rgba(255, 255, 255, 0.51);
+  --border-color: black;
+}
+
+.speech-bubble {
+  text-align: center;
+  font-family: cursive;
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--text-color);
+  background: var(--bubble-color);
+  padding: 1em;
+  position: relative;
+  border-radius: var(--bubble-corners);
+  max-width: var(--w);
+  box-shadow: 0 0 0 var(--border-size) var(--border-color);
+}
+
+.speech-bubble.round {
+  --bubble-corners: 1em;
+}
+
+.speech-bubble.circle {
+  --bubble-corners: 100%;
+  padding: 2em;
+}
+
+
+.speech-bubble:before, .speech-bubble:after {
+  content: "";
+  position: absolute;
+  bottom: calc(-1 * var(--arrow-h) * 2 + 0.5px);
+  left: 50%;
+  border-style: solid;
+  border-width: var(--arrow-h) var(--arrow-w);
+  border-color: var(--bubble-color) transparent transparent;
+}
+
+.speech-bubble:before {
+  border-width: calc(var(--arrow-h) + var(--border-size)) calc(var(--arrow-w) + var(--border-size));
+  border-color: var(--border-color) transparent transparent;
+  bottom: calc(-1 * var(--arrow-h) * 2 - 2.5*var(--border-size));
+  left: calc(50% - var(--border-size));
+}
+
+.speech-bubble.t:after {
+  border-color: transparent transparent var(--bubble-color);
+  bottom: auto;
+  top: calc(-1 * var(--arrow-h) * 2 + 0.5px);
+}
+
+.speech-bubble.t:before {
+  border-width: calc(var(--arrow-h) + var(--border-size)) calc(var(--arrow-w) + var(--border-size));
+  border-color: transparent transparent var(--border-color);
+  bottom: auto;
+  top: calc(-1 * var(--arrow-h) * 2 - 2.5*var(--border-size));
+}
+
+
+
+</style>
+</head>
+<body>
+<div class="container">
+    <section id="hero" style="background-image: url('Images/bg9.gif');">
+        <h1><a href="index1.html">Kanav Bhardwaj</a></h1>
+            <div class="speech-bubble round t">I'm a CSE student in IIIT Bangalore. <br>
+                This website is dedicated to my interests and goals.<br>
+                Enjoy.</div>
+    </section>
+
+    <section id="music" style="background-image: url('Images/music.gif');">
+        <h1><a href="Music.html">Music</a></h1>
+        <p>Tune into the beats that shape our world.</p>
+        
+    </section>
+
+    <section id="movies" style="background-image: url('Images/movie.gif');">
+        <h1><a href="https://websim.ai/comicverse/movies">Movies</a></h1>
+        <p>Lights, camera, action! Dive into cinematic wonders.</p>
+    </section>
+
+    <section id="games" style="background-image: url('Images/game.gif');">
+        <h1><a href="https://websim.ai/comicverse/games">Games</a></h1>
+        <p>Level up your entertainment with interactive adventures.</p>
+    </section>
+
+    <section id="travel" style="background-image: url('Images/travel.gif');">
+        <h1><a href="https://websim.ai/comicverse/travel">Travel</a></h1>
+        <p>Explore the world, one panel at a time.</p>
+        
+    </section>
+
+    <section id="food" style="background-image: url('Images/food.gif');">
+        <h1><a href="https://websim.ai/comicverse/food">Food</a></h1>
+        <p>Savor the flavors of culinary comics.</p>
+        
+    </section>
+
+    <section id="literature" style="background-image: url('Images/book.gif');">
+        <h1><a href="https://websim.ai/comicverse/literature">Literature</a></h1>
+        <p>Turn the pages of graphic storytelling.</p>
+        
+    </section>
+
+    <section id="art" style="background-image: url('Images/art.gif');">
+        <h1><a href="https://websim.ai/comicverse/art">Art</a></h1>
+        <p>Paint your imagination with vivid visuals.</p>
+        
+    </section>
+
+    <section id="sport" style="background-image: url('Images/sport.gif');">
+        <h1><a href="https://websim.ai/comicverse/sport">Sport</a></h1>
+        <p>Score big with athletic adventures.</p>
+        
+    </section>
+
+    <section id="credits" style="background-image: url('Images/credit.gif');">
+        <h1><a href="https://websim.ai/comicverse/credits">Credits</a></h1>
+        <p>The masterminds behind our comic universe.</p>
+        
+    </section>
+</div>
+
+<div class="section-indicator">
+    <a href="#hero"><i class="fa fa-home nav-icon"></i></a>
+    <a href="#music"><i class="fa fa-compact-disc nav-icon"></i></a>
+    <a href="#movies"><i class="fa fa-film nav-icon"></i></a>
+    <a href="#games"><i class="fa fa-gamepad nav-icon"></i></a>
+    <a href="#travel"><i class="fa fa-suitcase nav-icon"></i></a>
+    <a href="#food"><i class="fa fa-cutlery nav-icon"></i></a>
+    <a href="#literature"><i class="fa fa-book nav-icon"></i></a>
+    <a href="#art"><i class="fa fa-paint-brush nav-icon"></i></a>
+    <a href="#sport"><i class="fa fa-futbol nav-icon"></i></a>
+    <a href="#credits"><i class="fa fa-copyright nav-icon"></i></a>
+</div>
+
+<footer>
+    <a href="https://instagram.com/comicverse" target="_blank">
+        <img src="Images/instagram.png" alt="Instagram" class="social-icon" style="filter: invert(1);">
+    </a>
+    <a href="https://linkedin.com/company/comicverse" target="_blank">
+        <img src="Images/linkedin.png" alt="LinkedIn" class="social-icon" style="filter: invert(1);">
+    </a>
+    <a href="https://github.com/comicverse" target="_blank">
+        <img src="Images/github.png" alt="GitHub" class="social-icon" style="filter: invert(1);">
+    </a>
+</footer>
+
+<script>
+document.querySelectorAll('.social-icon').forEach(icon => {
+    icon.addEventListener('mouseover', () => {
+        icon.style.filter = 'invert(0.5) sepia(1) saturate(5) hue-rotate(270deg)';
+    });
+    icon.addEventListener('mouseout', () => {
+        icon.style.filter = 'invert(1)';
+    });
+});
+
+// Snap scrolling and section indicator
+const container = document.querySelector('.container');
+const sections = document.querySelectorAll('section');
+const sectionIndicators = document.querySelectorAll('.section-indicator a');
+
+let isScrolling = false;
+let currentSection = 0;
+
+function updateSectionIndicator() {
+    sectionIndicators.forEach((indicator, index) => {
+        if (index === currentSection) {
+            indicator.classList.add('active');
+        } else {
+            indicator.classList.remove('active');
+        }
+    });
+}
+
+function scrollToSection(index) {
+    if (index >= 0 && index < sections.length) {
+        sections[index].scrollIntoView({ behavior: 'smooth' });
+        currentSection = index;
+        updateSectionIndicator();
+    }
+}
+
+container.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    if (!isScrolling) {
+        isScrolling = true;
+        if (e.deltaY > 0 && currentSection < sections.length - 1) {
+            currentSection++;
+        } else if (e.deltaY < 0 && currentSection > 0) {
+            currentSection--;
+        }
+        scrollToSection(currentSection);
+        setTimeout(() => {
+            isScrolling = false;
+        }, 1000);
+    }
+}, { passive: false });
+
+sectionIndicators.forEach((indicator, index) => {
+    indicator.addEventListener('click', (e) => {
+        e.preventDefault();
+        scrollToSection(index);
+    });
+});
+
+
+updateSectionIndicator();
+const images = [
+    'Images/pow.png',
+    'Images/pop.png',
+    'Images/wham.png',
+    'Images/zzap.png',
+    'Images/bang.png',
+    // Add more images to the array as needed
+  ];
+
+  document.addEventListener('click', (e) => {
+    const randomImage = images[Math.floor(Math.random() * images.length)];
+    const img = document.createElement('img');
+    img.src = randomImage;
+    img.style.position = 'absolute';
+    img.style.top = `${e.clientY}px`;
+    img.style.left = `${e.clientX}px`;
+    img.style.opacity = 0;
+    img.style.width = '100px'; // Set the width of the image
+    img.style.height = '100px';
+    document.body.appendChild(img);
+
+    img.addEventListener('load', () => {
+      img.style.transition = 'opacity 0.5s';
+      img.style.opacity = 1;
+      setTimeout(() => {
+        img.style.opacity = 0;
+        setTimeout(() => {
+          img.remove();
+        }, 500);
+      }, 1000);
+    });
+  });
+</script>
+
+</body></html>

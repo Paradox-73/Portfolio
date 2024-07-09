@@ -1,122 +1,396 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" >
 <head>
   <meta charset="UTF-8">
   <title>Food</title>
-  <link rel="stylesheet" href="CSS/nav.css">
-  <link rel="stylesheet" href="CSS/foodstyle.css">
-  <link rel="icon" type="image/x-icon" href="Images/profile.jpg">
-  <link rel="stylesheet" href="CSS/inf slider.css">
-  <style>
-    .header-wrapper nav {
-    background: #673c1171;
-    }
-  </style>
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300i|McLaren|Syncopate:400,700&display=swap" rel="stylesheet"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
+<link rel="stylesheet" href="CSS/foodstyle.css"><link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css'>
+<link rel="icon" type="image/x-icon" href="Images/profile.jpg">
 </head>
 <body>
-
-
-
+<header>
+  <div class="name"><span>F</span><span>O</span><span>O</span><span>D</span><span>I</span><span>E</span>
+  </div>
+  <div class="opening-hours">When do I cook? <br>Mom's the boss! But I mostly cook for dinner, desserts or on weekends.</div>
+  <div class="location">
+    <p>Welcome to My humble kitchen Menu</p>
+    <p>Don't call me, i only cook for myself</p>
+  </div>
+</header>
 <main>
-  <div class="header-wrapper">
-    <nav>
-      <input type="checkbox" id="menu-toggle">
-      <label for="menu-toggle">
-        Food
-        <div id="menu-icon"></div>
-      </label>
-      <div id="overlay"></div>
-      <ul>
-        <li><a href="./index.html">Home</a></li>
-        <li><a href="./Music.html">Music</a></li>
-        <li><a href="./MoviesTV.html">Movies & TV</a></li>
-        <li><a href="./Games.html">Games</a></li>
-        <li><a href="./Travel.html">Travel</a></li>
-        <li><a href="./Food.html">Food</a></li>
-        <li><a href="./Literature.html">Literature</a></li>
-        <li><a href="./art.html">Art</a></li>
-        <ul id="social-media">
-          <li><a href="https://www.facebook.com/" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
-          <li><a href="https://www.twitter.com/" target="_blank"><i class="fab fa-twitter"></i></a></li>
-          <li><a href="https://www.instagram.com/" target="_blank"><i class="fab fa-instagram"></i></a></li>
-          <li><a href="https://www.linkedin.com/" target="_blank"><i class="fab fa-linkedin-in"></i></a></li>
-        </ul>
-      </ul>
-    </nav>
+  <div class="legend">
+    <div class="legend__item"><i>N</i><span>Nuts</span></div>
+    <div class="legend__item"><i>E</i><span>Eggs</span></div>
+    <div class="legend__item"><i>W</i><span>Wheat</span></div>
+    <div class="legend__item"><i>D</i><span>Dairy</span></div>
+    <div class="legend__item"><i>S</i><span>Seafood</span></div>
   </div>
-
-  <div id="gallery">
-    <article class="card no_bg">
-      <div>
-        <h1>Food<br />photo gallery</h1>
+  <div class="menu">
+    <div class="mains">
+      <h3>Suspicious But Delicious</h3>
+      <div class="item">
+        <div class="item__image"><img src="https://static.vecteezy.com/system/resources/previews/032/325/154/original/lasagna-on-a-plate-isolated-on-transparent-background-file-cut-out-ai-generated-png.png"/></div>
+        <div class="item__desc">
+          <div class="item__name">Lasagna</div>
+          <div class="item__description">Bacon, Kebab, Paneer, Cheese, Onion Garlic Tomato sauce.  Spicy.</div>
+          <div class="rating" data-rating="3">
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+          </div>
+          <button><i class="fa-solid fa-cart-shopping"></i></button>
+          <div class="item__allergens"><span class="allergen wheat">W</span><span class="allergen dairy">D</span>
+          </div>
+        </div>
       </div>
-    </article>
-
-    <article class="card" style="--img:url('../Images/breakfast.jpg');">
-      <h2>Eggs, peanut butter protein shake</h2>
-    </article>
-
-    <article class="card" style="--img:url('../Images/fish.jpg');">
-      <h2>Fish</h2>
-    </article>
-
-    <article class="card" style="--img:url('../Images/cake.jpg');">
-      <h2 style="color:black">Cake</h2>
-    </article>
-
-    
-  </div>
-
-  <div class="slider">
-    <div class="slide-track">
-      <div class="slide">
-        <img src="https://asset.brandfetch.io/id7ETzoB9W/idu6N-uDtX.svg" height="100" width="250" alt="" />
+      <div class="item">
+        <div class="item__image"><img src="https://static.vecteezy.com/system/resources/previews/023/858/490/original/tasty-grilled-chicken-breast-fillet-isolated-on-transparent-background-png.png"/></div>
+        <div class="item__desc">
+          <div class="item__name">Grilled Chicken and Garlic Bread</div>
+          <div class="item__description">Chicken, bread, various spices.</div>
+          <div class="rating" data-rating="5">
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+          </div><button><i class="fa-solid fa-cart-shopping"></i></button>
+          <div class="item__allergens"><span class="allergen wheat">W</span>
+          </div>
+        </div>
       </div>
-      <div class="slide">
-        <img src="https://asset.brandfetch.io/idh37nk_BV/id5ER-NlJ3.svg" height="100" width="250" alt="" />
+      <div class="item">
+        <div class="item__image"><img src="https://static.vecteezy.com/system/resources/previews/025/222/206/original/shawarma-sandwich-isolated-on-transparent-background-png.png"/></div>
+        <div class="item__desc">
+          <div class="item__name">Egg wrapped Roll</div>
+          <div class="item__description">Eggs, chicken, sauces, spices</div>
+          <div class="rating" data-rating="2">
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+          </div><button><i class="fa-solid fa-cart-shopping"></i></button>
+          <div class="item__allergens"><span class="allergen eggs">E</span><span class="allergen wheat">W</span><span class="allergen dairy">D</span>
+          </div>
+        </div>
       </div>
-      <div class="slide">
-        <img src="https://asset.brandfetch.io/idd6YXWdqJ/idestcUzZ7.svg" height="100" width="250" alt="" />
+      <div class="item">
+        <div class="item__image"><img src="https://static.vecteezy.com/system/resources/previews/029/284/526/original/grilled-fish-with-lemon-png.png"/></div>
+        <div class="item__desc">
+          <div class="item__name">Lemon Butter Fish</div>
+          <div class="item__description">Lemon, butter, fish, spices</div>
+          <div class="rating" data-rating="5">
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+          </div><button><i class="fa-solid fa-cart-shopping"></i></button>
+          <div class="item__allergens"><span class="allergen wheat">W</span><span class="allergen dairy">D</span><span class="allergen sea">S</span>
+          </div>
+        </div>
       </div>
-      <div class="slide">
-        <img src="https://asset.brandfetch.io/id3O1uj8JT/id8RX3bIAb.svg" height="100" width="250" alt="" />
+      <div class="item">
+        <div class="item__image"><img src="https://static.vecteezy.com/system/resources/previews/025/066/797/original/ramen-with-ai-generated-free-png.png"/></div>
+        <div class="item__desc">
+          <div class="item__name">Ramen</div>
+          <div class="item__description">Avocado, anchovies, lemon juice, paprika.</div>
+          <div class="rating" data-rating="5">
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+          </div><button><i class="fa-solid fa-cart-shopping"></i></button>
+          <div class="item__allergens"><span class="allergen wheat">W</span><span class="allergen dairy">D</span><span class="allergen sea">S</span>
+          </div>
+        </div>
       </div>
-      <div class="slide">
-        <img src="https://asset.brandfetch.io/idiMsuk2zA/idcJw7-e4N.svg" height="100" width="250" alt="" />
+      <div class="item">
+        <div class="item__image"><img src="https://static.vecteezy.com/system/resources/thumbnails/025/076/438/small/pizza-isolated-illustration-ai-generative-png.png"/></div>
+        <div class="item__desc">
+          <div class="item__name">Pizza</div>
+          <div class="item__description">Avocado, mangoes, lemon juice, chili powder, mint.</div>
+          <div class="rating" data-rating="5">
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+          </div><button><i class="fa-solid fa-cart-shopping"></i></button>
+          <div class="item__allergens"><span class="allergen wheat">W</span>
+          </div>
+        </div>
       </div>
-      <div class="slide">
-        <img src="https://asset.brandfetch.io/idh336BtAD/ideGfK_7NU.svg" height="100" width="250" alt="" />
+      <div class="item">
+        <div class="item__image"><img src="https://static.vecteezy.com/system/resources/previews/025/222/176/original/pancakes-isolated-on-transparent-background-png.png"/></div>
+        <div class="item__desc">
+          <div class="item__name">Pancakes</div>
+          <div class="item__description">Avocado, citrus fruit of the week, mint, feta cheese.</div>
+          <div class="rating" data-rating="5">
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+          </div><button><i class="fa-solid fa-cart-shopping"></i></button>
+          <div class="item__allergens"><span class="allergen wheat">W</span><span class="allergen dairy">D</span>
+          </div>
+        </div>
       </div>
-      <div class="slide">
-        <img src="https://asset.brandfetch.io/idt392h1Oj/id9Mm2VNoF.svg" height="100" width="250" alt="" />
-      </div>
-      <div class="slide">
-        <img src="https://asset.brandfetch.io/id7ETzoB9W/idu6N-uDtX.svg" height="100" width="250" alt="" />
-      </div>
-      <div class="slide">
-        <img src="https://asset.brandfetch.io/idh37nk_BV/id5ER-NlJ3.svg" height="100" width="250" alt="" />
-      </div>
-      <div class="slide">
-        <img src="https://asset.brandfetch.io/idd6YXWdqJ/idestcUzZ7.svg" height="100" width="250" alt="" />
-      </div>
-      <div class="slide">
-        <img src="https://asset.brandfetch.io/id3O1uj8JT/id8RX3bIAb.svg" height="100" width="250" alt="" />
-      </div>
-      <div class="slide">
-        <img src="https://asset.brandfetch.io/idiMsuk2zA/idcJw7-e4N.svg" height="100" width="250" alt="" />
-      </div>
-      <div class="slide">
-        <img src="https://asset.brandfetch.io/idh336BtAD/ideGfK_7NU.svg" height="100" width="250" alt="" />
-      </div>
-      <div class="slide">
-        <img src="https://asset.brandfetch.io/idt392h1Oj/id9Mm2VNoF.svg" height="100" width="250" alt="" />
+      <div class="item">
+        <div class="item__image"><img src="Images/sw.png"/></div>
+        <div class="item__desc">
+          <div class="item__name">Sandwich</div>
+          <div class="item__description">Avocado, radishes, baby peas, lemon juice, basil.</div>
+          <div class="rating" data-rating="5">
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+          </div><button><i class="fa-solid fa-cart-shopping"></i></button>
+          <div class="item__allergens"><span class="allergen wheat">W</span>
+          </div>
+        </div>
       </div>
     </div>
+    <div class="sides">
+      <h3>Frozen Gourmet</h3>
+      <div class="item">
+        <div class="item__desc">
+          <div class="item__name">Cheesy Fries</div>
+          <div class="item__description">With ketchup or mayo</div>
+          <div class="rating" data-rating="5">
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+          </div><button><i class="fa-solid fa-cart-shopping"></i></button>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item__desc">
+          <div class="item__name">Nuggets</div>
+          <div class="item__description">With chipotle lime dip</div>
+          <div class="rating" data-rating="5">
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+          </div><button><i class="fa-solid fa-cart-shopping"></i></button>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item__desc">
+          <div class="item__name">Sautéed Kebab</div>
+          <div class="item__description">With chipotle lime dip</div>
+          <div class="rating" data-rating="5">
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+          </div><button><i class="fa-solid fa-cart-shopping"></i></button>
+        </div>
+      </div>
+    </div>
+    <div class="tarts">
+      <h3>Sugar Crash</h3>
+      <div class="item">
+        <div class="item__image"><img src="https://static.vecteezy.com/system/resources/previews/027/522/308/original/chocolate-cake-happy-birthday-chocolate-cake-ai-generative-free-png.png"/></div>
+        <div class="item__desc">
+          <div class="item__name">Choclate Cake</div>
+          <div class="item__description">With chipotle lime dip</div>
+          <div class="rating" data-rating="5">
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+          </div><button><i class="fa-solid fa-cart-shopping"></i></button>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item__image"><img src="https://static.vecteezy.com/system/resources/thumbnails/010/834/011/small_2x/chocolate-cookies-isolated-on-white-background-full-depth-of-field-png.png"/></div>
+        <div class="item__desc">
+          <div class="item__name">Cookies</div>
+          <div class="item__description">With chipotle lime dip</div>
+          <div class="rating" data-rating="5">
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+          </div><button><i class="fa-solid fa-cart-shopping"></i></button>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item__image"><img src="Images/cookies.png"/></div>
+        <div class="item__desc">
+          <div class="item__name">Triple Decker Bus</div>
+          <div class="item__description">With chipotle lime dip</div>
+          <div class="rating" data-rating="5">
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+          </div><button><i class="fa-solid fa-cart-shopping"></i></button>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item__image"><img src="https://static.vecteezy.com/system/resources/previews/027/308/960/non_2x/brownie-with-ai-generated-free-png.png"/></div>
+        <div class="item__desc">
+          <div class="item__name">Brownie</div>
+          <div class="item__description">With chipotle lime dip</div>
+          <div class="rating" data-rating="5">
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+          </div><button><i class="fa-solid fa-cart-shopping"></i></button>
+        </div>
+      </div>
+    </div>
+    <div class="latte">
+      <h3>Udderly Delicious</h3>
+      <div class="item">
+        <div class="item__image"><img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/567707/cof-chai.png"/></div>
+        <div class="item__desc">
+          <div class="item__name">Whey to Go Protein Shake</div>
+          <div class="item__description">With chipotle lime dip</div>
+          <div class="rating" data-rating="5">
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+          </div><br><button><i class="fa-solid fa-cart-shopping"></i></button>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item__image"><img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/567707/cof-turmeric.png"/></div>
+        <div class="item__desc">
+          <div class="item__name">Chocoholic's Dream Shake</div>
+          <div class="item__description">With chipotle lime dip</div>
+          <div class="rating" data-rating="5">
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+          </div><br><button><i class="fa-solid fa-cart-shopping"></i></button>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item__image"><img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/567707/cof-hojicha.png"/></div>
+        <div class="item__desc">
+          <div class="item__name">Gone Bananas Shake</div>
+          <div class="item__description">With chipotle lime dip</div>
+          <div class="rating" data-rating="5">
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+          </div><br><button><i class="fa-solid fa-cart-shopping"></i></button>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item__image"><img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/567707/cof-rose.png"/></div>
+        <div class="item__desc">
+          <div class="item__name">Java Jolt Coffee Shake</div>
+          <div class="item__description">With chipotle lime dip</div>
+          <div class="rating" data-rating="5">
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+          </div><br><button><i class="fa-solid fa-cart-shopping"></i></button>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item__image"><img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/567707/cof-redvelvet.png"/></div>
+        <div class="item__desc">
+          <div class="item__name">Mango Tango Shake</div>
+          <div class="item__description">With chipotle lime dip</div>
+          <div class="rating" data-rating="5">
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+          </div><br><button><i class="fa-solid fa-cart-shopping"></i></button>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item__image"><img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/567707/cof-matcha.png"/></div>
+        <div class="item__desc">
+          <div class="item__name">Cake Shake</div>
+          <div class="item__description">With chipotle lime dip</div>
+          <div class="rating" data-rating="5">
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+          </div><br><button><i class="fa-solid fa-cart-shopping"></i></button>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item__image"><img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/567707/cof-ubi.png"/></div>
+        <div class="item__desc">
+          <div class="item__name">PBJ Shake</div>
+          <div class="item__description">With chipotle lime dip</div>
+          <div class="rating" data-rating="5">
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+          </div><br><button><i class="fa-solid fa-cart-shopping"></i></button>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item__image"><img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/567707/cof-charcoal.png"/></div>
+        <div class="item__desc">
+          <div class="item__name">Oreo-gasmic Shake</div>
+          <div class="item__description">With chipotle lime dip</div>
+          <div class="rating" data-rating="5">
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+          </div><br><button><i class="fa-solid fa-cart-shopping"></i></button>
+        </div>
+      </div>
+    </div><a class="menu-cart" id="menu-cart">Bill:</a>
   </div>
-
 </main>
-
-<script src="JavaScript/foodscript.js"></script>
+<footer>
+  <p> Check my other pages</p>
+  <a class="social-item" href="index.html" target="_blank"><i class="fa fa-home nav-icon"></i></a>
+  <a class="social-item" href="Music.html" target="_blank"><i class="fa fa-compact-disc nav-icon"></i></a>
+  <a class="social-item" href="MoviesTV.html" target="_blank"><i class="fa fa-film nav-icon"></i></a>
+  <a class="social-item" href="Games.html" target="_blank"><i class="fa fa-gamepad nav-icon"></i></a>
+  <a class="social-item" href="Travel.html" target="_blank"><i class="fa fa-suitcase nav-icon"></i></a>
+  <a class="social-item" href="Food.html" target="_blank"><i class="fa fa-cutlery nav-icon"></i></a>
+  <a class="social-item" href="Literature.html" target="_blank"><i class="fa fa-book nav-icon"></i></a>
+  <a class="social-item" href="art.html" target="_blank"><i class="fa fa-paint-brush nav-icon"></i></a>
+  <a class="social-item" href="sport.html" target="_blank"><i class="fa fa-futbol nav-icon"></i></a>
+  <a class="social-item" href="credits.html" target="_blank"><i class="fa fa-copyright nav-icon"></i></a>
+</footer>
+<!-- partial -->
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script><script  src="JavaScript/foodscript.js"></script>
 
 </body>
 </html>

@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #f2f2f200;
+  }
+  
+  .profile-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+  }
+  
+  .carousel-container {
+    display: flex;
+    margin-top: 20px;
+  }
+  
+  .carousel {
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+    margin-right: 20px;
+  }
+  
+  .carousel a {
+    text-decoration: none;
+    color: #000000;
+    margin: 0 10px;
+    padding: 8px 15px;
+    border-radius: 5px;
+  }
+  
+  .carousel a:hover {
+    color: #ffffff;
+  }
+  
+  .carousel a.active {
+    font-weight: bold;
+    color: #23527c;
+    background-color: #e0e0e0;
+  }
+  
+  .image-carousel-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    position: relative;
+  }
+  
+  .image-carousel {
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .image-carousel img {
+    width: 200px;
+    height: 150px;
+    margin: 10px;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+  }
+  
+  .image-carousel img.active {
+    border: 2px solid #337ab7;
+    transform: scale(1.2);
+  }
+  
+  .gamepad-status {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  .game-title {
+    position: absolute;
+    top: 250px;
+    left: 400px;
+  }
+  
+  .game-title p {
+    font-size: 1.2em;
+    font-weight: bold;
+  }
+  
+  body {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <img src="Images/profile.jpg" alt="Profile Picture" class="profile-image">
+    <div class="carousel-container">
+      <div class="carousel">
+        <a href="index.html">Home</a>
+        <a href="Music.html" >Music</a>
+        <a href="MoviesTV.html" class="active">Movies&TV</a>
+        <a href="Games.html">Games</a>
+        <a href="Travel.html">Travel</a>
+        <a href="Food.html">food</a>
+        <a href="Literature.html">Literature</a>
+        <a href="art.html">Art</a>
+        <a href="sport.html">Sport</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="carousel-container">
+      <div class="image-carousel-container">
+        <div class="image-carousel">
+          <img src="Images/DBZ.jpg" alt="Image 1">
+          <img src="Images/GoW.jpg" alt="Image 2">
+          <img src="Images/GTAV.jpg" alt="Image 3">
+          <img src="Images/Spider_Man.avif" alt="Image 4">
+          <img src="Images/Spider_Man_Miles_Morales.avif" alt="Image 5">
+          <img src="Images/nfs mw.jpg" alt="Image 1">
+          <img src="Images/Cuphead.png" alt="Image 2">
+          <img src="Images/chainsaw man.jpg" alt="Image 3">
+          <img src="Images/jjk.jpg" alt="Image 4">
+          <img src="Images/rickandmorty.jpg" alt="Image 5">
+        </div>
+        <div class="game-title">
+          <p id="gameTitle">-</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="gamepad-status">
+    <p id="connectionStatus">Gamepad not connected</p>
+    <p>Current button pressed:</p>
+    <p id="buttonStatus">-</p>
+  </div>
+
+  <script>window.addEventListener("gamepadconnected", function(e) {
+    var gamepad = navigator.getGamepads()[e.gamepad.index];
+    document.getElementById("connectionStatus").textContent = "Gamepad connected: " + gamepad.id;
+    updateGamepadStatus();
+  });
+  
+  window.addEventListener("gamepaddisconnected", function(e) {
+    document.getElementById("connectionStatus").textContent = "Gamepad disconnected";
+    document.getElementById("buttonStatus").textContent = "-";
+  });
+  
+  var carouselLinks = document.querySelectorAll('.carousel a');
+  var currentLinkIndex = 3;
+  var visibleLinks = 2;
+  var l1Pressed = false;
+  var r1Pressed = false;
+  var aPressed = false;
+  var bPressed = false;
+  let carouselTimer = null;
+  
+  var imageCarouselImages = document.querySelectorAll('.image-carousel img');
+  var currentImageIndex = 0;
+  var visibleImages = 5;
+  var imageCarouselTimer = null;
+  
+  function updateCarousel() {
+    for (let i = 0; i < carouselLinks.length; i++) {
+      carouselLinks[i].style.display = 'none';
+      carouselLinks[i].classList.remove('active');
+    }
+    for (let i = -Math.floor(visibleLinks / 2); i <= Math.ceil(visibleLinks / 2); i++) {
+      let index = (currentLinkIndex + i) % carouselLinks.length;
+      if (index < 0) {
+        index += carouselLinks.length;
+      }
+      carouselLinks[index].style.display = 'inline-block';
+      if (i === 0) {
+        carouselLinks[index].classList.add('active');
+      }
+    }
+  }
+  
+  function updateImageCarousel() {
+    for (let i = 0; i < imageCarouselImages.length; i++) {
+      imageCarouselImages[i].style.display = 'none';
+      imageCarouselImages[i].classList.remove('active');
+    }
+    for (let i = 0; i < visibleImages; i++) {
+      let index = (currentImageIndex + i) % imageCarouselImages.length;
+      imageCarouselImages[index].style.display = 'inline-block';
+      if (i === 0) {
+        imageCarouselImages[index].classList.add('active');
+      }
+    }
+    updateGameTitle();
+    updateBackgroundImage();
+  }
+  
+  function updateGameTitle() {
+    const gameTitleElement = document.getElementById("gameTitle");
+    const gameTitles = ["Dragon Ball Z", "God of War", "Grand Theft Auto V", "Spider-Man", "Spider-Man: Miles Morales", "Need For Speed Most Wanted", "Cuphead", "g2", "g3", "g4"];
+    gameTitleElement.textContent = gameTitles[currentImageIndex % gameTitles.length];
+  }
+  
+  function updateGamepadStatus() {
+    var gamepads = navigator.getGamepads();
+    if (!gamepads) {
+      return;
+    }
+  
+    var gamepad = gamepads[0];
+    if (!gamepad) {
+      return;
+    }
+  
+    var buttons = gamepad.buttons;
+    var buttonStatus = "-";
+    for (var i = 0; i < buttons.length; i++) {
+      if (buttons[i].pressed) {
+        buttonStatus = getButtonLabel(i);
+        break;
+      }
+    }
+  
+    if (buttonStatus === "L1" &&!l1Pressed) {
+      l1Pressed = true;
+      currentLinkIndex = (currentLinkIndex - 1 + carouselLinks.length) % carouselLinks.length;
+      updateCarousel();
+    } else if (buttonStatus === "R1" &&!r1Pressed) {
+      r1Pressed = true;
+      currentLinkIndex = (currentLinkIndex + 1) % carouselLinks.length;
+      updateCarousel();
+    } else if (buttonStatus === "A" &&!aPressed) {
+      aPressed = true;
+      var activeLink = carouselLinks[currentLinkIndex];
+      window.location.href = activeLink.href;
+    } else if (buttonStatus === "D PAD LEFT") {
+      if (!imageCarouselTimer) {
+        imageCarouselTimer = setTimeout(() => {
+          imageCarouselTimer = null;
+        }, 200);
+        currentImageIndex = (currentImageIndex - 1 + imageCarouselImages.length) % imageCarouselImages.length;
+        updateImageCarousel();
+      }
+    } else if (buttonStatus === "D PAD RIGHT") {
+      if (!imageCarouselTimer) {
+        imageCarouselTimer = setTimeout(() => {
+          imageCarouselTimer = null;
+        }, 200);
+        currentImageIndex = (currentImageIndex + 1) % imageCarouselImages.length;
+        updateImageCarousel();
+      }
+    }
+    if (buttonStatus!== "L1") {
+      l1Pressed = false;
+    }
+    if (buttonStatus!== "R1") {
+      r1Pressed = false;
+    }
+    if (buttonStatus!== "A") {
+      aPressed = false;
+    }
+  
+    document.getElementById("buttonStatus").textContent = buttonStatus;
+    requestAnimationFrame(updateGamepadStatus);
+  }
+  
+  function getButtonLabel(buttonIndex){
+    switch (buttonIndex) {
+      case 0: return "A";
+      case 1: return "B";
+      case 2: return "X";
+      case 3: return "Y";
+      case 4: return "L1";
+      case 5: return "R1";
+      case 6: return "L2";
+      case 7: return "R2";
+      case 8: return "SELECT";
+      case 9: return "START";
+      case 10: return "L3";
+      case 11: return "R3";
+      case 12: return "D PAD UP";
+      case 13: return "D PAD DOWN";
+      case 14: return "D PAD LEFT";
+      case 15: return "D PAD RIGHT";
+      case 16: return "PS";
+      default: return "+";
+    }
+  }
+  
+  function updateBackgroundImage() {
+    const activeImage = imageCarouselImages[currentImageIndex];
+    if (activeImage) {
+      document.body.style.backgroundImage = `url(${activeImage.src})`;
+    }
+  }
+  
+  updateCarousel();
+  updateImageCarousel();
+  requestAnimationFrame(updateGamepadStatus);
+  
+  document.addEventListener('wheel', function(event) {
+    if (event.deltaY < 0) {
+      currentImageIndex = (currentImageIndex - 1 + imageCarouselImages.length) % imageCarouselImages.length;
+    } else {
+      currentImageIndex = (currentImageIndex + 1) % imageCarouselImages.length;
+    }
+    updateImageCarousel();
+  });</script>
+</body>
+</html>
