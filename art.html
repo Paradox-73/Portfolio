@@ -1,90 +1,389 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/x-icon" href="Images/profile.jpg">
-    <link rel="stylesheet" href="CSS/nav.css">
-    <link rel="stylesheet" href="CSS/art.css">
+<!DOCTYPE HTML>
+<html>
+  <head>
     <title>Art</title>
-    <style>
-      </style>
+    <meta charset="utf-8" />
+		<link rel="icon" type="image/x-icon" href="Images/profile.jpg">
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+  body { margin: 0; overflow: hidden; }
+  canvas { width: 100%; height: 100% }
+  #info {
+    position: absolute;
+    top: 10px;
+    width: 100%;
+    text-align: center;
+    color: white;
+    font-family: Arial, sans-serif;
+    pointer-events: none;
+    z-index: 100;
+    text-shadow: 2px 2px 2px rgba(0,0,0,0.5);
+  }
+  #nav-menu {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: none;
+  z-index: 1000;
+}
+
+#nav-menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+#nav-menu li {
+  margin-bottom: 20px;
+}
+
+#nav-menu a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 24px;
+}
+
+#nav-menu a:hover {
+  color: #ccc;
+}
+</style>
 </head>
 <body>
-    
-    <div class="header-wrapper">
-        <nav>
-            <input type="checkbox" id="menu-toggle">
-            <label for="menu-toggle">
-              Art
-              <div id="menu-icon"></div>
-            </label>
-            <div id="overlay"></div>
-            <ul>
-                <li><a href="./index.html">Home</a></li>
-                <li><a href="./Music.html">Music</a></li>
-                <li><a href="./MoviesTV.html">Movies & TV</a></li>
-                <li><a href="./Games.html">Games</a></li>
-                <li><a href="./Travel.html">Travel</a></li>
-                <li><a href="./Food.html">Food</a></li>
-                <li><a href="./Literature.html & TV.html">Literature</a></li>
-                <li><a href="./art.html">Art</a></li>
-                <ul id="social-media">
-                  <li><a href="https://www.facebook.com/" target="_blank"><i class="fab fa-facebook-f"></i><p>help</p>help</a></li>
-                  <li><a href="https://www.twitter.com/" target="_blank"><i class="fab fa-twitter"></i></a></li>
-                  <li><a href="https://www.instagram.com/" target="_blank"><i class="fab fa-instagram"></i></a></li>
-                  <li><a href="https://www.linkedin.com/" target="_blank"><i class="fab fa-linkedin-in"></i></a></li>
-                </ul>
-            </ul>
-        </nav>
-      </div>
-    
-    <div class="container">
-        <div class="slider slider-up">
-          <div class="slide-track">
-              <div class="slide"><img src="Images/a1.jpg" width="500px" height="500px"></div>
-              <div class="slide"><img src="Images/a2.jpg" width="500px" height="500px"></div>
-              <div class="slide"><img src="Images/a3.jpg" width="500px" height="500px"></div>
-              <div class="slide"><img src="Images/a4.jpg" width="500px" height="500px"></div>
-              <div class="slide"><img src="Images/a5.jpg" width="500px" height="500px"></div>
-              <div class="slide"><img src="Images/a1.jpg" width="500px" height="500px"></div>
-              <div class="slide"><img src="Images/a2.jpg" width="500px" height="500px"></div>
-              <div class="slide"><img src="Images/a3.jpg" width="500px" height="500px"></div>
-              <div class="slide"><img src="Images/a4.jpg" width="500px" height="500px"></div>
-              <div class="slide"><img src="Images/a5.jpg" width="500px" height="500px"></div>
-          </div>
-        </div>
-        <div class="slider slider-down">
-          <div class="slide-track">
-            <div class="slide"><img src="Images/a8.jpg" width="500px" height="500px"></div>
-              <div class="slide"><img src="Images/a9.jpg" width="500px" height="500px"></div>
-              <div class="slide"><img src="Images/a10.jpg" width="500px" height="500px"></div>
-              <div class="slide"><img src="Images/a11.jpg" width="500px" height="500px"></div>
-              <div class="slide"><img src="Images/a12.jpg" width="500px" height="500px"></div>
-              <div class="slide"><img src="Images/a8.jpg" width="500px" height="500px"></div>
-              <div class="slide"><img src="Images/a9.jpg" width="500px" height="500px"></div>
-              <div class="slide"><img src="Images/a10.jpg" width="500px" height="500px"></div>
-              <div class="slide"><img src="Images/a11.jpg" width="500px" height="500px"></div>
-              <div class="slide"><img src="Images/a12.jpg" width="500px" height="500px"></div>
+  <audio id="music" loop>
+    <source src="Images/art.mp3" type="audio/mp3">
+    Your browser does not support the audio element.
+  </audio>
+<div id="info">Use WASD keys to move and mouse to look around. Click N toggle starry night ceiling. O to open door and nav menu.</div>
+<nav id="nav-menu">
+  <ul>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="Music.html">Music</a></li>
+    <li><a href="MoviesTV.html">Movies & TV</a></li>
+    <li><a href="Games.html">Games</a></li>
+    <li><a href="Travel.html">Travel</a></li>
+    <li><a href="Food.html">Food</a></li>
+    <li><a href="Literature.html">Literature</a></li>
+    <li><a href="art.html">Art</a></li>
+    <li><a href="sport.html">Sport</a></li>
+  </ul>
+</nav>
+<script>
+  let scene, camera, renderer, ceiling;
+  const artworks = [
+    { url: 'Images/a1.jpg', position: [0, 2, -15], rotation: [0, 0, 0], description: "Abstract Expressionism" },
+    { url: 'Images/a3.jpg', position: [-3, 2, -10], rotation: [0, Math.PI/2, 0], description: "Pop Art Portrait" },
+    { url: 'Images/a4.jpg', position: [-3, 2, -5], rotation: [0, Math.PI/2, 0], description: "Impressionist Scene" },
+    { url: 'Images/a5.jpg', position: [-3, 2, 0], rotation: [0, Math.PI/2, 0], description: "Cubist Still Life" },
+    { url: 'Images/a6.jpg', position: [-3, 2, 5], rotation: [0, Math.PI/2, 0], description: "Minimalist Composition" },
+    { url: 'Images/a7.jpg', position: [3, 2, -10], rotation: [0, -Math.PI/2, 0], description: "Photorealistic Cityscape" },
+    { url: 'Images/a8.jpg', position: [3, 2, -5], rotation: [0, -Math.PI/2, 0], description: "Abstract Geometric" },
+    { url: 'Images/a9.jpg', position: [3, 2, 0], rotation: [0, -Math.PI/2, 0], description: "Romantic Era Painting" },
+    { url: 'Images/a10.jpg', position: [3, 2, 5], rotation: [0, -Math.PI/2, 0], description: "Digital Art Fusion" },
+  ];
 
-          </div>
-        </div>
-        <div class="slider slider-up">
-            <div class="slide-track">
-                <div class="slide"><img src="Images/a7.jpg" width="500px" height="500px"></div>
-                <div class="slide"><img src="Images/a6.jpg" width="500px" height="500px"></div>
-                <div class="slide"><img src="Images/a13.jpg" width="500px" height="500px"></div>
-                <div class="slide"><img src="Images/a14.jpg" width="500px" height="500px"></div>
-                <div class="slide"><img src="Images/a15.jpg" width="500px" height="500px"></div>
-                <div class="slide"><img src="Images/a7.jpg" width="500px" height="500px"></div>
-                <div class="slide"><img src="Images/a6.jpg" width="500px" height="500px"></div>
-                <div class="slide"><img src="Images/a13.jpg" width="500px" height="500px"></div>
-                <div class="slide"><img src="Images/a14.jpg" width="500px" height="500px"></div>
-                <div class="slide"><img src="Images/a15.jpg" width="500px" height="500px"></div>
+  function init() {
+    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
 
-            </div>
-          </div>
-      </div>
+    // Add lighting
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    scene.add(ambientLight);
+    const pointLight = new THREE.PointLight(0xffffff, 0.5);
+    pointLight.position.set(0, 5, 0);
+    scene.add(pointLight);
+
+    // Create door mesh
+const doorGeometry = new THREE.BoxGeometry(2, 4, 0.1); doorGeometry.translate(1, 0, 0);
+const doorMaterial = new THREE.MeshBasicMaterial({ color: 0xA1662F });
+const doorMesh = new THREE.Mesh(doorGeometry, doorMaterial);
+doorMesh.position.set(-1, 2, 15.5);
+doorMesh.rotation.y = Math.PI;
+scene.add(doorMesh);
+let doorOpen = false;
+let doorAngle = 0; let navMenuOpen = false;
+
+document.addEventListener('keydown', (e) => {
+  if (e.key.toLowerCase() === 'o') {
+    doorOpen = !doorOpen;
+    if (doorOpen) {
+      doorAngle = Math.PI / 2;
+      navMenuOpen = true;
+      document.getElementById('nav-menu').style.display = 'block';
+      document.exitPointerLock();
+    } else {
+      doorAngle = 0;
+      navMenuOpen = false;
+      document.getElementById('nav-menu').style.display = 'none';
+      document.body.requestPointerLock();
+    }
+  }
+});
+
+function updateDoor() {
+  if (doorOpen) {
+    doorMesh.rotation.y = Math.min(doorAngle, doorMesh.rotation.y + 0.05);
+  } else {
+    doorMesh.rotation.y = Math.max(0, doorMesh.rotation.y - 0.05);
+  }
+}
+
+// Call updateDoor in the animate function
+function animate() {
+  requestAnimationFrame(animate);
+  renderer.render(scene, camera);
+  updateDoor();
+}
+    // Create The Shining inspired carpet floor
+    const carpetTexture = loadCarpetTexture();
+const floorGeometry = new THREE.PlaneGeometry(8, 32);
+const floorMaterial = new THREE.MeshStandardMaterial({ 
+  map: carpetTexture,
+  bumpMap: carpetTexture,
+  bumpScale: 0.02
+});
+const floorMesh = new THREE.Mesh(floorGeometry, floorMaterial);
+floorMesh.rotation.x = -Math.PI / 2;
+scene.add(floorMesh);
+
+    // Create walls
+    const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xf0e68c });
+    
+    const leftWall = new THREE.Mesh(new THREE.PlaneGeometry(32, 5), wallMaterial);
+    leftWall.position.set(-4, 2.5, 0);
+    leftWall.rotation.y = Math.PI / 2;
+    scene.add(leftWall);
+
+    const rightWall = new THREE.Mesh(new THREE.PlaneGeometry(32, 5), wallMaterial);
+    rightWall.position.set(4, 2.5, 0);
+    rightWall.rotation.y = -Math.PI / 2;
+    scene.add(rightWall);
+
+    const frontWall = new THREE.Mesh(new THREE.PlaneGeometry(8, 5), wallMaterial);
+    frontWall.position.set(0, 2.5, -16);
+    scene.add(frontWall);
+
+    const backWall = new THREE.Mesh(new THREE.PlaneGeometry(8, 5), wallMaterial);
+    backWall.position.set(0, 2.5, 16);
+    backWall.rotation.y = Math.PI;
+    scene.add(backWall);
+
+    // Create ceiling
+    ceiling = new THREE.Mesh(new THREE.PlaneGeometry(8, 32), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+    ceiling.position.set(0, 5, 0);
+    ceiling.rotation.x = Math.PI / 2;
+    ceiling.material.map = loadStarryNightTexture();
+    scene.add(ceiling);
+
+    // Add artworks with frames and description boxes
+    const loader = new THREE.TextureLoader();
+    artworks.forEach(artwork => {
+      const group = new THREE.Group();
+
+      // Artwork
+      const artGeometry = new THREE.PlaneGeometry(2, 1.5);
+      const artMaterial = new THREE.MeshBasicMaterial({ map: loader.load(artwork.url) });
+      const artMesh = new THREE.Mesh(artGeometry, artMaterial);
+
       
-</body>
-</html>
+
+      // Description box
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+      canvas.width = 256;
+      canvas.height = 64;
+      context.fillStyle = 'white';
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      context.font = '24px Arial';
+      context.fillStyle = 'black';
+      context.textAlign = 'center';
+      context.fillText(artwork.description, canvas.width / 2, canvas.height / 2 + 8);
+
+      const descTexture = new THREE.CanvasTexture(canvas);
+      const descGeometry = new THREE.PlaneGeometry(2, 0.5);
+      const descMaterial = new THREE.MeshBasicMaterial({ map: descTexture });
+      const descMesh = new THREE.Mesh(descGeometry, descMaterial);
+      descMesh.position.y = -1;
+
+      
+      group.add(artMesh);
+      group.add(descMesh);
+
+      group.position.set(...artwork.position);
+      group.rotation.set(...artwork.rotation);
+      scene.add(group);
+    });
+
+    camera.position.set(0, 1.6, 14); // Set initial camera position
+
+    animate();
+  }
+
+  function loadCarpetTexture() {
+  const loader = new THREE.TextureLoader();
+  const carpetTexture = loader.load('https://cms-assets.tutsplus.com/cdn-cgi/image/width=850/uploads/users/523/posts/27364/final_image/project-preview-large.png');
+  carpetTexture.wrapS = THREE.RepeatWrapping;
+  carpetTexture.wrapT = THREE.RepeatWrapping;
+  carpetTexture.repeat.set(1, 4);
+  return carpetTexture;
+}
+
+function loadStarryNightTexture() {
+  const loader = new THREE.TextureLoader();
+  const starryNightTexture = loader.load('https://images.pexels.com/photos/1341279/pexels-photo-1341279.jpeg?cs=srgb&dl=pexels-kaip-1341279.jpg&fm=jpg');
+  starryNightTexture.wrapS = THREE.RepeatWrapping;
+  starryNightTexture.wrapT = THREE.RepeatWrapping;
+  starryNightTexture.repeat.set(1, 4);
+  return starryNightTexture;
+}
+
+function loadCloudySkyTexture() {
+  const loader = new THREE.TextureLoader();
+  const cloudySkyTexture = loader.load('https://cdn.mos.cms.futurecdn.net/FRdq8ZbPetwNDRV9R3hYpP-1200-80.jpg');
+  cloudySkyTexture.wrapS = THREE.RepeatWrapping;
+  cloudySkyTexture.wrapT = THREE.RepeatWrapping;
+  cloudySkyTexture.repeat.set(1, 4);
+  return cloudySkyTexture;
+}
+
+  function animate() {
+    requestAnimationFrame(animate);
+    renderer.render(scene, camera);
+  }
+
+  init();
+
+  // WASD controls
+  const moveSpeed = 0.02;
+  const keys = { w: false, a: false, s: false, d: false };
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key.toLowerCase() in keys) keys[e.key.toLowerCase()] = true;
+    if (e.key.toLowerCase() === 'd') {
+      ceiling.material.map = createCloudySkyTexture();
+      ceiling.material.needsUpdate = true;
+    }
+  });
+
+  document.addEventListener('keyup', (e) => {
+  if (e.key.toLowerCase() in keys) keys[e.key.toLowerCase()] = false;
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key.toLowerCase() === 'n') {
+    isStarryNight = !isStarryNight;
+    ceiling.material.map = isStarryNight ? loadStarryNightTexture() : loadCloudySkyTexture();
+    ceiling.material.needsUpdate = true;
+  }
+});
+
+
+
+document.addEventListener('click', () => {
+  if (!isMouseLocked) {
+    document.body.requestPointerLock();
+    music.play();
+  }
+});
+
+  // Mouse look controls and ceiling toggle
+  let isMouseLocked = false;
+  let pitch = 0;
+  let yaw = 0;
+  let isStarryNight = false;
+
+  document.addEventListener('click', () => {
+    if (!isMouseLocked) {
+      document.body.requestPointerLock();
+    } else {
+      isStarryNight = !isStarryNight;
+      ceiling.material.map = isStarryNight ? createStarryNightTexture() : createCloudySkyTexture();
+      ceiling.material.needsUpdate = true;
+    }
+  });
+
+  document.addEventListener('pointerlockchange', () => {
+    isMouseLocked = document.pointerLockElement === document.body;
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (isMouseLocked) {
+      yaw -= e.movementX * 0.002;
+      pitch -= e.movementY * 0.002;
+      pitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, pitch));
+    }
+  });
+
+  function updatePosition() {
+    if (keys.w) {
+      camera.position.x -= Math.sin(yaw) * moveSpeed;
+      camera.position.z -= Math.cos(yaw) * moveSpeed;
+    }
+    if (keys.s) {
+      camera.position.x += Math.sin(yaw) * moveSpeed;
+      camera.position.z += Math.cos(yaw) * moveSpeed;
+    }
+    if (keys.a) {
+      camera.position.x -= Math.cos(yaw) * moveSpeed;
+      camera.position.z += Math.sin(yaw) * moveSpeed;
+    }
+    if (keys.d) {
+      camera.position.x += Math.cos(yaw) * moveSpeed;
+      camera.position.z -= Math.sin(yaw) * moveSpeed;
+    }
+
+    // Constrain movement within the corridor
+    camera.position.x = Math.max(-3.5, Math.min(3.5, camera.position.x));
+    camera.position.z = Math.max(-15, Math.min(15, camera.position.z));
+
+    // Update camera rotation
+    camera.rotation.order = 'YXZ';
+    camera.rotation.y = yaw;
+    camera.rotation.x = pitch;
+
+    
+
+    requestAnimationFrame(updatePosition);
+  }
+
+  updatePosition();
+
+  // Handle window resize
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+  let music = document.getElementById('music');
+let isMusicPlaying = true;
+
+document.addEventListener('keydown', (e) => {
+  if (e.key.toLowerCase() === 'p') {
+    if (isMusicPlaying) {
+      music.pause();
+      isMusicPlaying = false;
+    } else {
+      music.play();
+      isMusicPlaying = true;
+    }
+  }
+});
+
+const playMusicButton = document.getElementById('play-music-button');
+playMusicButton.addEventListener('click', () => {
+  music.play();
+});
+
+</script>
+</body></html>
