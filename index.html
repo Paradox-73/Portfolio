@@ -1,524 +1,488 @@
-<!DOCTYPE HTML>
-<html>
-    <head>
-        <title>Kanav here</title>
-        <meta charset="utf-8" />
-		<link rel="icon" type="image/x-icon" href="Images/profile.jpg">
-		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-        <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css'>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@300;400;700&display=swap');
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Art Room</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        /* Reset and Body */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #2c2c2c; /* Dark background outside the room */
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden; /* Prevent scrolling if possible */
+        }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+        /* The Room Container 
+           This maintains the aspect ratio of the room and scales with the browser window.
+        */
+        #room-container {
+            position: relative;
+            width:100vw;
+            aspect-ratio: 16/9; /* Standard widescreen aspect ratio */
+            background-color: #e0d5c1; /* Fallback wall color */
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
 
-html, body {
-    height: 100%;
-    overflow: hidden;
-}
+        /* Common styles for all assets */
+        .asset {
+            position: absolute;
+            display: block;
+            image-rendering: pixelated; /* Keeps pixel art crisp */
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Bouncy smooth transition */
+            cursor: pointer;
+            user-select: none;
+            z-index: 10;
+        }
 
-body {
-    font-family: 'Comic Neue', cursive;
-    
-}
+        /* Hover Effect: Scale 1.05x and bring to front slightly */
+        .asset:hover {
+            transform: scale(1.05);
+            z-index: 100; /* Pop on top of other items when hovering */
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
+        }
 
-.container {
-    height: 100vh;
-    overflow-y: scroll;
-    scroll-snap-type: y mandatory;
-    scroll-behavior: smooth;
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none;
-}
-.container::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, and Opera */
-}
+        /* --- BACKGROUND LAYERS --- */
+        
+        /* The main room structure (walls, floor) */
+        #room-bg {
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 5; /* In front of sky, behind objects */
+            pointer-events: none; /* Let clicks pass through if needed */
+        }
 
-.container #hero {
-    cursor: url('Images/cursor.png'), auto;
-    
-}
-.container #music {
-    cursor: url('Images/music.png'), auto;
-    
-}
-.container #movies {
-    cursor: url('Images/movie.png'), auto;
-    
-}
-.container #games {
-    cursor: url('Images/game.png'), auto;
-    
-}
-.container #travel {
-    cursor: url('Images/travel.png'), auto;
-    
-}
-.container #food {
-    cursor: url('Images/food.png'), auto;
-    
-}
-.container #literature {
-    cursor: url('Images/book.png'), auto;
-    
-}
-.container #sport {
-    cursor: url('Images/sport.png'), auto;
-    
-}
-.container #art {
-    cursor: url('Images/art.png'), auto;
-    
-}
+        /* The Night Sky (Behind the window) */
+        #night-sky {
+            width: 29%;
+            top: 26%;
+            left: 40%;
+            z-index: 1; /* Furthest back */
+        }
+        #night-sky:hover {
+            transform: none;
+            filter: none;
+        }
 
-section {
-    height: 100vh;
-    scroll-snap-align: start;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background-size: cover;
-    background-position: center;
-    color: #fff;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.5s ease;
-}
+        /* --- OBJECT POSITIONING (Percentages relative to container) --- */
 
-section::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 1;
-    
-}
+        /* == CEILING & WALLS == */
+        
+        #fan {
+            width: 17%;
+            top: 9%; /* Hanging from top */
+            left: 42%;
+            
+            z-index: 20;
+            transform-origin: top center;
+        }
+        /* Override hover for fan to keep it centered while scaling */
+        #fan:hover {
+            transform: none;
+            filter: none; 
+        }
 
-section > * {
-    position: relative;
-    z-index: 2;
-}
+        #polaroids {
+            width: 22%;
+            top: 18%;
+            left: 18%;
+            z-index: 8;
+        }
 
-h1 {
-    font-family: 'Bangers', cursive;
-    font-size: 5rem;
-    margin-bottom: 1rem;
-    text-shadow: 5px 5px 0 #000;
-    
-}
+        #whiteboard {
+            width: 16%;
+            top: 30%;
+            left: 24%;
+            z-index: 9;
+        }
+        #whiteboard:hover {
+            transform: none;
+            filter: none; 
+        }
 
-p {
-    font-size: 1.5rem;
-    max-width: 80%;
-    text-shadow: 2px 2px 0 #000;
+        #bookshelf {
+            width: 14%;
+            top: 22%;
+            left: 2%;
+            z-index: 10;
+        }
 
-}
+        #ukulele {
+            width: 5%;
+            top: 35%;
+            left: 18%;
+            z-index: 9;
+        }
 
-a {
-    color: #fff;
-    text-decoration: none;
-    transition: all 0.3s ease;
+        /* == LEFT FLOOR AREA == */
 
-}
+        #desk {
+            width: 20%;
+            bottom: 3%; /* Position from bottom looks better for floor items */
+            left: 4%;
+            z-index: 14;
+        }
+        #desk:hover {
+            transform: none;
+            filter: none; 
+        }
 
-a:hover {
-    color: #ffffff;
-    text-decoration: none;
-    transition: all 0.3s ease;
- 
-}
+        #monitor {
+            width: 9%; /* Adjust width to fit on desk */
+            bottom: 31%; /* Position relative to the desk */
+            left: 8%; /* Position relative to the desk */
+            z-index: 15; /* Ensure it's above the desk */
+        }
 
+        /* Small items on/near desk */
+        #noodles {
+            width: 4.5%;
+            bottom: 29%; /* Adjusted to sit on the desk */
+            left: 12%; /* Adjusted to sit on the desk */
+            z-index: 16;
+        }
 
-#hero a:hover {
-    color: #800080;
-    transform: scale(1.1);
-}
+        #ps5 {
+            width: 4.5%;
+            bottom: 13%;
+            left: 16%;
+            z-index: 15; /* Behind desk leg */
+        }
 
-#music a:hover {
-    color: #00ff00;
-    transform: scale(1.1);
-}
-#movies a:hover {
-    color: #ff0000;
-    transform: scale(1.1);
-}
-#games a:hover {
-    color: #0000ff;
-    transform: scale(1.1);
-}
-#travel a:hover {
-    color: #a52a2a;
-    transform: scale(1.1);
-}
-#food a:hover {
-    color: #ff00ff;
-    transform: scale(1.1);
-}
-#literature a:hover {
-    color: #ffdab9;
-    transform: scale(1.1);
-}
-#art a:hover {
-    color: #ffa500;
-    transform: scale(1.1);
-}
-#sport a:hover {
-    color: #ffff00;
-    transform: scale(1.1);
-}
-#credit a:hover {
-    color: #808080;
-    transform: scale(1.1);
-}
+        #dumbell {
+            width: 8%;
+            bottom: 11%;
+            right: 14%;
+            z-index: 16;
+        }
 
+        /* == CENTER FLOOR AREA == */
 
+        #bean-bag {
+            width: 16%;
+            bottom: 18%;
+            left: 30%;
+            z-index: 12;
+        }
 
-footer {
-    position:fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 1rem;
-    background: rgba(0,0,0,0.8);
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
-    z-index: 1000;
-}
+        /* Override the default asset hover effect for the bean bag to prevent scaling */
+        #bean-bag:hover {
+            transform: none;
+            filter: none;
+        }
 
-.social-icon {
-    width: 40px;
-    height: 40px;
-    transition: all 0.3s ease;
-}
+        #cyborg {
+            width: 14%; /* Adjust scale based on preference */
+            bottom: 12%;
+            left: 55%;
+            transform: translateX(-50%);
+            z-index: 18; /* In front of most things */
+        }
+        #cyborg:hover {
+             transform: translateX(-50%) scale(1.1);
+        }
 
-.social-icon:hover {
-    transform: scale(1.2);
-}
+        /* == RIGHT WALL & FLOOR AREA == */
 
+        #painting {
+            width: 14%;
+            top: 28%;
+            right: 19%;
+            z-index: 8;
+        }
 
-.section-indicator {
-    position: fixed;
-    top: 50%;
-    right: 5px;
-    transform: translateY(-50%);
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    z-index: 1000;
+        #posters {
+            width: 15%;
+            top: 18%;
+            right: 2%;
+            z-index: 8;
+        }
 
-}
+        #plant {
+            width: 8%;
+            bottom: 20%;
+            right: 18%;
+            z-index: 14;
+        }
+        #plant:hover {
+            transform: none;
+            filter: none; 
+        }
 
-.section-indicator a {
-    transition: all 0.3s ease;
-    opacity: 0.25;
-}
+        #dog {
+            width: 14%;
+            bottom: 17%;
+            right: 30%;
+            z-index: 15;
+        }
+        #dog:hover {
+            transform: none;
+            filter: none;
+        }
 
-.section-indicator a.active {
-    transform: scale(1.5);
-    opacity: 1;
-}
+        #cabinet {
+            width: 12%;
+            bottom: 0%;
+            right: 2%;
+            z-index: 16;
+        }
+        #cabinet:hover {
+            transform: none;
+            filter: none; 
+        }
 
-.nav-icon {
-  width: 20px;
-  height: 10px;
-  font-size: 1.1rem;
-}
+        #phone {
+            width: 3%;
+            bottom: 22%; /* Sitting on top of cabinet */
+            right: 10%;
+            z-index: 17;
+        }
 
+        #speaker {
+            width: 3%;
+            bottom: 22%; /* Sitting on top of cabinet */
+            right: 4%;
+            z-index: 17;
+        }
 
-/* Hide the vertical scrollbar */
-.container {
-    overflow-y: scroll;
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE and Edge */
-}
+        /* --- LOADING OVERLAY (Optional but nice) --- */
+        #loader {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #1a1a1a;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            transition: opacity 0.5s;
+        }
 
-.container::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, and Opera */
-}
-.speech-bubble {
-  --arrow-w: 0.5em;
-  --arrow-h: 1em;
-  --bubble-corners: 1;
-  --w: 12em;
-  --border-size: 3px;
-  --text-color: #800080;
-  --bubble-color: rgba(255, 255, 255, 0.51);
-  --border-color: black;
-}
+        /* Dialogue Box */
+        #dialogue-box {
+            position: absolute;
+            bottom: 75%; /* Adjust position relative to cyborg */
+            left: 25%;
+            transform: translateX(-50%);
+            width: 10%;
+            padding: 15px;
+            background-color: rgba(0, 0, 0, 0.8);
+            border: 3px solid #00ff00; /* Pixelated green border */
+            color: #00ff00;
+            font-size: 0.5em;
+            text-align: center;
+            box-shadow: 0 0 0 3px #00ff00, 0 0 0 6px rgba(0,255,0,0.5); /* Outer glow */
+            z-index: 200; /* Above all other elements */
+            display: none; /* Hidden by default */
+            image-rendering: pixelated;
+            font-family: 'Press Start 2P', 'Courier New', Courier, monospace; /* Use imported pixel font, fallback to monospace */
+            text-shadow: 1px 1px #000; /* For better readability on pixel font */
+        }
 
-.speech-bubble {
-  text-align: center;
-  font-family: cursive;
-  font-size: 20px;
-  font-weight: bold;
-  color: var(--text-color);
-  background: var(--bubble-color);
-  padding: 1em;
-  position: relative;
-  border-radius: var(--bubble-corners);
-  max-width: var(--w);
-  box-shadow: 0 0 0 var(--border-size) var(--border-color);
-}
+        /* --- Hologram Styles --- */
+        #phone-container {
+            /* These values are taken from the original #phone styles */
+            width: 3%;
+            bottom: 22%;
+            right: 9%;
+            z-index: 17;
+        }
 
-.speech-bubble.round {
-  --bubble-corners: 1em;
-}
+        #phone-container #phone {
+            width: 100%;
+            position: static; /* The wrapper is now the positioned element */
+            display: block; /* Ensure it behaves like a block element */
+        }
 
-.speech-bubble.circle {
-  --bubble-corners: 100%;
-  padding: 2em;
-}
+        #hologram {
+            position: absolute;
+            bottom: 100%; /* Position above the phone */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200%; /* Make it larger relative to the phone */
+            aspect-ratio: 1.05 / 1; /* Match the aspect ratio of the hologram image */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease, visibility 0s linear 0.4s;
+            pointer-events: none; /* Can't interact with it when hidden */
+            z-index: 200; /* Ensure it appears above other elements */
+            image-rendering: pixelated;
+        }
 
+        #phone-container:hover #hologram {
+            opacity: 1;
+            visibility: visible;
+            transition-delay: 0s;
+            pointer-events: auto; /* Allow interaction when visible */
+        }
 
-.speech-bubble:before, .speech-bubble:after {
-  content: "";
-  position: absolute;
-  bottom: calc(-1 * var(--arrow-h) * 2 + 0.5px);
-  left: 50%;
-  border-style: solid;
-  border-width: var(--arrow-h) var(--arrow-w);
-  border-color: var(--bubble-color) transparent transparent;
-}
+        #hologram .hologram-image {
+            width: 100%;
+            position: absolute;
+            top: -10%;
+            left: 0;
+            pointer-events: none;
+        }
 
-.speech-bubble:before {
-  border-width: calc(var(--arrow-h) + var(--border-size)) calc(var(--arrow-w) + var(--border-size));
-  border-color: var(--border-color) transparent transparent;
-  bottom: calc(-1 * var(--arrow-h) * 2 - 2.5*var(--border-size));
-  left: calc(50% - var(--border-size));
-}
-
-.speech-bubble.t:after {
-  border-color: transparent transparent var(--bubble-color);
-  bottom: auto;
-  top: calc(-1 * var(--arrow-h) * 2 + 0.5px);
-}
-
-.speech-bubble.t:before {
-  border-width: calc(var(--arrow-h) + var(--border-size)) calc(var(--arrow-w) + var(--border-size));
-  border-color: transparent transparent var(--border-color);
-  bottom: auto;
-  top: calc(-1 * var(--arrow-h) * 2 - 2.5*var(--border-size));
-}
-
-
-
-</style>
+        #hologram .hologram-link {
+            position: absolute;
+        }
+    </style>
 </head>
 <body>
-    <audio id="lesgo">
-        <source src="Images/Lesgo.mp3" type="audio/mp3">
-        Your browser does not support the audio element.
-      </audio>
-<div class="container">
-    <section id="hero" style="background-image: url('Images/bg9.gif');">
-        <h1><a href="indexq.html">Kanav Bhardwaj</a></h1>
-            <div class="speech-bubble round t">I'm a CSE student in IIIT Bangalore. <br>
-                This website is dedicated to my interests and goals.<br>
-                Enjoy.</div>
-    </section>
 
-    <section id="music" style="background-image: url('Images/music.gif');">
-        <h1><a href="Music.html">Music</a></h1>
-        <p>Tune into the beats that shape our world.</p>
+    <div id="room-container">
         
-    </section>
+        <!-- Loader -->
+        <div id="loader">Loading Assets...</div>
 
-    <section id="movies" style="background-image: url('Images/movie.gif');">
-        <h1><a href="MoviesTV.html">Movies</a></h1>
-        <p>Lights, camera, action! Dive into cinematic wonders.</p>
-    </section>
+        <!-- Dialogue Box -->
+        <div id="dialogue-box" class="pixel-font">
+            <p id="dialogue-text"></p>
+        </div>
 
-    <section id="games" style="background-image: url('Images/game.gif');">
-        <h1><a href="Games.html">Games</a></h1>
-        <p>Level up your entertainment with interactive adventures.</p>
-    </section>
+        <!-- 1. Backgrounds -->
+        <!-- Note: Ensure "night sky.png" is placed properly. It sits behind the window of "room.png" -->
+        <img src="assets/night sky.png" id="night-sky" class="asset" alt="Night Sky">
+        <img src="assets/room2.png" id="room-bg" class="asset" alt="Room Background">
 
-    <section id="travel" style="background-image: url('Images/travel.gif');">
-        <h1><a href="Travel.html">Travel</a></h1>
-        <p>Explore the world, one panel at a time.</p>
+        <!-- 2. Ceiling & Upper Walls -->
+        <img src="assets/fan1.png" id="fan" class="asset" alt="Ceiling Fan">
+        <img src="assets/polaroids1.png" id="polaroids" class="asset" alt="Polaroid Photos">
+        <img src="assets/posters1.png" id="posters" class="asset" alt="Movie Posters">
+        <img src="assets/painting1.png" id="painting" class="asset" alt="Starry Night Painting">
+        <img src="assets/whiteboard1.png" id="whiteboard" class="asset" alt="Whiteboard">
+        <img src="assets/bookshelf1.png" id="bookshelf" class="asset" alt="Bookshelf">
+        <img src="assets/ukulele1.png" id="ukulele" class="asset" alt="Ukulele">
+
+        <!-- 3. Floor & Furniture -->
+        <img src="assets/desk.png" id="desk" class="asset" alt="Computer Desk">
+        <img src="assets/monitor.png" id="monitor" class="asset" alt="Computer Monitor">
+        <img src="assets/noodles1.png" id="noodles" class="asset" alt="Cup Noodles">
+        <img src="assets/ps5 pixelated1.png" id="ps5" class="asset" alt="PS5 Console">
+        <img src="assets/dumbell1.png" id="dumbell" class="asset" alt="Dumbbell">
         
-    </section>
-
-    <section id="food" style="background-image: url('Images/food.gif');">
-        <h1><a href="Food.html">Food</a></h1>
-        <p>Savor the flavors of culinary comics.</p>
+        <img src="assets/bean bag2.png" id="bean-bag" class="asset" alt="Bean Bag Chair">
         
-    </section>
+        <!-- Character -->
+        <!--img src="assets/cyborg1.png" id="cyborg" class="asset" alt="Cyborg Character"-->
 
-    <section id="literature" style="background-image: url('Images/book.gif');">
-        <h1><a href="Literature.html">Literature</a></h1>
-        <p>Turn the pages of graphic storytelling.</p>
+        <img src="assets/plant1.png" id="plant" class="asset" alt="House Plant">
+        <img src="assets/dog.gif" id="dog" class="asset" alt="Sleeping Dog">
         
-    </section>
+        <img src="assets/cabinet1.png" id="cabinet" class="asset" alt="Wooden Cabinet">
+        <div id="phone-container" class="asset">
+            <img src="assets/phone1.png" id="phone" alt="Smartphone">
+            <div id="hologram">
+                <img src="assets/hologram1.png" class="hologram-image" alt="Hologram Links">
+                <a href="https://github.com/Paradox-73" target="_blank" class="hologram-link" style="top: 0; left: 0; width: 50%; height: 50%;" title="GitHub"></a>
+                <a href="resume.pdf" target="_blank" class="hologram-link" style="top: 0; left: 50%; width: 50%; height: 50%;" title="Resume"></a>
+                <a href="mailto:kanavbhardwaj5150@gmail.com" class="hologram-link" style="top: 50%; left: 0; width: 50%; height: 50%;" title="Email"></a>
+                <a href="https://www.linkedin.com/in/kanav-bhardwaj-a25940281/" target="_blank" class="hologram-link" style="top: 50%; left: 50%; width: 50%; height: 50%;" title="LinkedIn"></a>
+            </div>
+        </div>
+        <img src="assets/speaker1.png" id="speaker" class="asset" alt="Smartphone">
 
-    <section id="art" style="background-image: url('Images/art.gif');">
-        <h1><a href="art.html">Art</a></h1>
-        <p>Paint your imagination with vivid visuals.</p>
-        
-    </section>
+    </div>
 
-    <section id="sport" style="background-image: url('Images/sport.gif');">
-        <h1><a href="sport.html">Sport</a></h1>
-        <p>Score big with athletic adventures.</p>
-        
-    </section>
+    <script>
+        window.onload = function() {
+            const loader = document.getElementById('loader');
+            const dialogueBox = document.getElementById('dialogue-box');
+            const dialogueText = document.getElementById('dialogue-text');
+            const roomContainer = document.getElementById('room-container');
 
-    <section id="credits" style="background-image: url('Images/credit.gif');">
-        <h1><a href="credits.html">Credits</a></h1>
-        <p>The masterminds behind our comic universe.</p>
-        
-    </section>
-</div>
+            loader.style.opacity = '0';
+            setTimeout(() => {
+                loader.style.display = 'none';
+            }, 500);
 
-<div class="section-indicator">
-    <a href="#hero"><i class="fa fa-home nav-icon"></i></a>
-    <a href="#music"><i class="fa fa-compact-disc nav-icon"></i></a>
-    <a href="#movies"><i class="fa fa-film nav-icon"></i></a>
-    <a href="#games"><i class="fa fa-gamepad nav-icon"></i></a>
-    <a href="#travel"><i class="fa fa-suitcase nav-icon"></i></a>
-    <a href="#food"><i class="fa fa-cutlery nav-icon"></i></a>
-    <a href="#literature"><i class="fa fa-book nav-icon"></i></a>
-    <a href="#art"><i class="fa fa-paint-brush nav-icon"></i></a>
-    <a href="#sport"><i class="fa fa-futbol nav-icon"></i></a>
-    <a href="#credits"><i class="fa fa-copyright nav-icon"></i></a>
-</div>
+            // Function to show dialogue
+            function showDialogue(message) {
+                const cyborg = document.getElementById('cyborg');
+                const cyborgRect = cyborg.getBoundingClientRect();
+                const roomRect = roomContainer.getBoundingClientRect();
 
-<footer>
-    <a href="https://www.instagram.com/kanavbhardwaj_73" target="_blank">
-        <img src="Images/instagram.png" alt="Instagram" class="social-icon" style="filter: invert(1);">
-    </a>
-    <a href="https://www.linkedin.com/in/kanav-bhardwaj-a25940281" target="_blank">
-        <img src="Images/linkedin.png" alt="LinkedIn" class="social-icon" style="filter: invert(1);">
-    </a>
-    <a href="https://github.com/Paradox-73" target="_blank">
-        <img src="Images/github.png" alt="GitHub" class="social-icon" style="filter: invert(1);">
-    </a>
-</footer>
+                const cyborgLeft = (cyborgRect.left - roomRect.left) / roomRect.width * 100;
+                const cyborgBottom = (roomRect.bottom - cyborgRect.bottom) / roomRect.height * 100;
 
-<script>
-document.querySelectorAll('.social-icon').forEach(icon => {
-    icon.addEventListener('mouseover', () => {
-        icon.style.filter = 'invert(0.5) sepia(1) saturate(5) hue-rotate(270deg)';
-    });
-    icon.addEventListener('mouseout', () => {
-        icon.style.filter = 'invert(1)';
-    });
-});
+                dialogueBox.style.left = `${cyborgLeft + (cyborgRect.width / roomRect.width * 100 / 2)}%`;
+                dialogueBox.style.bottom = `${cyborgBottom + 18}%`;
+                dialogueBox.style.transform = 'translateX(-50%)';
 
-// Snap scrolling and section indicator
-const container = document.querySelector('.container');
-const sections = document.querySelectorAll('section');
-const sectionIndicators = document.querySelectorAll('.section-indicator a');
+                dialogueText.textContent = message;
+                dialogueBox.style.display = 'block';
+            }
 
-let isScrolling = false;
-let currentSection = 0;
+            // Function to hide dialogue
+            function hideDialogue() {
+                dialogueBox.style.display = 'none';
+            }
 
-function updateSectionIndicator() {
-    sectionIndicators.forEach((indicator, index) => {
-        if (index === currentSection) {
-            indicator.classList.add('active');
-        } else {
-            indicator.classList.remove('active');
-        }
-    });
-}
+            // --- BEAN BAG HOVER EFFECT ---
+            // This script changes the bean bag's image on hover.
+            const beanBag = document.getElementById('bean-bag');
+            if (beanBag) {
+                const originalSrc = beanBag.src;
+                const hoverSrc = 'assets/bean bag3.png'; // The image to show on hover
 
-function scrollToSection(index) {
-    if (index >= 0 && index < sections.length) {
-        sections[index].scrollIntoView({ behavior: 'smooth' });
-        currentSection = index;
-        updateSectionIndicator();
-    }
-}
+                // Preload the hover image to prevent a flash on first hover
+                const hoverImage = new Image();
+                hoverImage.src = hoverSrc;
 
-container.addEventListener('wheel', (e) => {
-    e.preventDefault();
-    if (!isScrolling) {
-        isScrolling = true;
-        if (e.deltaY > 0 && currentSection < sections.length - 1) {
-            currentSection++;
-        } else if (e.deltaY < 0 && currentSection > 0) {
-            currentSection--;
-        }
-        scrollToSection(currentSection);
-        setTimeout(() => {
-            isScrolling = false;
-        }, 1000);
-    }
-}, { passive: false });
+                beanBag.addEventListener('mouseenter', () => {
+                    beanBag.src = hoverSrc;
+                });
 
-sectionIndicators.forEach((indicator, index) => {
-    indicator.addEventListener('click', (e) => {
-        e.preventDefault();
-        scrollToSection(index);
-    });
-});
+                beanBag.addEventListener('mouseleave', () => {
+                    beanBag.src = originalSrc;
+                });
+            }
+            // --- END BEAN BAG HOVER EFFECT ---
 
+            // Map asset IDs to their messages and links
+            const interactiveAssets = {
+                'ukulele': { message: "Strumming some digital tunes.", link: "Music.html" },
+                'posters': { message: "Escape into another reel.", link: "MoviesTV.html" },
+                'ps5': { message: "Ready to level up?", link: "Games.html" },
+                'painting': { message: "A splash of pixelated inspiration.", link: "art.html" },
+                'noodles': { message: "Fueling up for code. Or just hungry.", link: "Food.html" },
+                'polaroids': { message: "Memories captured, adventures await.", link: "Travel.html" },
+                'bookshelf': { message: "Dive into a story.", link: "Literature.html" }
+            };
 
-updateSectionIndicator();
-const images = [
-    'Images/pow.png',
-    'Images/pop.png',
-    'Images/wham.png',
-    'Images/zzap.png',
-    'Images/bang.png',
-    // Add more images to the array as needed
-  ];
+            const assets = document.querySelectorAll('.asset');
+            assets.forEach(asset => {
+                const assetId = asset.id;
+                const assetData = interactiveAssets[assetId];
 
-  document.addEventListener('click', (e) => {
-    const randomImage = images[Math.floor(Math.random() * images.length)];
-    const img = document.createElement('img');
-    img.src = randomImage;
-    img.style.position = 'absolute';
-    img.style.top = `${e.clientY}px`;
-    img.style.left = `${e.clientX}px`;
-    img.style.opacity = 0;
-    img.style.width = '100px'; // Set the width of the image
-    img.style.height = '100px';
-    document.body.appendChild(img);
-
-    img.addEventListener('load', () => {
-      img.style.transition = 'opacity 0.5s';
-      img.style.opacity = 1;
-      setTimeout(() => {
-        img.style.opacity = 0;
-        setTimeout(() => {
-          img.remove();
-        }, 500);
-      }, 1000);
-    });
-  });
-  const soundEffect = document.getElementById('lesgo');
-
-const links = [
-  document.querySelector('#hero a'),
-  document.querySelector('#music a'),
-  document.querySelector('#movies a'),
-  document.querySelector('#games a'),
-  document.querySelector('#travel a'),
-  document.querySelector('#food a'),
-  document.querySelector('#literature a'),
-  document.querySelector('#art a'),
-  document.querySelector('#sport a'),
-  document.querySelector('#credits a'),
-];
-
-links.forEach((link) => {
-  link.addEventListener('mouseover', () => {
-    soundEffect.play();
-  });
-});
-
-
-// Add more event listeners for each link you want to play a sound on hover
-</script>
-
-</body></html>
+                if (assetData) {
+                    asset.addEventListener('mouseenter', () => {
+                        showDialogue(assetData.message);
+                    });
+                    asset.addEventListener('mouseleave', () => {
+                        hideDialogue();
+                    });
+                    asset.addEventListener('click', () => {
+                        window.location.href = assetData.link;
+                    });
+                } else {
+                    asset.addEventListener('click', () => {
+                        console.log(`You clicked on: ${asset.alt}`);
+                    });
+                }
+            });
+        };
+    </script>
+</body>
+</html>
