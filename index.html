@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/x-icon" href="assets/profile.jpg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pixel Art Room</title>
+    <title>Kanav here</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
         /* Reset and Body */
@@ -56,7 +57,7 @@
         #room-bg {
             width: 100%;
             height: 100%;
-            top: 0;
+            top: 0%;
             left: 0;
             z-index: 5; /* In front of sky, behind objects */
             pointer-events: none; /* Let clicks pass through if needed */
@@ -79,7 +80,7 @@
         /* == CEILING & WALLS == */
         
         #fan {
-            width: 17%;
+            width: 12%;
             top: 9%; /* Hanging from top */
             left: 42%;
             
@@ -161,17 +162,17 @@
 
         #dumbell {
             width: 8%;
-            bottom: 11%;
-            right: 14%;
+            bottom: 13%;
+            right: 15%;
             z-index: 16;
         }
 
         /* == CENTER FLOOR AREA == */
 
         #bean-bag {
-            width: 16%;
-            bottom: 18%;
-            left: 30%;
+            width: 20%;
+            bottom: 15%;
+            left: 27%;
             z-index: 12;
         }
 
@@ -202,8 +203,8 @@
         }
 
         #posters {
-            width: 15%;
-            top: 18%;
+            width: 22%;
+            top: 15%;
             right: 2%;
             z-index: 8;
         }
@@ -220,8 +221,8 @@
         }
 
         #dog {
-            width: 14%;
-            bottom: 17%;
+            width: 17%;
+            bottom: 15%;
             right: 30%;
             z-index: 15;
         }
@@ -231,7 +232,7 @@
         }
 
         #cabinet {
-            width: 12%;
+            width: 13%;
             bottom: 0%;
             right: 2%;
             z-index: 16;
@@ -243,15 +244,15 @@
 
         #phone {
             width: 3%;
-            bottom: 22%; /* Sitting on top of cabinet */
+            bottom: 26%; /* Sitting on top of cabinet */
             right: 10%;
             z-index: 17;
         }
 
         #speaker {
             width: 3%;
-            bottom: 22%; /* Sitting on top of cabinet */
-            right: 4%;
+            bottom: 24%; /* Sitting on top of cabinet */
+            right: 5%;
             z-index: 17;
         }
 
@@ -271,31 +272,47 @@
         /* Dialogue Box */
         #dialogue-box {
             position: absolute;
-            bottom: 75%; /* Adjust position relative to cyborg */
-            left: 25%;
-            transform: translateX(-50%);
-            width: 10%;
-            padding: 15px;
-            background-color: rgba(0, 0, 0, 0.8);
-            border: 3px solid #00ff00; /* Pixelated green border */
-            color: #00ff00;
-            font-size: 0.5em;
+            /* Positioning relative to the cyborg - will be adjusted by JS */
+            top: 60%; 
+            left: 43%;
+            transform: translateX(-50%) translateY(-100%); /* Adjust to place above cyborg's mouth */
+            width: 30%; /* Adjust width for the speech bubble image */
+            height: 20%; /* Adjust height for the speech bubble image */
+            background-image: url('assets/dialogue box.png');
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            display: flex; /* Use flexbox for centering text */
+            justify-content: center;
+            align-items: center;
+            padding-bottom: 4%; /* Adjust padding to fit text within the bubble shape */
+            padding-left: 7%;
+            padding-right: 7%;
+            box-sizing: border-box; /* Include padding in width/height */
+            color: black; /* Text color inside the dialogue box */
+            font-size: 1em; /* Adjust font size to fit */
             text-align: center;
-            box-shadow: 0 0 0 3px #00ff00, 0 0 0 6px rgba(0,255,0,0.5); /* Outer glow */
             z-index: 200; /* Above all other elements */
-            display: none; /* Hidden by default */
+            visibility: hidden; /* Hidden by default, use visibility for smoother transitions */
             image-rendering: pixelated;
             font-family: 'Press Start 2P', 'Courier New', Courier, monospace; /* Use imported pixel font, fallback to monospace */
-            text-shadow: 1px 1px #000; /* For better readability on pixel font */
+            line-height: 1.2;
         }
 
+        #dialogue-box p {
+            margin-top: 15%; /* Push text down to fit in the bubble */
+            margin-bottom: 0;
+            white-space: pre-wrap; /* Allows newlines from JS to render */
+            max-width: 80%; /* Constrain text width */
+            text-shadow: none; /* Remove text shadow */
+            font-size: 0.7vw; /* Made font smaller and responsive using vw */
+        }
         /* --- Hologram Styles --- */
         #phone-container {
             /* These values are taken from the original #phone styles */
-            width: 3%;
-            bottom: 22%;
+            width: 4%;
+            bottom: 24%;
             right: 9%;
-            z-index: 17;
+            z-index: 18;
         }
 
         #phone-container #phone {
@@ -337,6 +354,25 @@
         #hologram .hologram-link {
             position: absolute;
         }
+
+        /* YouTube Player Container - Debug: visible */
+        #youtube-player-container {
+            position: absolute;
+            left: -9999px; /* Off-screen */
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            opacity: 0; /* Make visible */
+            pointer-events: none; /* Make interactive */
+            
+        }
+
+        /* Speaker glow effect for autoplay fallback */
+        .speaker-active-feedback {
+            transform: scale(1.05);
+            filter: drop-shadow(0 0 8px rgba(0, 153, 255, 0.4)); /* Green glow */
+            transition: transform 0.3s ease, filter 0.3s ease;
+        }
     </style>
 </head>
 <body>
@@ -351,9 +387,12 @@
             <p id="dialogue-text"></p>
         </div>
 
+        <!-- YouTube Player Container -->
+        <div id="youtube-player-container"></div>
+
         <!-- 1. Backgrounds -->
         <!-- Note: Ensure "night sky.png" is placed properly. It sits behind the window of "room.png" -->
-        <img src="assets/night sky.png" id="night-sky" class="asset" alt="Night Sky">
+        <img src="assets/night sky.gif" id="night-sky" class="asset" alt="Night Sky">
         <img src="assets/room2.png" id="room-bg" class="asset" alt="Room Background">
 
         <!-- 2. Ceiling & Upper Walls -->
@@ -372,10 +411,9 @@
         <img src="assets/ps5 pixelated1.png" id="ps5" class="asset" alt="PS5 Console">
         <img src="assets/dumbell1.png" id="dumbell" class="asset" alt="Dumbbell">
         
-        <img src="assets/bean bag2.png" id="bean-bag" class="asset" alt="Bean Bag Chair">
+        <img src="assets/bean bag2.png" id="bean-bag" class="asset" alt="Bean Bag Chair with Cyborg">
         
-        <!-- Character -->
-        <!--img src="assets/cyborg1.png" id="cyborg" class="asset" alt="Cyborg Character"-->
+        <!-- Character - Removed as it's part of the bean-bag image now -->
 
         <img src="assets/plant1.png" id="plant" class="asset" alt="House Plant">
         <img src="assets/dog.gif" id="dog" class="asset" alt="Sleeping Dog">
@@ -391,74 +429,200 @@
                 <a href="https://www.linkedin.com/in/kanav-bhardwaj-a25940281/" target="_blank" class="hologram-link" style="top: 50%; left: 50%; width: 50%; height: 50%;" title="LinkedIn"></a>
             </div>
         </div>
-        <img src="assets/speaker1.png" id="speaker" class="asset" alt="Smartphone">
+        <img src="assets/speaker1.png" id="speaker" class="asset" alt="Speaker">
 
     </div>
 
+    <!-- YouTube IFrame API script -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+
     <script>
-        window.onload = function() {
-            const loader = document.getElementById('loader');
+        // Global YouTube player variable
+        let player;
+        let autoplayBlockedMessageActive = false; // Flag to track if the fallback message is displayed
+
+        // Function to show dialogue (global scope)
+        function showDialogue(message) {
             const dialogueBox = document.getElementById('dialogue-box');
             const dialogueText = document.getElementById('dialogue-text');
-            const roomContainer = document.getElementById('room-container');
+            if (dialogueText && dialogueBox) {
+                dialogueText.textContent = message;
+                dialogueBox.style.visibility = 'visible';
+                dialogueBox.style.opacity = '1';
+            }
+        }
+
+        // Function to hide dialogue (global scope)
+        function hideDialogue() {
+            const dialogueBox = document.getElementById('dialogue-box');
+            if (dialogueBox) {
+                dialogueBox.style.opacity = '0';
+                dialogueBox.style.visibility = 'hidden';
+            }
+        }
+
+        // This function will be called when the YouTube IFrame API is ready
+        function onYouTubeIframeAPIReady() {
+            console.log("YouTube IFrame API is ready. Initializing player.");
+            player = new YT.Player('youtube-player-container', {
+                videoId: 'yajJ_QVIKwU', // The extracted video ID from https://youtu.be/t8NqwxeGVyY
+                playerVars: {
+                    'autoplay': 1,      // Autoplay the video
+                    'controls': 0,      // Hide player controls
+                    'loop': 1,          // Loop the video
+                    'modestbranding': 1, // Remove YouTube logo
+                    'showinfo': 0,      // Hide video title and uploader info
+                    'rel': 0,           // Do not show related videos
+                    'disablekb': 1,     // Disable keyboard controls
+                    'fs': 0,            // Disable fullscreen button
+                    'iv_load_policy': 3, // Do not show video annotations
+                    'playlist': 'yajJ_QVIKwU', // Required for looping single video
+                    'origin': window.location.origin // Crucial for local development CORS issues
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+
+        // This function fires once the video player is ready
+        function onPlayerReady(event) {
+            console.log("Player is ready. Attempting to play video.");
+            event.target.playVideo();
+            event.target.setVolume(50); // Ensure volume is set to a reasonable level
+
+            // Give it a moment to try autoplay and then check its state
+            setTimeout(() => {
+                const playerState = event.target.getPlayerState();
+                const speaker = document.getElementById('speaker'); // Get speaker here for check
+
+                console.log(`Initial player state after 1s: ${playerState}, isMuted: ${event.target.isMuted()}`);
+
+                // If not playing, or if it's playing but muted due to policy, then autoplay failed user expectation
+                if (playerState !== YT.PlayerState.PLAYING || (playerState === YT.PlayerState.PLAYING && event.target.isMuted())) {
+                    autoplayBlockedMessageActive = true;
+                    if (speaker) {
+                        speaker.classList.add('speaker-active-feedback'); // Add a class for visual feedback
+                    }
+                    event.target.mute(); // Ensure it's muted if it started playing silently
+                    console.log("Autoplay blocked. Fallback message will be displayed after welcome messages.");
+                } else {
+                    // Autoplay successful and unmuted, music is playing
+                    autoplayBlockedMessageActive = false;
+                    hideDialogue(); // Ensure dialogue is hidden if it was showing for other reasons
+                    console.log("Autoplay successful. Music playing.");
+                }
+            }, 1000); // 1 second to allow autoplay to attempt and browser to set state
+        }
+
+        // This function fires when the player's state changes
+        function onPlayerStateChange(event) {
+            console.log(`Player state changed to: ${event.data}`);
+            // We can add logic here if needed for state changes, e.g., if video ends, ensure it loops.
+            // However, 'loop: 1' and 'playlist: VIDEO_ID' in playerVars should handle looping.
+        }
+
+        window.onload = function() {
+            const loader = document.getElementById('loader');
+            const dialogueBox = document.getElementById('dialogue-box'); // Reintroduced
+            const dialogueText = document.getElementById('dialogue-text'); // Reintroduced
+            const beanBag = document.getElementById('bean-bag'); // The cyborg on the bean bag
+            const speaker = document.getElementById('speaker'); // Get the speaker element once here
 
             loader.style.opacity = '0';
             setTimeout(() => {
                 loader.style.display = 'none';
             }, 500);
 
-            // Function to show dialogue
-            function showDialogue(message) {
-                const cyborg = document.getElementById('cyborg');
-                const cyborgRect = cyborg.getBoundingClientRect();
-                const roomRect = roomContainer.getBoundingClientRect();
+            // Initial welcome message sequence
+            const welcomeMessages = [
+                "Welcome to my digital room. I'm Kanav.",
+                "Every item here tells a story, and some lead to pages I've crafted.",
+                "Hover over objects that subtly shift, then click to explore them!"
+            ];
+            const messageDisplayDuration = 4000; // 2 seconds per message
 
-                const cyborgLeft = (cyborgRect.left - roomRect.left) / roomRect.width * 100;
-                const cyborgBottom = (roomRect.bottom - cyborgRect.bottom) / roomRect.height * 100;
+            let currentMessageIndex = 0;
 
-                dialogueBox.style.left = `${cyborgLeft + (cyborgRect.width / roomRect.width * 100 / 2)}%`;
-                dialogueBox.style.bottom = `${cyborgBottom + 18}%`;
-                dialogueBox.style.transform = 'translateX(-50%)';
-
-                dialogueText.textContent = message;
-                dialogueBox.style.display = 'block';
+            function displayNextWelcomeMessage() {
+                if (currentMessageIndex < welcomeMessages.length) {
+                    showDialogue(welcomeMessages[currentMessageIndex]);
+                    currentMessageIndex++;
+                    setTimeout(displayNextWelcomeMessage, messageDisplayDuration);
+                } else {
+                    hideDialogue();
+                    beanBag.src = 'assets/bean bag2.png'; // Revert bean bag after welcome sequence
+                    // After welcome messages, check if autoplay was blocked and display the message
+                    if (autoplayBlockedMessageActive) {
+                        showDialogue("Autoplay blocked. Click the speaker for ambient music!");
+                    }
+                }
             }
 
-            // Function to hide dialogue
-            function hideDialogue() {
-                dialogueBox.style.display = 'none';
-            }
+            // Start with bean bag3 for the welcome message
+            beanBag.src = 'assets/bean bag3.png';
+            displayNextWelcomeMessage(); // Start the welcome message sequence
 
-            // --- BEAN BAG HOVER EFFECT ---
-            // This script changes the bean bag's image on hover.
-            const beanBag = document.getElementById('bean-bag');
-            if (beanBag) {
-                const originalSrc = beanBag.src;
-                const hoverSrc = 'assets/bean bag3.png'; // The image to show on hover
+            // Preload the hover images to prevent a flash on first hover
+            const hoverImageBeanBag3 = new Image();
+            hoverImageBeanBag3.src = 'assets/bean bag3.png';
 
-                // Preload the hover image to prevent a flash on first hover
-                const hoverImage = new Image();
-                hoverImage.src = hoverSrc;
+            const hoverImageBeanBag2 = new Image();
+            hoverImageBeanBag2.src = 'assets/bean bag2.png';
 
-                beanBag.addEventListener('mouseenter', () => {
-                    beanBag.src = hoverSrc;
+            // Re-introduce bean-bag hover effect
+            beanBag.addEventListener('mouseenter', () => {
+                beanBag.src = 'assets/bean bag3.png';
+            });
+            beanBag.addEventListener('mouseleave', () => {
+                // Only revert if no dialogue is active from other assets
+                if (dialogueBox.style.visibility === 'hidden') { 
+                    beanBag.src = 'assets/bean bag2.png';
+                }
+            });
+
+            // Speaker click listener for music toggle
+            if (speaker) {
+                speaker.addEventListener('click', () => {
+                    console.log("Speaker clicked.");
+                    if (player) {
+                        if (player.isMuted()) {
+                            player.unMute();
+                            player.setVolume(50); // Ensure volume is set upon unmuting
+                            player.playVideo(); // Always attempt to play on unMute click
+                            console.log("Player unmuted and playing.");
+                            console.log(`State after playVideo call: ${player.getPlayerState()}, isMuted: ${player.isMuted()}`);
+                        } else {
+                            player.mute();
+                            console.log("Player muted.");
+                        }
+                    }
+
+                    // If the autoplay blocked message was active, hide it and remove speaker feedback
+                    if (autoplayBlockedMessageActive) {
+                        showDialogue("Music playing! Click again to mute."); // Give feedback that it's now playing
+                        autoplayBlockedMessageActive = false;
+                        speaker.classList.remove('speaker-active-feedback');
+                        // Hide the dialogue after a short delay so it doesn't persist
+                        setTimeout(hideDialogue, 2000); 
+                    }
                 });
-
-                beanBag.addEventListener('mouseleave', () => {
-                    beanBag.src = originalSrc;
-                });
             }
-            // --- END BEAN BAG HOVER EFFECT ---
 
             // Map asset IDs to their messages and links
             const interactiveAssets = {
-                'ukulele': { message: "Strumming some digital tunes.", link: "Music.html" },
-                'posters': { message: "Escape into another reel.", link: "MoviesTV.html" },
-                'ps5': { message: "Ready to level up?", link: "Games.html" },
-                'painting': { message: "A splash of pixelated inspiration.", link: "art.html" },
-                'noodles': { message: "Fueling up for code. Or just hungry.", link: "Food.html" },
-                'polaroids': { message: "Memories captured, adventures await.", link: "Travel.html" },
-                'bookshelf': { message: "Dive into a story.", link: "Literature.html" }
+                'ukulele': { message: "My music journey. Click to explore my sonic world!", link: "Music.html" },
+                'posters': { message: "Movie & TV shows I've enjoyed. Click to see what's on!", link: "MoviesTV.html" },
+                'ps5': { message: "Dive into my gaming adventures. Click to start the quest!", link: "Games.html" },
+                'painting': { message: "My art inspirations. Click to discover my fav creative works!", link: "art.html" },
+                'noodles': { message: "Food: more than just fuel. Click to savor my culinary recipes!", link: "Food.html" },
+                'polaroids': { message: "Travel memories and destinations. Click to journey with me!", link: "Travel.html" },
+                'bookshelf': { message: "My literary escape. Click to browse my favorite reads!", link: "Literature.html" },
+                'dumbell': { message: "My sports journey. Click to play the sports I have played!", link: "Sport.html" },
+                'monitor': { message: "Projects I have made. Click to see my work!", link: "Projects.html" },
+                'phone-container': { message: "Connect with me! Click to explore my links.", link: "#"},  // Link handled by hologram links
+                'dog': { message: "Don't disturb him." }
             };
 
             const assets = document.querySelectorAll('.asset');
@@ -466,6 +630,7 @@
                 const assetId = asset.id;
                 const assetData = interactiveAssets[assetId];
 
+                // Only apply hover effects to interactive assets
                 if (assetData) {
                     asset.addEventListener('mouseenter', () => {
                         showDialogue(assetData.message);
@@ -476,6 +641,9 @@
                     asset.addEventListener('click', () => {
                         window.location.href = assetData.link;
                     });
+                } else if (assetId === 'bean-bag') {
+                    // Do nothing for bean-bag specific hover, as it's now controlled by others
+                    // or the initial state. Its 'click' functionality is still implicitly handled if it were interactive.
                 } else {
                     asset.addEventListener('click', () => {
                         console.log(`You clicked on: ${asset.alt}`);
