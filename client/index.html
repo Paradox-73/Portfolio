@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/x-icon" href="assets/profile.jpg">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kanav here</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="CSS/indexstyle.css">
+</head>
+<body>
+
+    <div id="room-container">
+        
+        <!-- Loader -->
+        <div id="loader">Loading Assets...</div>
+
+        <!-- Dialogue Box -->
+        <div id="dialogue-box" class="pixel-font">
+            <p id="dialogue-text"></p>
+        </div>
+
+        <!-- YouTube Player Container -->
+        <div id="youtube-player-container"></div>
+
+        <!-- 1. Backgrounds -->
+        <!-- Note: Ensure "night sky.png" is placed properly. It sits behind the window of "room.png" -->
+        <img src="assets/Home/night sky.gif" id="night-sky" class="asset" alt="Night Sky">
+        <img src="assets/Home/room4.png" id="room-bg" class="asset" alt="Room Background">
+
+        <!-- 2. Ceiling & Upper Walls -->
+        <img src="assets/Home/fan1.png" id="fan" class="asset" alt="Ceiling Fan">
+        <img src="assets/Home/polaroids1.png" id="polaroids" class="asset" alt="Polaroid Photos">
+        <img src="assets/Home/posters1.png" id="posters" class="asset" alt="Movie Posters">
+        <img src="assets/Home/painting1.png" id="painting" class="asset" alt="Starry Night Painting">
+        <img src="assets/Home/whiteboard1.png" id="whiteboard" class="asset" alt="Whiteboard">
+        <img src="assets/Home/bookshelf1.png" id="bookshelf" class="asset" alt="Bookshelf">
+        <img src="assets/Home/ukulele1.png" id="ukulele" class="asset" alt="Ukulele">
+
+        <!-- 3. Floor & Furniture -->
+        <img src="assets/Home/desk.png" id="desk" class="asset" alt="Computer Desk">
+        <img src="assets/Home/monitor.png" id="monitor" class="asset" alt="Computer Monitor">
+        <img src="assets/Home/noodles1.png" id="noodles" class="asset" alt="Cup Noodles">
+        <img src="assets/Home/ps5 pixelated1.png" id="ps5" class="asset" alt="PS5 Console">
+        <img src="assets/Home/dumbell1.png" id="dumbell" class="asset" alt="Dumbbell">
+        
+        <img src="assets/Home/bean bag2.png" id="bean-bag" class="asset" alt="Bean Bag Chair with Cyborg">
+        
+        <!-- Character - Removed as it's part of the bean-bag image now -->
+
+        <img src="assets/Home/plant1.png" id="plant" class="asset" alt="House Plant">
+        <img src="assets/Home/dog.gif" id="dog" class="asset" alt="Sleeping Dog">
+        
+        <img src="assets/Home/cabinet1.png" id="cabinet" class="asset" alt="Wooden Cabinet">
+        <div id="phone-container" class="asset">
+            <img src="assets/Home/phone1.png" id="phone" alt="Smartphone">
+            <div id="hologram">
+                <img src="assets/Home/hologram1.png" class="hologram-image" alt="Hologram Links">
+                <a href="https://github.com/Paradox-73" target="_blank" class="hologram-link" style="top: 0; left: 0; width: 50%; height: 50%;" title="GitHub"></a>
+                <a href="resume.pdf" target="_blank" class="hologram-link" style="top: 0; left: 50%; width: 50%; height: 50%;" title="Resume"></a>
+                <a href="mailto:kanavbhardwaj5150@gmail.com" class="hologram-link" style="top: 50%; left: 0; width: 50%; height: 50%;" title="Email"></a>
+                <a href="https://www.linkedin.com/in/kanav-bhardwaj-a25940281/" target="_blank" class="hologram-link" style="top: 50%; left: 50%; width: 50%; height: 50%;" title="LinkedIn"></a>
+            </div>
+        </div>
+        <img src="assets/Home/speaker1.png" id="speaker" class="asset" alt="Speaker">
+
+    </div>
+
+    <!-- YouTube IFrame API script -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+
+    <script  src="JavaScript/indexscript.js"></script>
+</body>
+</html>

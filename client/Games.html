@@ -1,0 +1,1760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="assets/profile.jpg">
+    <title>Kanav's Arcade</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        :root {
+            --ps-blue: #00439c;
+            --ps-light-blue: #0070d1;
+            --bg-transition: 1.2s ease-in-out;
+            --carousel-transition: 0.4s cubic-bezier(0.2, 0, 0, 1);
+            --icon-size: 80px;
+            --icon-gap: 14px;
+            --item-width: 94px; /* size + gap */
+            --visible-items: 5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background-color: #000;
+            color: #fff;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        /* --- INTRO SCREEN --- */
+        #intro-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 200;
+            background: black;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1.5s ease;
+        }
+
+        #intro-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        #intro-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+
+        .ps-logo-intro {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 30px;
+            filter: drop-shadow(0 0 10px rgba(255,255,255,0.5));
+        }
+
+        #intro-prompt {
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            color: rgba(255,255,255,0.8);
+            animation: pulse 2.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; transform: scale(0.98); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+
+        /* --- BACKGROUND LAYERS --- */
+        #main-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 2s ease;
+        }
+
+        .bg-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        #base-wave {
+            background: linear-gradient(135deg, #001a3d 0%, #000 100%);
+            background-image: url('https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHp1eXF5MHF4eHJ4eHJ4eHJ4eHJ4eHJ4eHJ4eHJ4eHJ4eHJ4eHJ4ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7TKDkDbIDJieKbVm/giphy.gif');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.3;
+        }
+
+        #dynamic-bg-img {
+            object-fit: cover;
+            transition: opacity var(--bg-transition);
+            z-index: 2;
+        }
+
+        #youtube-bg-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 1.5s ease;
+            overflow: hidden;
+        }
+
+        #youtube-bg-container iframe {
+            width: 100vw;
+            height: 56.25vw;
+            min-height: 100vh;
+            min-width: 177.77vh;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 5% 20%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.4) 40%, rgba(0,0,0,0.9) 100%);
+            z-index: 5;
+        }
+
+        /* --- HEADER --- */
+        header {
+            position: absolute;
+            top: 30px;
+            left: 60px;
+            right: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 20;
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .nav-left { display: flex; gap: 25px; font-size: 0.95rem; font-weight: 600; }
+        .nav-tab { opacity: 0.4; transition: 0.3s; position: relative; cursor: pointer; }
+        .nav-tab.active { opacity: 1; }
+        .nav-tab.active::after {
+            content: ''; position: absolute; bottom: -6px; left: 0; width: 100%; height: 2px; background: #fff;
+        }
+
+        .status-bar { display: flex; align-items: center; gap: 20px; }
+
+        /* --- SEARCH BOX --- */
+        .search-container { position: relative; display: flex; align-items: center; }
+        
+        #search-input-wrapper {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s;
+            cursor: pointer;
+            flex-direction: row;
+        }
+
+        #search-input-wrapper.expanded {
+            width: 300px;
+            background: rgba(255,255,255,0.2);
+            padding: 0 15px;
+            flex-direction: row-reverse; /* Icon on the right when expanded */
+        }
+
+        #search-input {
+            background: transparent;
+            border: none;
+            color: white;
+            outline: none;
+            width: 0;
+            opacity: 0;
+            transition: width 0.4s, opacity 0.3s;
+            padding: 0;
+        }
+
+        #search-input-wrapper.expanded #search-input {
+            width: calc(100% - 30px);
+            opacity: 1;
+            padding-right: 10px;
+        }
+
+        .icon-btn { width: 18px; height: 18px; fill: #fff; opacity: 0.6; flex-shrink: 0; transition: opacity 0.3s; }
+        #search-input-wrapper.expanded .icon-btn { opacity: 1; }
+        
+        .profile-pic { width: 36px; height: 36px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,0.2); }
+
+        /* --- CAROUSEL --- */
+        #carousel-section {
+            position: absolute;
+            top: 100px;
+            left: 60px;
+            z-index: 15;
+            width: calc(var(--item-width) * 5);
+            overflow: hidden;
+            mask-image: linear-gradient(to right, black 80%, transparent 100%);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        #carousel-container {
+            display: flex;
+            gap: var(--icon-gap);
+            transition: transform var(--carousel-transition);
+            align-items: center;
+            padding: 20px 0;
+            will-change: transform;
+        }
+
+        .game-item {
+            min-width: var(--icon-size);
+            width: var(--icon-size);
+            height: var(--icon-size);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            opacity: 0.45;
+            background: #111;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .game-item.active, #carousel-container.scrolling .game-item {
+            opacity: 1;
+        }
+
+        .game-item.active {
+            transform: scale(1.25);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+            border: 2px solid #fff;
+            margin: 0 10px;
+            z-index: 5;
+        }
+
+        .game-item img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* --- GAME INFO --- */
+        #game-info {
+            position: absolute;
+            bottom: 12%;
+            left: 60px;
+            z-index: 15;
+            max-width: 600px;
+            transition: opacity 0.8s ease;
+        }
+
+        #game-logo { font-size: 3rem; font-weight: 800; margin-bottom: 5px; text-transform: uppercase; }
+        #game-tagline { font-size: 1.1rem; opacity: 0.8; margin-bottom: 25px; line-height: 1.4; }
+
+        .play-btn {
+            background: #fff;
+            color: #000;
+            padding: 12px 45px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .play-btn:hover { background: var(--ps-light-blue); color: #fff; transform: scale(1.05); }
+
+        /* --- OVERLAYS --- */
+        #settings-menu {
+            position: fixed;
+            right: -420px;
+            top: 0;
+            width: 400px;
+            height: 100%;
+            background: rgba(10,10,10,0.95);
+            backdrop-filter: blur(30px);
+            padding: 60px 40px;
+            z-index: 150;
+            transition: right 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        #settings-menu.open { right: 0; }
+        
+        .close-btn {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            opacity: 0.5;
+            transition: 0.3s;
+        }
+        .close-btn:hover { opacity: 1; transform: rotate(90deg); }
+        .close-btn::before, .close-btn::after {
+            content: '';
+            position: absolute;
+            top: 14px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: white;
+        }
+        .close-btn::before { transform: rotate(45deg); }
+        .close-btn::after { transform: rotate(-45deg); }
+
+        .menu-list-container {
+            flex: 1;
+            overflow-y: auto;
+            margin-top: 30px;
+            padding-right: 10px;
+            scrollbar-width: none;
+        }
+        .menu-list-container::-webkit-scrollbar { display: none; }
+        
+        .menu-list { list-style: none; }
+        .menu-item {
+            padding: 15px 20px; border-radius: 10px; font-size: 1.1rem; margin-bottom: 5px; cursor: pointer; transition: 0.2s; opacity: 0.7;
+        }
+        .menu-item:hover { background: rgba(255,255,255,0.1); opacity: 1; }
+
+        #search-results {
+            position: absolute; top: 50px; left: 0; width: 100%;
+            background: rgba(20,20,20,0.95); backdrop-filter: blur(10px);
+            border-radius: 10px; overflow-y: auto; max-height: 300px; display: none; z-index: 50;
+        }
+        .result-item { padding: 12px 15px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 10px; }
+        .result-item:hover { background: rgba(255,255,255,0.1); }
+        .result-item img { width: 40px; height: 40px; object-fit: cover; border-radius: 5px; }
+
+        /* UI HIDDEN STATE */
+        .ui-hidden header, .ui-hidden #carousel-section, .ui-hidden #game-info {
+            opacity: 0; pointer-events: none; transform: translateY(-20px);
+        }
+
+        #detail-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.92); backdrop-filter: blur(20px); z-index: 180;
+            display: none; padding: 100px; opacity: 0; transition: opacity 0.4s;
+        }
+        .detail-content { display: flex; gap: 50px; max-width: 1100px; margin: 0 auto; align-items: center; }
+        #detail-img { width: 350px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); }
+
+        /* MODAL STYLES */
+        .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 9000; display: none; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        #input-modal-field { color: black; }
+    
+        /* MODAL STYLES */
+        .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 9000; display: none; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        
+        .modal-content-wrapper {
+            background: rgba(10,10,10,0.95);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            padding: 30px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        #input-modal-title, #alert-modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        #input-modal-label, #alert-modal-message {
+            font-size: 0.95rem;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 15px;
+        }
+
+        #input-modal-field {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 5px;
+            background: rgba(255,255,255,0.05);
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        #input-modal-field::placeholder {
+            color: rgba(255,255,255,0.4);
+        }
+
+        #input-modal-field:focus {
+            border-color: var(--ps-light-blue);
+            box-shadow: 0 0 0 2px rgba(0, 112, 209, 0.4);
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-buttons button {
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+            border: none;
+            flex: 1;
+        }
+
+        #input-modal-cancel, #alert-modal-ok {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        #input-modal-cancel:hover, #alert-modal-ok:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        #input-modal-submit {
+            background: var(--ps-blue);
+            color: white;
+        }
+        #input-modal-submit:hover {
+            background: var(--ps-light-blue);
+        }
+    
+
+    </style>
+</head>
+<body>
+
+<div id="intro-container">
+    <canvas id="intro-canvas"></canvas>
+    <div id="intro-content">
+        <i class="fa fa-gamepad fa-5x ps-logo-intro" aria-hidden="true"></i>
+        <div id="intro-prompt">Press the Spacebar on your keyboard or A on your gamepad</div>
+    </div>
+</div>
+
+<div id="main-container">
+    <div id="base-wave" class="bg-layer"></div>
+    <img id="dynamic-bg-img" class="bg-layer" src="" alt="">
+    <div id="youtube-bg-container"></div>
+    <div class="overlay"></div>
+
+    <header id="main-header">
+        <div class="nav-left">
+            <div class="nav-tab active">Games</div>
+            <div class="nav-tab">Wishlist</div>
+        </div>
+        <div class="status-bar">
+            <div class="search-container">
+                <div id="search-input-wrapper">
+                    <svg class="icon-btn" style="margin-left:11px" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                    <input type="text" id="search-input" placeholder="Search Games...">
+                </div>
+                <div id="search-results"></div>
+            </div>
+            <svg class="icon-btn" viewBox="0 0 24 24" id="btn-settings"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+            <img class="profile-pic" src="assets/profile.jpg" alt="User">
+            <div id="clock">12:22</div>
+        </div>
+    </header>
+
+    <div id="carousel-section">
+        <div id="carousel-container"></div>
+    </div>
+
+    <div id="game-info">
+        <div id="game-logo">HOME</div>
+        <div id="game-tagline">Welcome back. Select a game to begin.</div>
+        <button class="play-btn" id="main-play-btn">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            Play
+        </button>
+    </div>
+
+    <div id="detail-overlay">
+        <div class="detail-content">
+            <img src="" class="detail-img" id="detail-img">
+            <div class="detail-text">
+                <h1 id="detail-title">Game Title</h1>
+                <p id="detail-desc"></p>
+                <div style="display:flex; gap:15px;">
+                    <button class="play-btn" id="recommend-btn">Recommend Me</button>
+                    <button class="play-btn" style="background:rgba(255,255,255,0.1); color:white;" id="btn-close-details">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="settings-menu">
+        <div class="close-btn" id="btn-close-settings"></div>
+        <h2>Menu</h2>
+        <div class="menu-list-container">
+            <ul class="menu-list">
+                <li class="menu-item">Home</li>
+                <li class="menu-item">Music</li>
+                <li class="menu-item">Movies</li>
+                <li class="menu-item">Games</li>
+                <li class="menu-item">Literature</li>
+                <li class="menu-item">Food</li>
+                <li class="menu-item">Travel</li>
+                <li class="menu-item">Art</li>
+                <li class="menu-item">Sports</li>
+                <li class="menu-item">Projects</li>
+                <li class="menu-item">Network</li>
+                <li class="menu-item">System Info</li>
+            </ul>
+        </div>
+    </div>
+
+</div>
+
+<!-- INPUT MODAL -->
+<div id="input-modal" class="modal-bg">
+    <div class="modal-content-wrapper">
+        <h3 id="input-modal-title"></h3>
+        <p id="input-modal-label"></p>
+        <input id="input-modal-field" type="text" placeholder="Enter here...">
+        <div class="modal-buttons">
+            <button id="input-modal-cancel">Cancel</button>
+            <button id="input-modal-submit">Submit</button>
+        </div>
+    </div>
+</div>
+
+<!-- ALERT MODAL -->
+<div id="alert-modal" class="modal-bg">
+    <div class="modal-content-wrapper">
+        <h3 id="alert-modal-title"></h3>
+        <p id="alert-modal-message"></p>
+        <button id="alert-modal-ok">OK</button>
+    </div>
+</div>
+
+<script src="Javascript/papaparse.min.js"></script>
+<script src="https://www.youtube.com/iframe_api"></script>
+<script>
+    // --- MODAL HELPER FUNCTIONS ---
+    function showInputModal(title, label, placeholder = '', inputType = 'text') {
+        return new Promise((resolve) => {
+            const modal = document.getElementById('input-modal');
+            document.getElementById('input-modal-title').innerText = title;
+            document.getElementById('input-modal-label').innerText = label;
+            const inputField = document.getElementById('input-modal-field');
+            inputField.value = ''; // Clear previous input
+            inputField.placeholder = placeholder;
+            inputField.type = inputType; // Set input type (text, password, etc.)
+            
+            // Focus on the input field after a slight delay to ensure it's visible
+            setTimeout(() => inputField.focus(), 100);
+
+            modal.style.display = 'flex';
+
+            const handleSubmit = () => {
+                modal.style.display = 'none';
+                document.getElementById('input-modal-submit').removeEventListener('click', handleSubmit);
+                document.getElementById('input-modal-cancel').removeEventListener('click', handleCancel);
+                inputField.removeEventListener('keydown', handleKeyDown);
+                resolve(inputField.value);
+            };
+
+            const handleCancel = () => {
+                modal.style.display = 'none';
+                document.getElementById('input-modal-submit').removeEventListener('click', handleSubmit);
+                document.getElementById('input-modal-cancel').removeEventListener('click', handleCancel);
+                inputField.removeEventListener('keydown', handleKeyDown);
+                resolve(null); // Resolve with null if cancelled
+            };
+
+            const handleKeyDown = (event) => {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    handleSubmit();
+                } else if (event.key === 'Escape') {
+                    event.preventDefault();
+                    handleCancel();
+                }
+            };
+
+            document.getElementById('input-modal-submit').addEventListener('click', handleSubmit);
+            document.getElementById('input-modal-cancel').addEventListener('click', handleCancel);
+            inputField.addEventListener('keydown', handleKeyDown);
+        });
+    }
+
+    function showAlertModal(title, message) {
+        return new Promise((resolve) => {
+            const modal = document.getElementById('alert-modal');
+            document.getElementById('alert-modal-title').innerText = title;
+            document.getElementById('alert-modal-message').innerText = message;
+            modal.style.display = 'flex';
+
+            const handleOk = () => {
+                modal.style.display = 'none';
+                document.getElementById('alert-modal-ok').removeEventListener('click', handleOk);
+                resolve();
+            };
+
+            const handleKeyDown = (event) => {
+                if (event.key === 'Enter' || event.key === 'Escape') {
+                    event.preventDefault();
+                    handleOk();
+                }
+            };
+
+            document.getElementById('alert-modal-ok').addEventListener('click', handleOk);
+            modal.addEventListener('keydown', handleKeyDown);
+        });
+    }
+
+    function generateStarRatingHTML(rating) {
+        if (typeof rating === 'undefined' || rating === null || isNaN(rating)) {
+            return '<span style="font-size: 0.9em; opacity: 0.7;">No Rating</span>';
+        }
+        const maxRating = 5; // Assuming a max rating of 5
+        let starsHtml = '';
+        const fullStars = Math.floor(rating);
+        const hasHalfStar = (rating % 1 !== 0);
+
+        for (let i = 0; i < fullStars; i++) {
+            starsHtml += '<i class="fa fa-star" style="color: gold;"></i>';
+        }
+        if (hasHalfStar) {
+            starsHtml += '<i class="fa fa-star-half-o" style="color: gold;"></i>';
+        }
+        for (let i = 0; i < (maxRating - fullStars - (hasHalfStar ? 1 : 0)); i++) {
+            starsHtml += '<i class="fa fa-star-o" style="color: gold;"></i>';
+        }
+        return starsHtml;
+    }
+
+    const navTabs = document.querySelectorAll('.nav-tab');
+    const carouselSection = document.getElementById('carousel-section');
+    const gameInfo = document.getElementById('game-info');
+    const mainContainer = document.getElementById('main-container');
+    const mainPlayBtn = document.getElementById('main-play-btn'); // Add this for easier access
+
+    let currentView = 'games'; // New state variable
+
+    navTabs.forEach(tab => {
+        tab.addEventListener('click', async () => {
+            navTabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+
+            if (tab.innerText === 'Games') {
+                currentView = 'games';
+                renderCarouselAndInfo(gameLibrary, 'HOME', 'Welcome back. Select a game to begin.');
+            } else { // Wishlist tab
+                currentView = 'wishlist';
+                await loadWishlistData(); // Load wishlist data
+                renderCarouselAndInfo(wishlist, 'WISHLIST', 'Select an item from your wishlist.');
+            }
+        });
+    });
+
+    // --- mainPlayBtn event listener ---
+    mainPlayBtn.addEventListener('click', async () => {
+        const activeItem = container.querySelector('.game-item.active');
+        if (!activeItem) return;
+
+                    const title = activeItem.dataset.title;
+                    const itemId = activeItem.dataset.id;
+        
+                    if (currentView === 'wishlist') {
+                        console.log('--- Wishlist: Mark Played/Unplayed button clicked ---');
+                        const itemData = wishlist.find(w => String(w._id) === itemId);
+                        if (!itemData) {
+                            console.log('Wishlist item not found for ID:', itemId);
+                            return;
+                        }
+        
+                        console.log('Calling showInputModal for password...');
+                        const password = await showInputModal('Enter Password', 'To toggle "Played" status, please enter your password:', '', 'password');
+                        console.log('showInputModal returned:', password ? 'password entered' : 'password cancelled');
+                        if (!password) {
+                            await showAlertModal('Action Cancelled', 'Password entry cancelled. "Played" status not changed.');
+                            return;
+                        }
+        
+                        try {
+                            console.log(`Attempting to toggle played status for ${title} (ID: ${itemId})...`);
+                            const response = await fetch(`http://localhost:3000/api/wishlist/games/${itemId}/togglePlayed`, {
+                                method: 'PUT',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({ password: password }),
+                            });
+        
+                            if (response.ok) {
+                                const result = await response.json();
+                                itemData.played = result.played; // Update local state
+                                if (result.played) {
+                                    console.log(`${title} marked as played. Reloading data.`);
+                                    // Move game from wishlist to main library if marked as played
+                                    await loadGamesFromAPI(); // Re-load main games library
+                                    await loadWishlistData(); // Re-load wishlist
+                                    // Switch to Games tab and select the newly played game if possible
+                                    navTabs.forEach(t => {
+                                        if (t.innerText === 'Games') {
+                                            t.classList.add('active');
+                                        } else {
+                                            t.classList.remove('active');
+                                        }
+                                    });
+                                    currentView = 'games';
+                                    renderCarouselAndInfo(gameLibrary, 'HOME', 'Welcome back. Select a game to begin.');
+                                    // Attempt to select the newly played game in the Games carousel
+                                    setTimeout(() => {
+                                        const newActiveGame = Array.from(container.children).find(c => c.dataset.title === title);
+                                        if (newActiveGame) selectItem(newActiveGame);
+                                    }, 100);
+                                    await showAlertModal('Success', `${title} has been moved to your main library and marked as played!`);
+                                } else {
+                                    console.log(`${title} marked as unplayed.`);
+                                    await showAlertModal('Success', `"${title}" played status updated to Unplayed.`);
+                                }
+                                updateUI(); // Re-render button text
+                            } else {
+                                const errorData = await response.json();
+                                console.error('API Error:', errorData);
+                                await showAlertModal('Error', `Failed to update played status: ${errorData.message}`);
+                            }
+                        } catch (error) {
+                            console.error('Error toggling played status:', error);
+                            await showAlertModal('Error', `An unexpected error occurred while updating played status.`);
+                        }
+                    } else if (currentView === 'games') {            // This is where "Play" button logic or "Rating" display would go
+            // For now, if it's a game, the button either acts as "Play" or shows rating.
+            // No action needed for "Play" besides showing rating.
+        }
+    });
+
+    const apiKey = "906d4952a5544f40979cdb63c87b736c";
+    let gameLibrary = [];
+    let wishlist = [];
+    let playedGameTitles = new Set();
+    let wishlistGameTitles = new Set();
+
+
+    async function loadGamesFromAPI() {
+        try {
+            const response = await fetch('http://localhost:3000/api/games');
+            const fetchedGames = await response.json();
+            playedGameTitles.clear();
+            gameLibrary = fetchedGames.map(game => {
+                playedGameTitles.add(game.name.toLowerCase());
+                return {
+                    title: game.name || 'Untitled',
+                    description: game.description_raw || game.description || 'No description available.',
+                    cover: game.cover || game.background_image || 'https://via.placeholder.com/100x100?text=No+Image',
+                    id: game.id, // Keep RAWG ID for API interaction
+                    my_rating: game.my_rating, // Include my_rating from the fetched game data
+                    trailer: '' // will be fetched later
+                };
+            }).filter(g => g.title);
+            init();
+        } catch (error) {
+            console.error('Failed to load game library from API:', error);
+        }
+    }
+
+    async function loadWishlistData() { // Renamed and refactored
+        try {
+            const response = await fetch('http://localhost:3000/api/wishlist/games');
+            if (response.ok) {
+                const fetchedWishlist = await response.json();
+                wishlist = fetchedWishlist.map(item => ({
+                    title: item.title || item.name || 'Untitled',
+                    description: item.description || item.description_raw || 'No description available.',
+                    cover: item.cover || item.background_image || 'https://via.placeholder.com/100x100?text=No+Image',
+                    _id: item._id, // Keep MongoDB ID for backend interaction
+                    played: item.played || false // Ensure 'played' status is present
+                }));
+                wishlistGameTitles.clear();
+                wishlist.forEach(g => wishlistGameTitles.add(g.title.toLowerCase()));
+            } else {
+                console.error('Failed to load wishlist:', response.statusText);
+                wishlist = []; // Clear wishlist on failure
+            }
+        } catch (error) {
+            console.error('Failed to load wishlist:', error);
+            wishlist = []; // Clear wishlist on error
+        }
+    }
+    
+
+
+
+
+
+
+
+
+
+
+    function getYoutubeTrailer(gameTitle) {
+        // This is a placeholder as I cannot make external API calls.
+        // You would use the YouTube Data API to search for a trailer.
+        console.log(`[YouTube] Searching for YouTube trailer for: ${gameTitle}`);
+        // In a real application, you'd make an API call here.
+        // For now, return a placeholder or an empty string if no actual trailer is found.
+        const knownTrailers = {
+            "Grand Theft Auto V": "QkkoH_yXwms",
+            "The Witcher 3: Wild Hunt": "c0i88t0Kacs",
+            "Red Dead Redemption 2": "gmA6MrX81z4",
+            "Cyberpunk 2077": "L_R0n8hL5nU",
+            "ELDEN RING": "E3Hk0uP_z_4",
+            // Add more specific trailers for your games if you have them
+        };
+        const videoId = knownTrailers[gameTitle] || 'gHzuHo80U2M'; // Default placeholder trailer
+        console.log(`[YouTube] Returning video ID for ${gameTitle}: ${videoId}`);
+        return videoId;
+    }
+
+
+
+    const container = document.getElementById('carousel-container');
+    const bgImg = document.getElementById('dynamic-bg-img');
+    const youtubeContainer = document.getElementById('youtube-bg-container');
+    const clockEl = document.getElementById('clock');
+    const settingsMenu = document.getElementById('settings-menu');
+    const searchInput = document.getElementById('search-input');
+    const searchWrapper = document.getElementById('search-input-wrapper');
+    const searchResults = document.getElementById('search-results');
+    
+    let ytPlayer;
+    let holdTimer = null;
+    let hideUITimer = null;
+    let isMoving = false;
+    let dashboardStarted = false;
+    let isYoutubePlayerReady = false; // New flag
+    let currentDetailGame = null;
+
+    // --- INTRO CANVAS (BOKEH SPARK EFFECT) ---
+    const canvas = document.getElementById('intro-canvas');
+    const ctx = canvas.getContext('2d');
+    let sparks = [];
+
+    function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    class Spark {
+        constructor() { this.reset(); }
+        reset() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.vx = (Math.random() - 0.5) * 0.4;
+            this.vy = (Math.random() - 0.5) * 0.4;
+            this.size = Math.random() * 2 + 0.5;
+            this.alpha = Math.random() * 0.4;
+            this.targetAlpha = Math.random() * 0.6 + 0.2;
+        }
+        update() {
+            this.x += this.vx;
+            this.y += this.vy;
+            this.alpha += (this.targetAlpha - this.alpha) * 0.01;
+            if (this.alpha > 0.8) this.targetAlpha = 0;
+            if (this.alpha < 0.05) this.reset();
+        }
+        draw() {
+            ctx.fillStyle = `rgba(255, 255, 255, ${this.alpha})`;
+            ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
+        }
+    }
+    for (let i = 0; i < 150; i++) sparks.push(new Spark());
+
+    function animateIntro() {
+        if (dashboardStarted) return;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        sparks.forEach(s => { s.update(); s.draw(); });
+        requestAnimationFrame(animateIntro);
+    }
+    animateIntro();
+
+    window.addEventListener('keydown', (e) => {
+        if (dashboardStarted) {
+            showUI(); // Key movement brings back UI
+            return;
+        }
+        // Use SPACEBAR to start
+        if (e.code === 'Space') {
+            dashboardStarted = true;
+            document.getElementById('intro-container').style.opacity = '0';
+            mainContainer.style.opacity = '1';
+            setTimeout(() => { document.getElementById('intro-container').style.display = 'none'; }, 1500);
+                        loadGamesFromAPI();
+        }
+    });
+
+    // Gamepad API
+    let gamepadIndex = null;
+    let gamepadConnected = false;
+    let prevGamepadButtons = {};
+    const GAMEPAD_THRESHOLD = 0.5; // For joystick sensitivity
+
+    window.addEventListener("gamepadconnected", (e) => {
+        console.log("Gamepad connected at index %d: %s. %d buttons, %d axes.",
+            e.gamepad.index, e.gamepad.id,
+            e.gamepad.buttons.length, e.gamepad.axes.length);
+        gamepadIndex = e.gamepad.index;
+        gamepadConnected = true;
+        // Optionally, immediately start the dashboard if 'A' is pressed on connect
+        const gp = navigator.getGamepads()[gamepadIndex];
+        if (gp && gp.buttons[0] && gp.buttons[0].pressed) { // Button A
+            if (!dashboardStarted) {
+                startGamepadDashboard();
+            }
+        }
+        gameLoop(); // Start gamepad polling
+    });
+
+    window.addEventListener("gamepaddisconnected", (e) => {
+        console.log("Gamepad disconnected from index %d: %s",
+            e.gamepad.index, e.gamepad.id);
+        if (gamepadIndex === e.gamepad.index) {
+            gamepadIndex = null;
+            gamepadConnected = false;
+        }
+    });
+
+    function gameLoop() {
+        if (!gamepadConnected || gamepadIndex === null) {
+            requestAnimationFrame(gameLoop);
+            return;
+        }
+
+        const gamepad = navigator.getGamepads()[gamepadIndex];
+        if (!gamepad) {
+            gamepadConnected = false;
+            requestAnimationFrame(gameLoop);
+            return;
+        }
+
+        processGamepadInput(gamepad);
+        requestAnimationFrame(gameLoop);
+    }
+
+    // Function to start dashboard via gamepad
+    function startGamepadDashboard() {
+        dashboardStarted = true;
+        document.getElementById('intro-container').style.opacity = '0';
+        mainContainer.style.opacity = '1';
+        setTimeout(() => { document.getElementById('intro-container').style.display = 'none'; }, 1500);
+                    loadGamesFromAPI();
+    }
+
+    // placeholder for gamepad input processing
+    function processGamepadInput(gamepad) {
+        // Debounce button presses
+        const handleButtonPress = (buttonIndex, action) => {
+            if (gamepad.buttons[buttonIndex].pressed && !prevGamepadButtons[buttonIndex]) {
+                action();
+            }
+        };
+
+        // Start Dashboard (A button)
+        if (!dashboardStarted) {
+            handleButtonPress(0, startGamepadDashboard); // Button A
+        } else {
+            // Carousel Navigation (unified)
+            // Left (L1, D-pad Left, Left Joystick Left)
+            handleButtonPress(4, moveLeft); // L1
+            handleButtonPress(14, moveLeft); // D-pad Left
+            if (gamepad.axes[0] < -GAMEPAD_THRESHOLD && prevGamepadButtons['axis0_left'] === false) {
+                moveLeft();
+                prevGamepadButtons['axis0_left'] = true;
+            } else if (gamepad.axes[0] > -GAMEPAD_THRESHOLD) {
+                prevGamepadButtons['axis0_left'] = false;
+            }
+
+            // Right (R1, D-pad Right, Left Joystick Right)
+            handleButtonPress(5, moveRight); // R1
+            handleButtonPress(15, moveRight); // D-pad Right
+            if (gamepad.axes[0] > GAMEPAD_THRESHOLD && prevGamepadButtons['axis0_right'] === false) {
+                moveRight();
+                prevGamepadButtons['axis0_right'] = true;
+            } else if (gamepad.axes[0] < GAMEPAD_THRESHOLD) {
+                prevGamepadButtons['axis0_right'] = false;
+            }
+
+            // Select/Open Details (A button)
+            handleButtonPress(0, () => { // Button A
+                const active = container.children[1];
+                if (active) {
+                    const title = active.dataset.title;
+                    showDetailsFromUI(encodeURIComponent(title));
+                }
+            });
+
+            // Close Details/Settings (B button)
+            handleButtonPress(1, () => { // Button B
+                const detailOverlay = document.getElementById('detail-overlay');
+                if (detailOverlay.style.display === 'flex') {
+                    document.getElementById('btn-close-details').click();
+                }
+            });
+
+            // Toggle Settings Menu (Start button - index 9, or Menu button - index 16)
+            handleButtonPress(9, () => { // Start button
+                settingsMenu.classList.toggle('open');
+            });
+            handleButtonPress(16, () => { // Menu button (for some controllers)
+                settingsMenu.classList.toggle('open');
+            });
+
+            // Search Input Focus/Collapse (Y button)
+            handleButtonPress(3, () => {
+                if (searchWrapper.classList.contains('expanded')) {
+                    collapseSearch();
+                    searchInput.blur();
+                } else {
+                    searchWrapper.click();
+                }
+            });
+            
+            // Show UI on any gamepad input
+            if (gamepad.buttons.some(b => b.pressed) || gamepad.axes.some(a => Math.abs(a) > 0.1)) {
+                showUI();
+            }
+        }
+
+        // Store current button states for debouncing
+        for (let i = 0; i < gamepad.buttons.length; i++) {
+            prevGamepadButtons[i] = gamepad.buttons[i].pressed;
+        }
+        // Store current axis states for debouncing (specifically for d-pad/joystick)
+        // prevGamepadButtons['axis0_left'] and 'axis0_right'] are handled above
+    }
+    let scrollTimeout;
+    carouselSection.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+            // Unified movement for carousel
+            if (e.deltaY < 0) { // Scroll up (or wheel up)
+                moveLeft();
+            } else { // Scroll down (or wheel down)
+                moveRight();
+            }
+        }, 100); // Debounce time
+    });
+
+    let queuedTrailer = null; // New variable to queue trailers
+
+    function onYouTubeIframeAPIReady() {
+        ytPlayer = new YT.Player('youtube-bg-container', {
+            height: '100%',
+            width: '100%',
+            playerVars: {
+                'autoplay': 1,
+                'controls': 0,
+                'showinfo': 0,
+                'rel': 0,
+                'loop': 1,
+                'mute': 1,
+                'origin': window.location.origin
+            },
+            events: {
+                'onReady': (e) => {
+                    e.target.mute();
+                    isYoutubePlayerReady = true;
+                    console.log("[YouTube] Player is ready.");
+                    if (queuedTrailer) {
+                        loadQueuedTrailer();
+                    }
+                }
+            }
+        });
+    }
+
+    async function fetchGameDetails(gameName) {
+        if (!apiKey) return null;
+        try {
+            const res = await fetch(`https://api.rawg.io/api/games?key=${apiKey}&search=${encodeURIComponent(gameName)}&page_size=1`);
+            const data = await res.json();
+            if (data.results && data.results.length > 0) {
+                const id = data.results[0].id;
+                const dRes = await fetch(`https://api.rawg.io/api/games/${id}?key=${apiKey}`);
+                return await dRes.json();
+            }
+        } catch (e) {}
+        return null;
+    }
+
+    function init() {
+        renderCarouselAndInfo(gameLibrary, 'HOME', 'Welcome back. Select a game to begin.');
+        updateClock();
+        setInterval(updateClock, 1000);
+        updateUI(); // Initial UI update
+        window.addEventListener('mousemove', showUI);
+    }
+
+    function showUI() {
+        document.body.classList.remove('ui-hidden');
+        resetHideTimer();
+    }
+
+    function resetHideTimer() {
+        clearTimeout(hideUITimer);
+        if (settingsMenu.classList.contains('open') || searchWrapper.classList.contains('expanded')) return;
+        
+        hideUITimer = setTimeout(() => {
+            document.body.classList.add('ui-hidden');
+        }, 10000);
+    }
+
+    // Unified render function
+    function renderCarouselAndInfo(data, defaultLogoText, defaultTaglineText) {
+        container.innerHTML = '';
+        if (data.length === 0) {
+            container.innerHTML = '<p style="color:white; text-align:center;">No items to display.</p>';
+            document.getElementById('game-logo').innerText = defaultLogoText;
+            document.getElementById('game-tagline').innerText = defaultTaglineText;
+            mainPlayBtn.style.display = 'none'; // Hide play button if no items
+            return;
+        }
+
+        data.forEach((item, idx) => {
+            const div = document.createElement('div');
+            div.className = `game-item`; // Use generic class
+            div.dataset.id = String(item._id || item.id); // Use _id for wishlist, id for games API
+            div.dataset.title = item.title;
+            div.innerHTML = `<img src="${item.cover || item.background_image || 'https://via.placeholder.com/100x100?text=No+Image'}" alt="${item.title}">`;
+            div.onclick = () => { 
+                if(!isMoving) {
+                    selectItem(div);
+                    setTimeout(() => {
+                        const activeItem = container.children[1];
+                        if (activeItem) showDetailsFromUI(encodeURIComponent(activeItem.dataset.title));
+                    }, 500); // Small delay to allow carousel transition
+                }
+            };
+            container.appendChild(div);
+        });
+        updateItemStates(); // Update active class for carousel items
+        updateUI(); // Update info panel and button for the newly rendered carousel
+    }
+
+    function updateClock() {
+        const now = new Date();
+        clockEl.innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function selectItem(el) {
+        const children = Array.from(container.children);
+        const index = children.indexOf(el);
+        if (index === 1) return;
+        if (index === 0) moveLeft();
+        else {
+            const diff = index - 1;
+            for (let i = 0; i < diff; i++) setTimeout(() => moveRight(), i * 150);
+        }
+    }
+
+    function moveRight() {
+        if (isMoving) return;
+        isMoving = true;
+        container.classList.add('scrolling');
+        const width = 80 + 14;
+        container.style.transition = 'transform var(--carousel-transition)';
+        container.style.transform = `translateX(-${width}px)`;
+        
+        container.addEventListener('transitionend', function handler() {
+            container.removeEventListener('transitionend', handler);
+            container.style.transition = 'none';
+            container.appendChild(container.firstElementChild);
+            container.style.transform = 'translateX(0)';
+            isMoving = false;
+            container.classList.remove('scrolling');
+            updateUI();
+        });
+    }
+
+    function moveLeft() {
+        if (isMoving) return;
+        isMoving = true;
+        container.classList.add('scrolling');
+        const width = 80 + 14;
+        container.style.transition = 'none';
+        container.insertBefore(container.lastElementChild, container.firstElementChild);
+        container.style.transform = `translateX(-${width}px)`;
+        container.offsetHeight; 
+        container.style.transition = 'transform var(--carousel-transition)';
+        container.style.transform = 'translateX(0)';
+        
+        container.addEventListener('transitionend', function handler() {
+            container.removeEventListener('transitionend', handler);
+            isMoving = false;
+            container.classList.remove('scrolling');
+            updateUI();
+        });
+    }
+
+    function updateItemStates() {
+        const children = Array.from(container.children);
+        children.forEach((item, idx) => {
+            if (children.length === 1) {
+                item.classList.toggle('active', true); // Mark the single item as active
+            } else {
+                item.classList.toggle('active', idx === 1);
+            }
+        });
+    }
+
+    async function updateUI() {
+        showUI();
+        updateItemStates(); // This will ensure the correct item has the 'active' class
+
+        // Explicitly handle empty wishlist case
+        if (currentView === 'wishlist' && wishlist.length === 0) {
+            document.getElementById('game-logo').innerText = 'WISHLIST';
+            document.getElementById('game-tagline').innerText = 'Your wishlist is empty. Recommend some games!';
+            mainPlayBtn.style.display = 'none';
+            clearTimeout(holdTimer);
+            youtubeContainer.style.opacity = '0';
+            if (ytPlayer && ytPlayer.stopVideo) ytPlayer.stopVideo();
+            return;
+        }
+
+        // Find the actually active item, which could be children[0] if there's only one.
+        const active = container.querySelector('.game-item.active');
+        
+        // If there are items, but somehow none is active (shouldn't happen with updated updateItemStates, but as a fallback)
+        if (!active && container.children.length > 0) {
+            // Default to the first item if no active one is found but items exist.
+            // This might happen if carousel animations are still in progress or other edge cases.
+            // Ideally updateItemStates would guarantee an active item if the container is not empty.
+            // For now, let's just make sure we don't display the 'empty' message.
+            // This block indicates a potential issue elsewhere if it's hit often.
+            // If the carousel is not empty, but no item is active, it means the display isn't perfect.
+            // We should still try to display something related to the first item, or at least not the "empty" message.
+            // For now, I will let the default game/wishlist message from renderCarouselAndInfo persist
+            // and simply hide the play button and clear the trailer.
+            document.getElementById('game-logo').innerText = currentView === 'games' ? 'HOME' : 'WISHLIST';
+            document.getElementById('game-tagline').innerText = currentView === 'games' ? 'Welcome back. Select a game to begin.' : 'Select an item from your wishlist.';
+            mainPlayBtn.style.display = 'none';
+            clearTimeout(holdTimer);
+            youtubeContainer.style.opacity = '0';
+            if (ytPlayer && ytPlayer.stopVideo) ytPlayer.stopVideo();
+            return;
+        } else if (!active && container.children.length === 0 && currentView === 'games') {
+            // This handles the case where the games library is empty.
+            document.getElementById('game-logo').innerText = 'HOME';
+            document.getElementById('game-tagline').innerText = 'Welcome back. Select a game to begin.';
+            mainPlayBtn.style.display = 'none';
+            clearTimeout(holdTimer);
+            youtubeContainer.style.opacity = '0';
+            if (ytPlayer && ytPlayer.stopVideo) ytPlayer.stopVideo();
+            return;
+        } else if (!active) {
+            // This should ideally not be hit if updateItemStates is working correctly
+            // and the container has items.
+            return; // No active item, and not empty wishlist, do nothing to prevent overwriting
+        }
+
+
+        const title = active.dataset.title;
+        const itemId = active.dataset.id; // Get item ID
+        
+        let itemData;
+        if (currentView === 'games') {
+            itemData = gameLibrary.find(g => g.title === title);
+            const ratingHtml = generateStarRatingHTML(itemData ? itemData.my_rating : null);
+            mainPlayBtn.innerHTML = `<div style="font-size: 1.2rem; display: flex; align-items: center; gap: 5px;">${ratingHtml}</div>`;
+            mainPlayBtn.style.display = 'inline-flex';
+            mainPlayBtn.style.background = 'transparent'; // Make background transparent
+            mainPlayBtn.style.color = 'white'; // Change text color to white
+            mainPlayBtn.style.boxShadow = 'none'; // Remove box shadow
+            mainPlayBtn.style.cursor = 'default'; // Change cursor
+            mainPlayBtn.onmouseover = null; // Remove hover effects
+            mainPlayBtn.onmouseout = null; // Remove hover effects
+            mainPlayBtn.style.transition = 'none'; // Remove transition
+        } else { // currentView === 'wishlist'
+            itemData = wishlist.find(w => String(w._id) === itemId);
+            if (itemData) {
+                mainPlayBtn.innerHTML = `<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> ${itemData.played ? 'Mark Unplayed' : 'Mark Played'}`;
+                mainPlayBtn.style.display = 'inline-flex';
+                // Reset styles for wishlist button
+                mainPlayBtn.style.background = '#fff';
+                mainPlayBtn.style.color = '#000';
+                mainPlayBtn.style.boxShadow = '0 4px 15px rgba(0,0,0,0.3)';
+                mainPlayBtn.style.cursor = 'pointer';
+                mainPlayBtn.onmouseover = function() { this.style.background = 'var(--ps-light-blue)'; this.style.color = '#fff'; this.style.transform = 'scale(1.05)'; };
+                mainPlayBtn.onmouseout = function() { this.style.background = '#fff'; this.style.color = '#000'; this.style.transform = 'scale(1)'; };
+                mainPlayBtn.style.transition = '0.2s';
+            } else {
+                mainPlayBtn.style.display = 'none';
+            }
+        }
+
+        document.getElementById('game-logo').innerText = itemData ? itemData.title : (currentView === 'games' ? 'HOME' : 'WISHLIST');
+        
+        if (itemData && itemData.description) {
+            const truncatedDescription = itemData.description.substring(0, 140);
+            if (itemData.description.length > 140) {
+                document.getElementById('game-tagline').innerHTML = `${truncatedDescription}... <span style="color:white; cursor:pointer; text-decoration: underline;" onclick="showDetailsFromUI('${encodeURIComponent(title)}')">Read More</span>`;
+            } else {
+                document.getElementById('game-tagline').innerText = truncatedDescription;
+            }
+            bgImg.src = itemData.cover || itemData.background_image || 'https://via.placeholder.com/100x100?text=No+Image';
+            bgImg.style.opacity = '1';
+        } else {
+            document.getElementById('game-tagline').innerText = "No description available.";
+            bgImg.src = itemData ? (itemData.cover || itemData.background_image || 'https://via.placeholder.com/100x100?text=No+Image') : 'https://via.placeholder.com/100x100?text=No+Image';
+            bgImg.style.opacity = '1';
+        }
+
+        clearTimeout(holdTimer);
+        youtubeContainer.style.opacity = '0';
+        if (ytPlayer && ytPlayer.stopVideo) ytPlayer.stopVideo();
+
+        if (itemData) {
+            holdTimer = setTimeout(() => playTrailer(itemData.title), 3000);
+        }
+    }
+
+    function playTrailer(gameTitle) {
+        console.log(`[YouTube] Attempting to play trailer for: ${gameTitle}`);
+        const game = gameLibrary.find(g => g.title === gameTitle);
+        console.log(`[YouTube] Game object found: ${!!game}`);
+        let videoId = 'gHzuHo80U2M'; // default
+        if (game && game.trailer) {
+            videoId = game.trailer;
+            console.log(`[YouTube] Using pre-fetched trailer ID: ${videoId}`);
+        } else {
+            videoId = getYoutubeTrailer(gameTitle);
+            if(game) game.trailer = videoId;
+            console.log(`[YouTube] Fetched new trailer ID: ${videoId}`);
+        }
+
+        if (isYoutubePlayerReady && ytPlayer && ytPlayer.loadVideoById) {
+            ytPlayer.loadVideoById({ videoId: videoId, startSeconds: 0 });
+            youtubeContainer.style.opacity = '1';
+            resetHideTimer();
+            console.log(`[YouTube] Loading video ID: ${videoId}`);
+        } else {
+            console.log(`[YouTube] YouTube player not ready, queuing trailer: ${videoId} for ${gameTitle}`);
+            queuedTrailer = { videoId: videoId, gameTitle: gameTitle };
+        }
+    }
+
+    function loadQueuedTrailer() {
+        if (queuedTrailer && isYoutubePlayerReady && ytPlayer && ytPlayer.loadVideoById) {
+            console.log(`[YouTube] Playing queued trailer: ${queuedTrailer.videoId} for ${queuedTrailer.gameTitle}`);
+            ytPlayer.loadVideoById({ videoId: queuedTrailer.videoId, startSeconds: 0 });
+            youtubeContainer.style.opacity = '1';
+            resetHideTimer();
+            queuedTrailer = null; // Clear the queue
+        }
+    }
+
+    document.getElementById('recommend-btn').onclick = async () => {
+        if (!currentDetailGame) {
+            console.error("No game selected to recommend.");
+            return;
+        }
+
+        const gameTitle = currentDetailGame.title;
+        // Check if it's already in the library (played) or wishlist
+        if (playedGameTitles.has(gameTitle.toLowerCase())) {
+            await showAlertModal('Recommendation Failed', `${gameTitle} is already in your library!`);
+            return;
+        }
+        if (wishlistGameTitles.has(gameTitle.toLowerCase())) {
+            await showAlertModal('Recommendation Failed', `${gameTitle} is already in your wishlist!`);
+            return;
+        }
+
+        const recommendedBy = await showInputModal('Recommend Game', 'Your Name:', 'Enter your name');
+        if (!recommendedBy) {
+            await showAlertModal('Recommendation Cancelled', 'You cancelled the recommendation.');
+            return;
+        }
+
+        try {
+            const response = await fetch('http://localhost:3000/api/wishlist/games', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ game: currentDetailGame, recommendedBy: recommendedBy }),
+            });
+
+            if (response.ok) {
+                const newWishlistItem = await response.json();
+                wishlist.push(newWishlistItem);
+                wishlistGameTitles.add(gameTitle.toLowerCase());
+                renderWishlist(); // Re-render to show new item
+                updateWishlistItemStates(); // Update carousel states
+                await showAlertModal('Success', `${gameTitle} has been added to your wishlist by ${recommendedBy}!`);
+            } else {
+                const errorData = await response.json();
+                await showAlertModal('Error', `Failed to add ${gameTitle} to wishlist: ${errorData.message}`);
+            }
+        } catch (error) {
+            console.error('Error adding to wishlist:', error);
+            await showAlertModal('Error', `An unexpected error occurred while adding ${gameTitle} to wishlist.`);
+        }
+    };
+
+    async function loadWishlist() {
+        try {
+            const response = await fetch('http://localhost:3000/api/wishlist/games');
+            if (response.ok) {
+                wishlist = await response.json();
+                wishlistGameTitles.clear();
+                wishlist.forEach(g => wishlistGameTitles.add(g.title.toLowerCase()));
+                renderWishlist();
+                updateWishlistItemStates(); // Initialize active state for wishlist carousel
+            } else {
+                console.error('Failed to load wishlist:', response.statusText);
+                wishlistCarouselContainer.innerHTML = '<p style="color:white;">Failed to load wishlist items.</p>';
+            }
+        } catch (error) {
+            console.error('Failed to load wishlist:', error);
+            wishlistCarouselContainer.innerHTML = '<p style="color:white;">An error occurred while loading wishlist.</p>';
+        }
+    }
+
+    function renderWishlist() {
+        wishlistCarouselContainer.innerHTML = '';
+        if (wishlist.length === 0) {
+            wishlistCarouselContainer.innerHTML = '<p style="color:white;">Your wishlist is empty. Recommend some games!</p>';
+            return;
+        }
+
+        wishlist.forEach(game => {
+            const div = document.createElement('div');
+            div.className = 'wishlist-item';
+            div.dataset.id = String(game._id); // Store MongoDB _id
+            div.dataset.title = game.title;
+            div.innerHTML = `
+                <img src="${game.cover || 'https://via.placeholder.com/100x100?text=No+Image'}" alt="${game.title}">
+                <div class="wishlist-item-overlay">
+                    <span>${game.title}</span>
+                    <div class="played-toggle-container">
+                        <label for="played-checkbox-${game._id}">Played:</label>
+                        <input type="checkbox" id="played-checkbox-${game._id}" ${game.played ? 'checked' : ''}>
+                    </div>
+                </div>
+            `;
+            // Attach click handler to show details, similar to game items
+            div.onclick = () => {
+                if (!isWishlistMoving) {
+                    selectWishlistItem(div);
+                    // Optionally show full details for the selected wishlist item
+                    // showDetails(game); // Assuming showDetails can handle this format
+                }
+            };
+
+            // Add event listener to the checkbox
+            const checkbox = div.querySelector(`#played-checkbox-${game._id}`);
+            if (checkbox) {
+                checkbox.addEventListener('click', async (event) => {
+                    event.stopPropagation(); // Prevent item click from triggering
+                    event.preventDefault(); // Prevent immediate toggle
+
+                    const password = await showInputModal('Enter Password', 'To toggle "Played" status, please enter your password:', '', 'password');
+                    if (!password) {
+                        await showAlertModal('Action Cancelled', 'Password entry cancelled. "Played" status not changed.');
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch(`http://localhost:3000/api/wishlist/games/${game._id}/togglePlayed`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ password: password }),
+                        });
+
+                        if (response.ok) {
+                            const result = await response.json();
+                            game.played = result.played; // Update local state
+                            checkbox.checked = result.played; // Update checkbox visually
+                            await showAlertModal('Success', `"${game.title}" played status updated to ${result.played ? 'Played' : 'Unplayed'}.`);
+                        } else {
+                            const errorData = await response.json();
+                            await showAlertModal('Error', `Failed to update played status: ${errorData.message}`);
+                        }
+                    } catch (error) {
+                        console.error('Error toggling played status:', error);
+                        await showAlertModal('Error', `An unexpected error occurred while updating played status.`);
+                    }
+                });
+            }
+            wishlistCarouselContainer.appendChild(div);
+        });
+        updateWishlistItemStates(); // Call after rendering to set active class
+    }
+
+    searchWrapper.onclick = (e) => {
+        e.stopPropagation();
+        searchWrapper.classList.add('expanded');
+        searchInput.focus();
+        showUI();
+    };
+
+    // Collapse search when clicking away
+    document.addEventListener('click', () => {
+        if (searchWrapper.classList.contains('expanded') && document.activeElement !== searchInput) {
+            collapseSearch();
+        }
+    });
+
+    function collapseSearch() {
+        searchWrapper.classList.remove('expanded');
+        searchResults.style.display = 'none';
+        searchInput.value = '';
+    }
+
+    searchInput.oninput = async (e) => {
+        const v = e.target.value.toLowerCase();
+        if (!v) { searchResults.style.display = 'none'; return; }
+        searchResults.style.display = 'block';
+        searchResults.innerHTML = '';
+
+        // Owned Search
+        const owned = gameLibrary.filter(g => g.title.toLowerCase().includes(v));
+        owned.forEach(g => {
+            const div = document.createElement('div');
+            div.className = 'result-item';
+            div.innerHTML = `<span>[Owned] ${g.title}</span>`;
+            div.onclick = () => {
+                const el = Array.from(container.children).find(c => c.dataset.title === g.title);
+                if (el) selectItem(el);
+                collapseSearch();
+            };
+            searchResults.appendChild(div);
+        });
+
+        // Global Search
+        if (apiKey && v.length > 2) {
+            try {
+                const res = await fetch(`https://api.rawg.io/api/games?key=${apiKey}&search=${encodeURIComponent(v)}&page_size=5`);
+                const data = await res.json();
+                data.results.forEach(g => {
+                    if (owned.some(o => o.title.toLowerCase() === g.name.toLowerCase())) return;
+                    const div = document.createElement('div');
+                    div.className = 'result-item';
+                    div.innerHTML = `<img src="${g.background_image}"> <span>${g.name}</span>`;
+                    div.onclick = () => {
+                        showDetails(g);
+                        collapseSearch();
+                    };
+                    searchResults.appendChild(div);
+                });
+            } catch (err) {}
+        }
+    };
+
+    async function showDetails(gameDataOrTitle) {
+        const recommendBtn = document.getElementById('recommend-btn');
+        // Hide the wishlist toggle button in the main detail overlay by default
+        wishlistTogglePlayedBtn.style.display = 'none';
+
+        let isGameFromLibrary = false;
+        let gameTitle;
+        currentDetailGame = null; // Reset currentDetailGame
+
+        // Determine if gameDataOrTitle is a string (from library) or an object (from search/wishlist)
+        if (typeof gameDataOrTitle === 'string') {
+            gameTitle = decodeURIComponent(gameDataOrTitle);
+            const gameInLibrary = gameLibrary.find(g => g.title === gameTitle);
+            if (gameInLibrary) {
+                currentDetailGame = gameInLibrary;
+                // Fetch full details if necessary (e.g., from rawg.io)
+                const fullGameDetails = await fetchGameDetails(gameTitle);
+                if (fullGameDetails) {
+                    Object.assign(currentDetailGame, {
+                        title: fullGameDetails.name,
+                        description: fullGameDetails.description_raw,
+                        cover: fullGameDetails.background_image,
+                        ...fullGameDetails
+                    });
+                }
+                isGameFromLibrary = true;
+            }
+        } else {
+            currentDetailGame = { ...gameDataOrTitle };
+            gameTitle = currentDetailGame.name || currentDetailGame.title;
+
+            // If it's a minimal object (e.g., from search results), fetch full details
+            if ((!currentDetailGame.description_raw && !currentDetailGame.description) && gameTitle) {
+                 const fullGameDetails = await fetchGameDetails(gameTitle);
+                if (fullGameDetails) {
+                    Object.assign(currentDetailGame, {
+                        title: fullGameDetails.name,
+                        description: fullGameDetails.description_raw,
+                        cover: fullGameDetails.background_image,
+                        ...fullGameDetails
+                    });
+                }
+            } else {
+                // For wishlist items, ensure 'title' and 'cover' are correctly set if coming from MongoDB
+                currentDetailGame.title = currentDetailGame.title || currentDetailGame.name;
+                currentDetailGame.cover = currentDetailGame.cover || currentDetailGame.background_image;
+            }
+            isGameFromLibrary = gameLibrary.some(g => g.title === gameTitle);
+        }
+
+        if (!currentDetailGame || !currentDetailGame.title) {
+            console.error("Could not determine game details for display.");
+            await showAlertModal('Error', 'Failed to load game details.');
+            return;
+        }
+
+        const isInWishlist = wishlistGameTitles.has(currentDetailGame.title.toLowerCase());
+        const isInLibrary = playedGameTitles.has(currentDetailGame.title.toLowerCase());
+        
+        if (isInLibrary || isInWishlist) {
+            recommendBtn.style.display = 'none';
+        } else {
+            recommendBtn.style.display = 'inline-flex';
+        }
+
+        document.getElementById('detail-title').innerText = currentDetailGame.title;
+        document.getElementById('detail-img').src = currentDetailGame.cover || currentDetailGame.background_image || 'https://via.placeholder.com/600x400?text=No+Image';
+        
+        let detailDescHTML = '';
+        const description = currentDetailGame.description_raw || currentDetailGame.description || 'No detailed description available.';
+        detailDescHTML += `<p>${description}</p>`;
+
+        if (currentDetailGame) {
+            if (currentDetailGame.genres && currentDetailGame.genres.length > 0) {
+                detailDescHTML += `<p><strong>Genres:</strong> ${currentDetailGame.genres.map(g => g.name).join(', ')}</p>`;
+            }
+            if (currentDetailGame.platforms && currentDetailGame.platforms.length > 0) {
+                detailDescHTML += `<p><strong>Platforms:</strong> ${currentDetailGame.platforms.map(p => p.platform.name).join(', ')}</p>`;
+            }
+            if (currentDetailGame.released) {
+                detailDescHTML += `<p><strong>Release Date:</strong> ${currentDetailGame.released}</p>`;
+            }
+            if (currentDetailGame.recommendedBy) { // Display recommended by for wishlist items in details
+                detailDescHTML += `<p><strong>Recommended By:</strong> ${currentDetailGame.recommendedBy}</p>`;
+            }
+        }
+
+        document.getElementById('detail-desc').innerHTML = detailDescHTML;
+
+        const overlay = document.getElementById('detail-overlay');
+        overlay.style.display = 'flex';
+        setTimeout(() => overlay.style.opacity = '1', 10);
+    }
+
+    function showDetailsFromUI(encodedTitle) {
+        showDetails(encodedTitle);
+    }
+
+    document.getElementById('btn-close-details').onclick = () => {
+        const o = document.getElementById('detail-overlay');
+        o.style.opacity = '0';
+        setTimeout(() => o.style.display = 'none', 400);
+    };
+
+    document.getElementById('btn-settings').onclick = () => {
+        settingsMenu.classList.add('open');
+        showUI();
+    };
+    document.getElementById('btn-close-settings').onclick = () => settingsMenu.classList.remove('open');
+
+    window.addEventListener('keydown', (e) => {
+        if (!dashboardStarted) return;
+        showUI();
+
+        // Check if a modal is open, if so, only allow Escape key
+        const inputModal = document.getElementById('input-modal');
+        const alertModal = document.getElementById('alert-modal');
+        if (inputModal.style.display === 'flex' || alertModal.style.display === 'flex') {
+            if (e.key === 'Escape') {
+                // Let modal's internal keydown handle it
+            }
+            return;
+        }
+
+        if (document.activeElement === searchInput) {
+            if (e.key === 'Escape') {
+                collapseSearch();
+                searchInput.blur();
+            }
+            if (e.key === 'Enter') {
+                // For now, just let user click or handle search results via mouse.
+            }
+            return;
+        }
+
+        // Determine active section for carousel navigation
+        const isGamesSectionActive = carouselSection.style.display !== 'none' && carouselSection.style.display !== '';
+        const isWishlistSectionActive = wishlistSection.style.display !== 'none' && wishlistSection.style.display !== '';
+
+        if (isGamesSectionActive) {
+            switch(e.key) {
+                case 'ArrowRight': moveRight(); break;
+                case 'ArrowLeft': moveLeft(); break;
+            }
+        } else if (isWishlistSectionActive) {
+            switch(e.key) {
+                case 'ArrowRight': moveWishlistRight(); break;
+                case 'ArrowLeft': moveWishlistLeft(); break;
+            }
+        }
+        
+        switch(e.key) {
+            case 'Escape': 
+                settingsMenu.classList.remove('open'); 
+                const o = document.getElementById('detail-overlay');
+                if(o.style.display === 'flex') document.getElementById('btn-close-details').click();
+                break;
+        }
+    });
+</script>
+</body>
+</html>

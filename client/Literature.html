@@ -1,0 +1,1444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="assets/profile.jpg">
+    
+    <title>Kanav's Library</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- jQuery (3.3.1) & Turn.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/937765/turn.js"></script>
+    
+    <!-- Papa Parse CSV Library -->
+    <script src="https://unpkg.com/papaparse@5.3.2/papaparse.min.js"></script>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400&family=Indie+Flower&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Zilla+Slab+Highlight&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        :root {
+            --wood-dark: #1a0f0a;
+            --wood-medium: #3d2817;
+            --wood-light: #5c4033;
+            --gold: #ffd700;
+            --paper-texture-url: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/937765/seamless_paper_texture.png');
+        }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: #050302;
+            background-image: radial-gradient(circle at 50% 50%, #1a120b 0%, #000000 100%);
+            color: #e5e5e5;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* --- Realistic Wood Texture for Shelves --- */
+        .wood-texture {
+            background-color: #2a1b12;
+            position: relative;
+            z-index: 1;
+        }
+        .wood-texture::before {
+            content: "";
+            position: absolute; inset: 0; opacity: 0.15;
+            background-image: url("data:image/svg+xml,%3Csvg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+            pointer-events: none; z-index: -1;
+        }
+        .wood-texture::after {
+            content: "";
+            position: absolute; inset: 0;
+            background: repeating-linear-gradient(90deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 1px, transparent 1px, transparent 10px);
+            opacity: 0.3; pointer-events: none; z-index: -1;
+        }
+
+        /* --- Bookshelf Structure --- */
+        .bookshelf-container {
+            max-width: 1200px; margin: 0 auto;
+            border-left: 20px solid #1a0f0a; border-right: 20px solid #1a0f0a; border-top: 15px solid #1a0f0a;
+            background: #1e140e; box-shadow: 0 0 100px rgba(0,0,0,0.95);
+            position: relative; padding-top: 30px; padding-bottom: 80px;
+        }
+
+        .shelf {
+            position: relative; background: inherit;
+            padding: 50px 20px 25px 20px;
+            border-bottom: 30px solid #281810; 
+            border-image: linear-gradient(to right, #1a0f0a, #4a3022, #1a0f0a) 1;
+            box-shadow: inset 0 20px 40px rgba(0,0,0,0.95), 0 15px 30px rgba(0,0,0,0.8);
+            display: flex; align-items: flex-end; justify-content: center;
+            flex-wrap: wrap; gap: 15px; perspective: 1000px; margin-bottom: 5px;
+        }
+        .shelf::after {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 40px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent);
+            pointer-events: none; z-index: 1;
+        }
+        
+        .plaque-text {
+            font-family: 'Cinzel', serif; color: var(--gold);
+            text-shadow: 0px 0px 5px rgba(255, 215, 0, 0.4), 2px 2px 0px rgba(0, 0, 0, 0.9);
+            letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700;
+        }
+        .shelf-plaque {
+            position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
+            background: linear-gradient(to bottom, #1a0f0a, #000);
+            padding: 6px 20px; border: 2px solid #5c4033; border-radius: 4px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.9); z-index: 20; pointer-events: none; white-space: nowrap;
+        }
+
+        /* --- Book Items --- */
+        .book-face {
+            width: 80px; height: 120px; position: relative;
+            transition: transform 0.3s; cursor: pointer;
+            transform-style: preserve-3d; transform-origin: center bottom;
+            background-size: cover; background-position: center;
+            border-radius: 2px 4px 4px 2px;
+            box-shadow: inset 3px 0 5px rgba(255,255,255,0.1), 5px 5px 15px rgba(0,0,0,0.7);
+            flex-shrink: 0; display: flex;
+        }
+        @media (min-width: 768px) { .book-face { width: 100px; height: 150px; } }
+        .book-face:hover { transform: scale(1.15) translateY(-10px) rotateX(5deg); z-index: 100; }
+        
+        .book-generated-cover {
+            flex-direction: column; align-items: center; justify-content: center;
+            padding: 5px; text-align: center; border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* --- Controls --- */
+        .control-panel { position: fixed; top: 15px; left: 15px; z-index: 5000; display: flex; align-items: center; gap: 10px; }
+        .glass-btn {
+            background: rgba(0, 0, 0, 0.85); border: 1px solid #c5a028; color: #ffd700;
+            width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; position: relative; z-index: 5002;
+        }
+        .search-container {
+            position: relative; height: 40px; display: flex; align-items: center;
+            background: rgba(0, 0, 0, 0.85); border: 1px solid #5c4033; border-radius: 22px;
+            padding: 0 5px; transition: all 0.3s; z-index: 5002;
+        }
+        .search-input {
+            width: 0; background: transparent; border: none; color: #ffd700;
+            padding: 0; transition: width 0.3s; opacity: 0; pointer-events: none;
+        }
+        .search-container.active .search-input { width: 180px; padding: 0 10px; opacity: 1; pointer-events: auto; }
+        .search-container.active { background: #1a0f0a; border-color: #ffd700; }
+        
+        #nav-dropdown {
+            position: absolute; top: 55px; left: 0; width: 200px;
+            background: #1a0f0a; border: 2px solid #c5a028; border-radius: 8px;
+            display: none; flex-direction: column; z-index: 5001;
+        }
+        .show-menu { display: flex !important; }
+        #nav-dropdown a { padding: 12px; color: #aaa; border-bottom: 1px solid #333; text-decoration: none; }
+        #nav-dropdown a:hover { background: #3d2817; color: #ffd700; }
+
+        #search-results {
+            position: absolute; top: 50px; left: 0; right: 0; background: #1a0f0a;
+            border: 1px solid #c5a028; border-radius: 8px; max-height: 60vh; overflow-y: auto;
+            display: none; z-index: 5003;
+        }
+        .search-item { padding: 10px; border-bottom: 1px solid #333; cursor: pointer; display: flex; gap: 10px; }
+        .search-item:hover { background: #3d2817; }
+
+        /* --- MAGAZINE / TURN.JS STYLES (Adapted from Travel.html) --- */
+        .reader-overlay {
+            position: fixed; inset: 0; z-index: 6000; background: rgba(0,0,0,0.95);
+            overflow: hidden;
+            display: none; /* Ensure this is the only and final display property for initial state */
+            place-items: center; /* This property is only effective with display: grid or flex, will be set in JS */
+        }
+        
+        #magazine {
+            /* Texture applied by Turn.js via pages or container */
+        }
+
+        /* Specific styles for turn.js pages to match scrapbook feel */
+        #magazine .page {
+            background-color: white;
+            background-image: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/937765/linedpaper.png);
+            border: solid 1px grey;
+            overflow: hidden;
+        }
+
+        #magazine .hard {
+            background-image: url('https://www.textures4photoshop.com/tex/thumbs/black-texture-background-high-res-thumb33.jpg') !important;
+            color: gold !important;
+            font-family: "Zilla Slab Highlight", cursive;
+            border: solid 1px #444;
+            box-shadow: inset 0 0 30px #000;
+            text-align: center;
+        }
+        
+        /* Content Styling inside Magazine */
+        .page-content-inner {
+            padding: 20px;
+            font-family: "Indie Flower", cursive;
+            font-size: 1.2rem;
+            color: #333;
+            height: 100%;
+            overflow-y: hidden;
+            max-width: 80%; /* Add this for better centering on larger screens */
+            margin: 0 auto; /* Add this to center the content block */
+        }
+        
+        .page-content-inner h1 { 
+            font-family: "Zilla Slab Highlight", cursive; 
+            font-size: 2.5rem; 
+            border-bottom: 1px solid #ccc; 
+            margin-bottom: 20px; 
+            text-align: center;
+            padding-top: 50px;
+        }
+        
+        .page-content-inner p { 
+            margin-bottom: 15px; 
+            line-height: 1.6; 
+            text-align: justify; /* Add this to justify text */
+        }
+
+        /* Ensure mobile text is left-aligned and full width */
+        .page-content-inner p { 
+            margin-bottom: 15px; 
+            line-height: 1.6; 
+            text-align: justify; /* Add this to justify text */
+        }
+
+        /* Mobile scrollable view specific styles */
+        .mobile-scroll-view {
+            /* These styles are applied via JS now directly to #magazine, 
+               but keeping this here as a reference or if JS changes */
+            /* width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            overflow-x: hidden;
+            background-color: white; 
+            background-image: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/937765/linedpaper.png);
+            border: solid 1px grey;
+            max-width: 600px; */
+            padding-bottom: 20px; /* Add some space at the bottom */
+            box-sizing: border-box;
+        }
+
+        .mobile-page, .mobile-hard-page {
+            width: 100%; /* Full width within scroll container */
+            min-height: fit-content; /* Ensure content is not cut off */
+            padding: 0 20px; /* Horizontal padding for content */
+            box-sizing: border-box;
+            margin-bottom: 20px; /* Space between "pages" */
+            border: none !important; /* Remove individual page borders */
+            background: none !important; /* Remove individual page backgrounds */
+        }
+        
+        .mobile-page-content-inner-h1 h1 {
+            padding-top: 20px; /* Adjust padding for mobile titles */
+        }
+
+        /* Ensure mobile text is left-aligned and full width */
+        .mobile-page-content-inner {
+            max-width: 100%;
+            margin: 0;
+            overflow-y: visible; /* Allow content to dictate height */
+            height: auto; /* Allow content to define height */
+            padding-top: 0; /* Reset padding-top from desktop h1 rule */
+        }
+
+        .mobile-page-content-inner p {
+            text-align: left; /* Default text alignment for mobile readability */
+        }
+
+        /* Ensure mobile text is left-aligned and full width */
+        .page-content-inner p { 
+            margin-bottom: 15px; 
+            line-height: 1.6; 
+            text-align: justify; /* Add this to justify text */
+        }
+
+        /* Mobile scrollable view specific styles */
+        .mobile-scroll-view {
+            padding-bottom: 20px; /* Add some space at the bottom */
+            box-sizing: border-box;
+        }
+
+        .mobile-page, .mobile-hard-page {
+            width: 100%; /* Full width within scroll container */
+            min-height: fit-content; /* Ensure content is not cut off */
+            padding: 0 20px; /* Horizontal padding for content */
+            box-sizing: border-box;
+            margin-bottom: 20px; /* Space between "pages" */
+            border: none !important; /* Remove individual page borders */
+            background: none !important; /* Remove individual page backgrounds */
+        }
+        
+        .mobile-page-content-inner-h1 h1 {
+            padding-top: 20px; /* Adjust padding for mobile titles */
+        }
+
+        /* Ensure mobile text is left-aligned and full width */
+        .mobile-page-content-inner {
+            max-width: 100%;
+            margin: 0;
+            overflow-y: visible; /* Allow content to dictate height */
+            height: auto; /* Allow content to define height */
+            padding-top: 0; /* Reset padding-top from desktop h1 rule */
+        }
+
+        .mobile-page-content-inner p {
+            text-align: left; /* Default text alignment for mobile readability */
+        }
+
+        /* Modal Background */
+        .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 9000; display: none; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+    </style>
+</head>
+<body>
+
+    <!-- CONTROLS -->
+    <div class="control-panel">
+        <button id="menu-btn" class="glass-btn"><i data-lucide="menu"></i></button>
+        <div class="search-container" id="search-wrapper">
+            <input type="text" id="search-bar" class="search-input focus:outline-none" placeholder="Search to Recommend..." autocomplete="off">
+            <button id="search-btn" class="glass-btn"><i data-lucide="search"></i></button>
+            <div id="search-results"></div>
+        </div>
+        <div id="nav-dropdown">
+            <a href="index.html">Home</a>
+            <a href="library.html" style="color: #ffd700;">Literature</a>
+            <a href="music.html">Music</a>
+            <a href="games.html">Games</a>
+        </div>
+    </div>
+
+    <!-- SHELVES -->
+    <main class="bookshelf-container mt-20">
+        <div class="text-center py-6 mb-8 relative">
+            <h1 class="text-4xl md:text-6xl font-bold text-[#d4af37] font-serif">The Archive</h1>
+            <div class="w-24 h-1 bg-[#d4af37] mx-auto mt-4 rounded-full opacity-70"></div>
+        </div>
+
+        <div class="shelf wood-texture" id="shelf-works">
+            <div class="shelf-plaque"><span class="plaque-text text-sm md:text-xl">My Works</span></div>
+        </div>
+
+        <div class="shelf wood-texture" id="shelf-read">
+            <div class="shelf-plaque"><span class="plaque-text text-sm md:text-lg">Read Collection</span></div>
+            <div id="loading-msg" class="w-full text-center text-gray-500 italic mt-10">Loading...</div>
+        </div>
+
+        <div class="shelf wood-texture" id="shelf-wishlist">
+            <div class="shelf-plaque"><span class="plaque-text text-sm md:text-lg">Wishlist</span></div>
+            <div id="no-wishlist-books" class="w-full text-center text-gray-500 italic mt-10 hidden">Wishlist is empty.</div>
+        </div>
+    </main>
+
+    <!-- DETAILS MODAL -->
+    <div id="details-modal" class="modal-bg">
+        <div class="relative bg-[#1e140e] border border-[#5c4033] rounded shadow-2xl w-[90%] max-w-2xl flex flex-col md:flex-row overflow-hidden max-h-[80vh]">
+            <button onclick="document.getElementById('details-modal').style.display='none'" class="absolute top-2 right-2 text-gray-400 hover:text-white z-20"><i data-lucide="x"></i></button>
+            <div class="w-full md:w-1/3 bg-[#120c09] flex items-center justify-center p-6">
+                <img id="modal-cover" class="shadow-xl rounded max-h-48 object-contain">
+            </div>
+            <div class="w-full md:w-2/3 p-6 flex flex-col bg-[#1e140e] text-[#e5e5e5]">
+                <h3 id="modal-title" class="text-2xl font-bold text-[#d4af37]"></h3>
+                <p id="modal-author" class="text-gray-400 text-sm italic mb-2"></p>
+                <div class="flex-grow overflow-y-auto pr-2 mb-4">
+                    <div id="modal-desc" class="text-sm font-light text-gray-300"></div>
+                </div>
+                <div id="modal-footer" class="mt-auto border-t border-[#3e2723] pt-4"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- INPUT MODAL -->
+    <div id="input-modal" class="modal-bg">
+        <div class="relative bg-[#1e140e] border border-[#5c4033] rounded shadow-2xl w-[90%] max-w-sm p-6 text-center">
+            <h3 id="input-modal-title" class="text-xl font-bold text-[#d4af37] mb-4"></h3>
+            <p id="input-modal-label" class="text-gray-400 text-sm mb-2"></p>
+            <input id="input-modal-field" type="text" class="w-full bg-[#120c09] border border-[#5c4033] rounded px-3 py-2 text-white focus:outline-none focus:border-[#d4af37] mb-6">
+            <div class="flex justify-end gap-4">
+                <button id="input-modal-cancel" class="flex-1 bg-gray-700 hover:bg-gray-600 text-white/80 py-2 px-4 rounded font-bold uppercase text-xs tracking-wider">Cancel</button>
+                <button id="input-modal-submit" class="flex-1 bg-[#3e2723] hover:bg-[#5c4033] text-[#ffd700] py-2 px-4 rounded font-bold uppercase text-xs tracking-wider">Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ALERT MODAL -->
+    <div id="alert-modal" class="modal-bg">
+        <div class="relative bg-[#1e140e] border border-[#5c4033] rounded shadow-2xl w-[90%] max-w-sm p-6 text-center">
+            <h3 id="alert-modal-title" class="text-xl font-bold text-[#d4af37] mb-2"></h3>
+            <p id="alert-modal-message" class="text-gray-300 text-sm mb-6"></p>
+            <button id="alert-modal-ok" class="bg-[#3e2723] hover:bg-[#5c4033] text-[#ffd700] py-2 px-8 rounded font-bold uppercase text-xs tracking-wider">OK</button>
+        </div>
+    </div>
+
+    <!-- TURN.JSREADER OVERLAY -->
+    <div id="reader-overlay" class="reader-overlay">
+        <button onclick="window.closeReader()" class="absolute top-5 right-5 text-white z-50 hover:text-red-500"><i data-lucide="x-circle" width="40" height="40"></i></button>
+        <div id="magazine">
+            <!-- Pages injected dynamically -->
+        </div>
+    </div>
+
+    <script>
+
+            lucide.createIcons();
+
+    
+
+            // --- DATA ---
+
+            const FALLBACK_BOOKS = ["The Great Gatsby", "Dune", "Sapiens", "Atomic Habits", "Project Hail Mary", "Clean Code"];
+
+            const BOOK_COLORS = ['#2a1b12', '#3e2723', '#4e342e', '#5d4037', '#1a237e', '#004d40', '#b71c1c'];
+
+            
+
+            let WORKS_CONTENT = {};
+
+            window.readTitles = new Set();
+
+            window.wishlistTitles = new Set();
+
+            
+
+            function normalizeTitle(t) { return t ? t.toLowerCase().split(':')[0].split('(')[0].trim() : ""; }
+
+    
+
+            // --- DATA Loading ---
+
+            document.addEventListener('DOMContentLoaded', () => {
+
+                loadLibrary();
+
+                loadMyWorks();
+
+                loadWishlist();
+
+            });
+
+    
+
+            // --- UI ---
+
+            document.getElementById('menu-btn').onclick = (e) => { e.stopPropagation(); document.getElementById('nav-dropdown').classList.toggle('show-menu'); };
+
+            document.onclick = () => document.getElementById('nav-dropdown').classList.remove('show-menu');
+
+    
+
+            const searchWrapper = document.getElementById('search-wrapper');
+
+            const searchResults = document.getElementById('search-results');
+
+            const searchInput = document.getElementById('search-bar');
+
+    
+
+            document.getElementById('search-btn').onclick = (e) => { 
+
+                e.stopPropagation(); 
+
+                searchWrapper.classList.toggle('active'); 
+
+                if(!searchWrapper.classList.contains('active')) searchResults.style.display='none'; 
+
+                else searchInput.focus(); 
+
+            };
+
+    
+
+            let debounce;
+
+            searchInput.oninput = (e) => {
+
+                clearTimeout(debounce);
+
+                const q = e.target.value;
+
+                if(q.length < 3) { searchResults.style.display='none'; return; }
+
+                debounce = setTimeout(async () => {
+
+                    searchResults.style.display='block';
+
+                    searchResults.innerHTML = '<div class="p-2 text-gray-500 text-sm">Searching...</div>';
+
+                    try {
+
+                        const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(q)}&maxResults=5`);
+
+                        const data = await res.json();
+
+                        searchResults.innerHTML = '';
+
+                        if(data.items) {
+
+                            data.items.forEach(item => {
+
+                                const div = document.createElement('div');
+
+                                div.className = 'search-item';
+
+                                const thumb = item.volumeInfo.imageLinks?.smallThumbnail || item.volumeInfo.imageLinks?.thumbnail || 'https://via.placeholder.com/35x50?text=No+Img';
+
+                                div.innerHTML = `<img src="${thumb}" class="w-8 h-12 object-cover rounded"><div class="text-xs text-gray-300 font-bold">${item.volumeInfo.title}</div>`;
+
+                                const bookInfo = item.volumeInfo;
+
+                                div.onclick = () => showRecommendPreview(bookInfo);
+
+                                searchResults.appendChild(div);
+
+                            });
+
+                        } else searchResults.innerHTML = '<div class="p-2 text-gray-500 text-sm">No results.</div>';
+
+                    } catch(e) { console.error(e); }
+
+                }, 400);
+
+            };
+
+    
+
+            // --- MODAL & LOGIC ---
+
+            let activeInputResolver = null;
+
+            function showInputModal({ title, label, inputType = 'text', submitText = 'Submit' }) {
+
+                return new Promise((resolve) => {
+
+                    activeInputResolver = resolve;
+
+                    const modal = document.getElementById('input-modal');
+
+                    document.getElementById('input-modal-title').textContent = title;
+
+                    document.getElementById('input-modal-label').textContent = label;
+
+                    const inputField = document.getElementById('input-modal-field');
+
+                    inputField.type = inputType;
+
+                    inputField.value = '';
+
+                    document.getElementById('input-modal-submit').textContent = submitText;
+
+                    modal.style.display = 'flex';
+
+                    inputField.focus();
+
+                });
+
+            }
+
+            document.getElementById('input-modal-submit').onclick = () => {
+
+                const value = document.getElementById('input-modal-field').value;
+
+                if (activeInputResolver) activeInputResolver(value);
+
+                document.getElementById('input-modal').style.display = 'none';
+
+                activeInputResolver = null;
+
+            };
+
+            document.getElementById('input-modal-cancel').onclick = () => {
+
+                if (activeInputResolver) activeInputResolver(null);
+
+                document.getElementById('input-modal').style.display = 'none';
+
+                activeInputResolver = null;
+
+            };
+
+    
+
+            let activeAlertResolver = null;
+
+            function showAlert(title, message) {
+
+                return new Promise((resolve) => {
+
+                    activeAlertResolver = resolve;
+
+                    const modal = document.getElementById('alert-modal');
+
+                    document.getElementById('alert-modal-title').textContent = title;
+
+                    document.getElementById('alert-modal-message').textContent = message;
+
+                    modal.style.display = 'flex';
+
+                });
+
+            }
+
+            document.getElementById('alert-modal-ok').onclick = () => {
+
+                if (activeAlertResolver) activeAlertResolver();
+
+                document.getElementById('alert-modal').style.display = 'none';
+
+                activeAlertResolver = null;
+
+            };
+
+            
+
+            function showRecommendPreview(info) {
+
+                searchWrapper.classList.remove('active'); 
+
+                searchResults.style.display='none';
+
+                
+
+                const modal = document.getElementById('details-modal');
+
+                const footer = document.getElementById('modal-footer');
+
+                populateModal(info);
+
+                footer.innerHTML = '';
+
+    
+
+                const normTitle = normalizeTitle(info.title);
+
+                
+
+                if(window.readTitles.has(normTitle)) {
+
+                    const msg = document.createElement('div');
+
+                    msg.className = "w-full text-center text-[#d4af37] font-bold py-3 border border-[#d4af37]/30 rounded";
+
+                    msg.textContent = "You have already read this book.";
+
+                    footer.appendChild(msg);
+
+                } else if (window.wishlistTitles.has(normTitle)) {
+
+                    const msg = document.createElement('div');
+
+                    msg.className = "w-full text-center text-gray-400 font-bold py-3 border border-gray-600 rounded";
+
+                    msg.textContent = "Already in Wishlist.";
+
+                    footer.appendChild(msg);
+
+                } else {
+
+                    const btn = document.createElement('button');
+
+                    btn.className = "w-full bg-[#3e2723] hover:bg-[#5c4033] text-[#ffd700] py-3 rounded font-bold uppercase tracking-widest text-sm transition-colors border border-[#5c4033]";
+
+                    btn.textContent = "Recommend This Book";
+
+                    btn.onclick = () => processRecommendation(info);
+
+                    footer.appendChild(btn);
+
+                }
+
+                modal.style.display = 'flex';
+
+            }
+
+    
+
+            async function processRecommendation(info) {
+    const name = await showInputModal({
+        title: "Recommend Book",
+        label: "Enter your name (optional)",
+        submitText: "Submit"
+    });
+
+    if (name === null) return;
+    const recommender = name.trim() === "" ? "Anonymous" : name;
+
+    try {
+        const response = await fetch('http://localhost:3000/api/recommendations', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                title: info.title || "Unknown Title",
+                authors: info.authors || ['Unknown'],
+                description: info.description || '',
+                imageLinks: info.imageLinks || {},
+                recommendedBy: recommender,
+                status: 'wishlist'
+            })
+        });
+
+        if (response.status === 409) {
+            const errorData = await response.json();
+            await showAlert("Duplicate", errorData.message || "This book is already in the wishlist.");
+            return; // Stop further execution
+        }
+
+        if (!response.ok) {
+            throw new Error('Server responded with an error.');
+        }
+
+        await showAlert("Success", "Recommendation Sent! Thank you.");
+        document.getElementById('details-modal').style.display = 'none';
+        document.getElementById('search-bar').value = '';
+        loadWishlist(); // Refresh wishlist
+    } catch (e) {
+        console.error(e);
+        await showAlert("Error", "Failed to send recommendation.");
+    }
+}
+
+    
+
+            async function openDetailsModal(book, type, docId, recBy) {
+
+                const modal = document.getElementById('details-modal');
+
+                const footer = document.getElementById('modal-footer');
+
+                populateModal(book);
+
+                footer.innerHTML = '';
+
+    
+
+                if(recBy) document.getElementById('modal-desc').insertAdjacentHTML('afterbegin', `<p class="text-[#ffd700] text-xs italic mb-2">Rec by: ${recBy}</p>`);
+
+    
+
+                if(type === 'wishlist') {
+
+                    const label = document.createElement('label');
+
+                    label.className = "flex items-center space-x-3 cursor-pointer group p-2 hover:bg-[#2c1b12] rounded transition select-none";
+
+                    label.innerHTML = `<input type="checkbox" class="accent-[#d4af37] w-5 h-5 cursor-pointer"><span class="text-sm font-bold text-gray-400">I HAVE READ THIS</span>`;
+
+                    
+
+                    const checkbox = label.querySelector('input');
+
+                    
+
+                    checkbox.onclick = async (e) => {
+
+                        e.preventDefault(); 
+
+                        const pwd = await showInputModal({
+
+                            title: "Admin Access",
+
+                            label: "Enter password to move book",
+
+                            inputType: "password",
+
+                            submitText: "Confirm"
+
+                        });
+
+    
+
+                        if(pwd === "admin123") {
+
+                            checkbox.checked = true;
+
+                            try {
+
+                                // 1. Add to read collection
+
+                                const addResponse = await fetch('http://localhost:3000/api/books', {
+
+                                    method: 'POST',
+
+                                    headers: { 'Content-Type': 'application/json' },
+
+                                    body: JSON.stringify({
+
+                                        title: book.title,
+
+                                        authors: book.authors.join(', '),
+
+                                        description: book.description,
+
+                                        thumbnail: book.imageLinks?.thumbnail
+
+                                    })
+
+                                });
+
+                                if (!addResponse.ok) throw new Error('Failed to add book to read collection.');
+
+    
+
+                                // 2. Remove from wishlist
+
+                                const deleteResponse = await fetch(`http://localhost:3000/api/wishlist/${docId}`, {
+
+                                    method: 'DELETE'
+
+                                });
+
+                                if (!deleteResponse.ok) throw new Error('Failed to remove book from wishlist.');
+
+    
+
+                                await showAlert("Success", "Moved to Read Collection!");
+
+                                document.getElementById('details-modal').style.display = 'none';
+
+                                
+
+                                // 3. Refresh both shelves
+
+                                loadLibrary();
+
+                                loadWishlist();
+
+    
+
+                            } catch(err) {
+
+                                await showAlert("Update Failed", err.message);
+
+                            }
+
+                        } else if(pwd !== null) {
+
+                            await showAlert("Error", "Incorrect Password.");
+
+                            checkbox.checked = false;
+
+                        }
+
+                    };
+
+                    footer.appendChild(label);
+
+                }
+
+                modal.style.display = 'flex';
+
+            }
+
+    
+
+            function populateModal(info) {
+
+                document.getElementById('modal-title').textContent = info.title || "Untitled";
+
+                document.getElementById('modal-author').textContent = info.authors?.join(', ')||'Unknown Author';
+
+                document.getElementById('modal-desc').innerHTML = info.description || 'No description available.';
+
+                document.getElementById('modal-cover').src = info.imageLinks?.thumbnail || `https://via.placeholder.com/150x220?text=${encodeURIComponent(info.title || 'Book')}`;
+
+            }
+
+    
+
+            // --- LIBRARY LOGIC ---
+
+            function loadMyWorks() {
+
+                const shelf = document.getElementById('shelf-works');
+
+                Array.from(shelf.children).forEach(c => { 
+
+                    if(!c.classList.contains('shelf-plaque')) c.remove(); 
+
+                });
+
+                WORKS_CONTENT = {};
+
+    
+
+                function chunkTextByParagraph(text, maxChars) {
+
+                    const pages = [];
+
+                    const paragraphs = text.split('\n').map(p => `<p>${p.trim()}</p>`);
+
+                    let currentPageHTML = '';
+
+                    for (const p of paragraphs) {
+
+                        if (p.length <= 7) continue;
+
+                        if ((currentPageHTML.length + p.length) > maxChars && currentPageHTML.length > 0) {
+
+                            pages.push(currentPageHTML);
+
+                            currentPageHTML = '';
+
+                        }
+
+                        currentPageHTML += p;
+
+                    }
+
+                    if (currentPageHTML.length > 0) pages.push(currentPageHTML);
+
+                    return pages;
+
+                }
+
+    
+
+                fetch('http://localhost:3000/api/works')
+
+                    .then(response => response.json())
+
+                    .then(works => {
+
+                        works.forEach(work => {
+
+                            if (work.title && work.text) {
+
+                                const key = normalizeTitle(work.title);
+
+                                const CHARS_PER_PAGE = 750;
+
+                                const htmlPages = chunkTextByParagraph(work.text, CHARS_PER_PAGE);
+
+    
+
+                                WORKS_CONTENT[key] = {
+
+                                    title: work.title,
+
+                                    pages: [`<h1>${work.title}</h1>`, ...htmlPages]
+
+                                };
+
+    
+
+                                const el = createBookEl({ title: work.title, authors: ['My Work'], imageLinks: { thumbnail: null } }, shelf, 'work');
+
+                                el.onclick = () => window.openMagazine(work.title, key);
+
+                            }
+
+                        });
+
+                        console.log("Fetched and processed My Works from API.");
+
+                    })
+
+                    .catch(error => {
+
+                        console.error("Error fetching My Works:", error);
+
+                    });
+
+            }
+
+            
+
+            async function loadLibrary() {
+
+                // Clear existing books from the shelf first
+
+                const shelf = document.getElementById('shelf-read');
+
+                Array.from(shelf.children).forEach(c => { 
+
+                    if(!c.classList.contains('shelf-plaque') && c.id !== 'loading-msg') c.remove(); 
+
+                });
+
+                document.getElementById('loading-msg').style.display = 'none';
+
+    
+
+                try {
+
+                    const response = await fetch('http://localhost:3000/api/books');
+
+                    if (!response.ok) throw new Error('Network response was not ok');
+
+                    const books = await response.json();
+
+                    
+
+                    window.readTitles.clear();
+
+                    books.forEach(book => {
+
+                        if (book.title) {
+
+                            const bookData = {
+
+                                title: book.title,
+
+                                authors: book.authors ? [book.authors] : [],
+
+                                description: book.description || 'No description available.',
+
+                                imageLinks: { thumbnail: book.thumbnail }
+
+                            };
+
+                            
+
+                            window.readTitles.add(normalizeTitle(bookData.title));
+
+                            const el = createBookEl(bookData, shelf, 'read');
+
+                            updateBookEl(el, bookData);
+
+                        }
+
+                    });
+
+                    console.log("Fetched and processed Read Collection from API.");
+
+                } catch (error) {
+
+                    console.error("Error fetching Read Collection:", error);
+
+                    shelf.insertAdjacentHTML('beforeend', '<div class="w-full text-center text-red-400 italic mt-10 p-4">Could not load Read Collection from API. Using fallback books.</div>');
+
+                    for(let t of FALLBACK_BOOKS) {
+
+                        window.readTitles.add(normalizeTitle(t));
+
+                        const el = createBookEl({title:t, authors:['...']}, shelf, 'read');
+
+                        fetch(`https://www.googleapis.com/books/v1/volumes?q=intitle:${encodeURIComponent(t)}&maxResults=1`)
+
+                            .then(r=>r.json()).then(d=>{ if(d.items) updateBookEl(el, d.items[0].volumeInfo); });
+
+                    }
+
+                }
+
+            }
+
+    
+
+            async function loadWishlist() {
+
+                try {
+
+                    const response = await fetch('http://localhost:3000/api/wishlist');
+
+                    if (!response.ok) throw new Error('Network response was not ok');
+
+                    const books = await response.json();
+
+    
+
+                    const shelf = document.getElementById('shelf-wishlist');
+
+                    Array.from(shelf.children).forEach(c => { 
+
+                        if(!c.classList.contains('shelf-plaque') && c.id !== 'no-wishlist-books') c.remove(); 
+
+                    });
+
+                    
+
+                    window.wishlistTitles.clear();
+
+                    document.getElementById('no-wishlist-books').classList.toggle('hidden', books.length > 0);
+
+    
+
+                    books.forEach(book => {
+
+                        const bookData = {
+
+                            title: book.title,
+
+                            authors: book.authors || [],
+
+                            description: book.description || 'No description available.',
+
+                            imageLinks: book.imageLinks || {},
+
+                            recommendedBy: book.recommendedBy,
+
+                            _id: book._id // Assuming the server sends back the MongoDB document ID
+
+                        };
+
+                        window.wishlistTitles.add(normalizeTitle(bookData.title));
+
+                        const el = createBookEl(bookData, shelf, 'wishlist');
+
+                        applyBookAppearance(el, bookData);
+
+                        // Pass the document ID to the details modal
+
+                        el.onclick = () => openDetailsModal(bookData, 'wishlist', bookData._id, bookData.recommendedBy);
+
+                    });
+
+                    console.log("Fetched and processed Wishlist from API.");
+
+                } catch (error) {
+
+                    console.error("Error fetching Wishlist:", error);
+
+                    document.getElementById('shelf-wishlist').insertAdjacentHTML('beforeend', '<div class="w-full text-center text-red-400 italic mt-10 p-4">Could not load Wishlist from API.</div>');
+
+                }
+
+            }
+
+    
+
+            function createBookEl(book, container, type) {
+
+                const el = document.createElement('div');
+
+                el.className = 'book-face book-generated-cover';
+
+                el.style.backgroundColor = BOOK_COLORS[Math.floor(Math.random()*BOOK_COLORS.length)];
+
+                el.style.borderLeft = "4px solid rgba(0,0,0,0.3)";
+
+                el.innerHTML = `<div class="flex flex-col h-full w-full justify-between py-2 px-1"><span class="text-[8px] uppercase text-white/50 text-center border-b border-white/20 pb-1">${type}</span><div class="text-[10px] md:text-xs font-bold text-center leading-tight line-clamp-3 text-[#f3f3f3] font-serif">${book.title}</div><div class="text-[8px] text-center text-white/50 truncate">${book.authors?.[0]||''}</div></div>`;
+
+                if(type !== 'wishlist' && type !== 'work') el.onclick = () => openDetailsModal(book, type);
+
+                container.appendChild(el);
+
+                return el;
+
+            }
+
+    
+
+            function applyBookAppearance(el, info) {
+
+                if(info.imageLinks?.thumbnail) {
+
+                    el.classList.remove('book-generated-cover'); el.style.backgroundImage = `url('${info.imageLinks.thumbnail}')`; el.innerHTML = '<div class="absolute left-0 top-0 bottom-0 w-1 bg-white/10"></div>';
+
+                } else {
+
+                    el.querySelector('div div:nth-child(2)').textContent = info.title; 
+
+                    el.querySelector('div div:nth-child(3)').textContent = info.authors?.[0] || '';
+
+                }
+
+            }
+
+    
+
+            function updateBookEl(el, info) {
+
+                applyBookAppearance(el, info);
+
+                el.onclick = () => openDetailsModal(info, 'read');
+
+            }
+
+    
+
+            // --- TURN.JS MAGAZINE (Global Scope) ---
+
+            window.openMagazine = function(t, k) {
+
+                const d = WORKS_CONTENT[k]; if(!d) return;
+
+                const readerOverlay = document.getElementById('reader-overlay');
+
+                
+
+                // Determine if in mobile view
+
+                const isMobile = $(window).width() < 768;
+
+    
+
+                // Set overlay display and centering properties based on mode
+
+                if (isMobile) {
+
+                    readerOverlay.style.display = 'flex'; // Use flex for mobile scrolling layout
+
+                    readerOverlay.style.alignItems = 'flex-start'; // Align content to start for scrolling
+
+                    readerOverlay.style.justifyContent = 'center'; // Center horizontally
+
+                    readerOverlay.style.placeItems = ''; // Clear placeItems
+
+                } else {
+
+                    readerOverlay.style.display = 'grid'; // Use grid for desktop centering
+
+                    readerOverlay.style.placeItems = 'center'; // Center both vertically and horizontally
+
+                    readerOverlay.style.alignItems = ''; // Clear alignItems
+
+                    readerOverlay.style.justifyContent = ''; // Clear justifyContent
+
+                }
+
+    
+
+                const mag = $('#magazine');
+
+                
+
+                if(mag.turn('is')) mag.turn('destroy'); // Destroy existing turn.js instance if any
+
+                mag.html(''); // Clear previous content
+
+    
+
+                if (isMobile) {
+
+                    // Mobile view: single scrollable page
+
+                    // Append all content directly into #magazine
+
+                    mag.addClass('mobile-scroll-view'); // Add class for mobile styling
+
+                    mag.css({
+
+                        'width': '100%',
+
+                        'height': '100%',
+
+                        'overflow-y': 'auto',
+
+                        'overflow-x': 'hidden',
+
+                        'position': 'static', // Override absolute positioning
+
+                        'transform': 'none',   // Override transform
+
+                        'max-width': '600px', // Limit width for readability
+
+                        'background-color': 'white', 
+
+                        'background-image': 'url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/937765/linedpaper.png)',
+
+                        'border': 'solid 1px grey'
+
+                    });
+
+    
+
+                    mag.append(`<div class="hard mobile-hard-page"><div class="page-content-inner mobile-page-content-inner-h1"><h1>${d.title}</h1></div></div>`);
+
+                    d.pages.forEach(html => {
+
+                        mag.append(`<div class="page mobile-page"><div class="page-content-inner mobile-page-content-inner">${html}</div></div>`);
+
+                    });
+
+                    
+
+                } else {
+
+                    // Desktop view: Turn.js magazine
+
+                    mag.removeClass('mobile-scroll-view'); // Remove mobile class
+
+                    // Ensure default styles for #magazine are applied (or not overridden)
+
+                    mag.css({
+
+                        'position': '', // Reset to default or initial style
+
+                        'transform': '',
+
+                        'width': '',
+
+                        'height': '',
+
+                        'overflow-y': '',
+
+                        'overflow-x': '',
+
+                        'max-width': '',
+
+                        'background-color': '',
+
+                        'background-image': '',
+
+                        'border': ''
+
+                    });
+
+    
+
+                    mag.append(`<div class="hard"><div class="page-content-inner" style="display:flex; justify-content:center; align-items:center; text-align:center;"><h1>${d.title}</h1></div></div>`);
+
+                    mag.append(`<div class="hard"></div>`);
+
+    
+
+                    d.pages.forEach(html => {
+
+                        mag.append(`<div class="page"><div class="page-content-inner">${html}</div></div>`);
+
+                    });
+
+    
+
+                    mag.append(`<div class="hard"></div>`);
+
+                    mag.append(`<div class="hard"></div>`);
+
+    
+
+                    let w = Math.min($(window).width() * 0.9, 1000);
+
+                    let h = Math.min($(window).height() * 0.8, 600);
+
+                    const displayMode = $(window).width() < 768 ? 'single' : 'double'; 
+
+    
+
+                    mag.turn({
+
+                        width: w, height: h,
+
+                        display: displayMode, // This will typically be 'double' on desktop
+
+                        autoCenter: true,
+
+                        gradients: true,
+
+                        acceleration: true,
+
+                        turnCorners: "tl,tr"
+
+                    });
+
+    
+
+                    mag.bind("turned", function(event, page, view) {
+
+                        if (page >= mag.turn('pages')) {
+
+                            setTimeout(function() {
+
+                                window.closeReader();
+
+                            }, 0); 
+
+                        }
+
+                    });
+
+                }
+
+                // Update the size on window resize for both modes if necessary
+
+                $(window).resize(function() {
+
+                    if(!isMobile && mag.turn('is')) { // Only resize turn.js if it's active and not mobile
+
+                        let w = Math.min($(window).width() * 0.9, 1000);
+
+                        let h = Math.min($(window).height() * 0.8, 600);
+
+                        mag.turn('size', w, h);
+
+                    } else if (isMobile) {
+
+                        // For mobile, ensure max-width adjusts if window width changes
+
+                        mag.css('max-width', Math.min($(window).width() * 0.9, 600) + 'px');
+
+                    }
+
+                });
+
+            };
+
+    
+
+            window.closeReader = function() {
+
+                const mag = $('#magazine');
+
+                if (mag.turn('is')) {
+
+                    mag.turn('destroy');
+
+                }
+
+                // Reset #magazine classes and inline styles
+
+                mag.removeClass('mobile-scroll-view');
+
+                mag.css({
+
+                    'width': '',
+
+                    'height': '',
+
+                    'overflow-y': '',
+
+                    'overflow-x': '',
+
+                    'position': '',
+
+                    'transform': '',
+
+                    'max-width': '',
+
+                    'background-color': '',
+
+                    'background-image': '',
+
+                    'border': ''
+
+                });
+
+                const readerOverlay = document.getElementById('reader-overlay');
+
+                readerOverlay.style.display = 'none'; // Ensure it's hidden
+
+                readerOverlay.style.alignItems = ''; // Reset
+
+                readerOverlay.style.justifyContent = ''; // Reset
+
+                readerOverlay.style.placeItems = ''; // Reset
+
+            };
+
+            
+
+            $(window).resize(function() {
+
+                if($('#magazine').turn('is')) {
+
+                    let w = Math.min($(window).width() * 0.9, 1000);
+
+                    let h = Math.min($(window).height() * 0.8, 600);
+
+                    $('#magazine').turn('size', w, h);
+
+                }
+
+            });
+
+    
+
+        </script>

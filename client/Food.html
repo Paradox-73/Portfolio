@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Kanav' Kitchen</title>
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300i|McLaren|Syncopate:400,700&display=swap" rel="stylesheet"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
+<link rel="stylesheet" href="CSS/foodstyle.css"><link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css'>
+<link rel="icon" type="image/x-icon" href="assets/profile.jpg">
+</head>
+<body>
+  <div id="player" style="display: block; width: 300px; height: 200px;"></div>
+  <button id="music-toggle" class="music-toggle">
+    <i class="fa-solid fa-music"></i>
+  </button>
+  <div id="youtube-audio-player" style="display: none;"></div>
+  <audio id="hover-sound" src="assets/button1.mp3" preload="auto"></audio>
+  <audio id="active-sound" src="assets/button2.mp3" preload="auto"></audio>
+<header>
+  
+  <div class="name"><span>F</span><span>O</span><span>O</span><span>D</span><span>I</span><span>E</span>
+  </div>
+  <div class="opening-hours">When do I cook? <br>Mom's the boss! But I mostly cook for dinner, desserts or on weekends.</div>
+  <div class="location">
+    <p>Welcome to My humble kitchen Menu</p>
+    <p>Don't call me, i only cook for myself</p>
+  </div>
+</header>
+<main>
+  <div class="legend">
+    <div class="legend__item"><i>N</i><span>Nuts</span></div>
+    <div class="legend__item"><i>E</i><span>Eggs</span></div>
+    <div class="legend__item"><i>W</i><span>Wheat</span></div>
+    <div class="legend__item"><i>D</i><span>Dairy</span></div>
+    <div class="legend__item"><i>S</i><span>Seafood</span></div>
+  </div>
+  <div class="menu">
+    <div class="mains">
+      <h3>Suspicious But Delicious</h3>
+      <div class="item">
+        <div class="item__image"><img src="https://static.vecteezy.com/system/resources/previews/032/325/154/original/lasagna-on-a-plate-isolated-on-transparent-background-file-cut-out-ai-generated-png.png"/></div>
+        <div class="item__desc">
+          <div class="item__name">The Leaning Tower of Cheesiness</div>
+          <div class="item__description">Sheet, sauce, meat, cheese repeat.</div>
+          <div class="rating" data-rating="4">
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+          </div>
+          <button class="recipe-button"><i class="fa-solid fa-book-open"></i></button>
+      
+          <div class="item__allergens"><span class="allergen wheat">W</span><span class="allergen dairy">D</span>
+          </div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item__image"><img src="https://static.vecteezy.com/system/resources/previews/023/858/490/original/tasty-grilled-chicken-breast-fillet-isolated-on-transparent-background-png.png"/></div>
+        <div class="item__desc">
+          <div class="item__name">Stakeout</div>
+          <div class="item__description">Grilled chicken with garlic bread</div>
+          <div class="rating" data-rating="5">
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+          </div><button class="recipe-button"><i class="fa-solid fa-book-open"></i></button>
+          <div class="item__allergens"><span class="allergen wheat">W</span>
+          </div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item__image"><img src="https://static.vecteezy.com/system/resources/previews/025/222/206/original/shawarma-sandwich-isolated-on-transparent-background-png.png"/></div>
+        <div class="item__desc">
+          <div class="item__name">Nakey Bakey</div>
+          <div class="item__description">Fluffy omelet hugging juicy chicken</div>
+          <div class="rating" data-rating="5">
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+          </div><button class="recipe-button"><i class="fa-solid fa-book-open"></i></button>
+          <div class="item__allergens"><span class="allergen eggs">E</span><span class="allergen wheat">W</span><span class="allergen dairy">D</span>
+          </div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item__image"><img src="https://static.vecteezy.com/system/resources/previews/029/284/526/original/grilled-fish-with-lemon-png.png"/></div>
+        <div class="item__desc">
+          <div class="item__name">Zesty Nemo</div>
+          <div class="item__description">Lemon, butter, fish, spices</div>
+          <div class="rating" data-rating="4">
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+          </div><button class="recipe-button"><i class="fa-solid fa-book-open"></i></button>
+          <div class="item__allergens"><span class="allergen wheat">W</span><span class="allergen dairy">D</span><span class="allergen sea">S</span>
+          </div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item__image"><img src="https://static.vecteezy.com/system/resources/previews/025/066/797/original/ramen-with-ai-generated-free-png.png"/></div>
+        <div class="item__desc">
+          <div class="item__name">Ramen</div>
+          <div class="item__description">Broke College Student's Symphony of Noodles</div>
+          <div class="rating" data-rating="3">
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+          </div><button class="recipe-button"><i class="fa-solid fa-book-open"></i></button>
+          <div class="item__allergens"><span class="allergen wheat">W</span><span class="allergen dairy">D</span><span class="allergen sea">S</span>
+          </div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item__image"><img src="https://static.vecteezy.com/system/resources/thumbnails/025/076/438/small/pizza-isolated-illustration-ai-generative-png.png"/></div>
+        <div class="item__desc">
+          <div class="item__name">Pizza</div>
+          <div class="item__description">Do you need a desc?</div>
+          <div class="rating" data-rating="4">
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+          </div><button class="recipe-button"><i class="fa-solid fa-book-open"></i></button>
+          <div class="item__allergens"><span class="allergen wheat">W</span>
+          </div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item__image"><img src="https://static.vecteezy.com/system/resources/previews/025/222/176/original/pancakes-isolated-on-transparent-background-png.png"/></div>
+        <div class="item__desc">
+          <div class="item__name">Happy Stack</div>
+          <div class="item__description">A fluffy pile of joy to brighten the day</div>
+          <div class="rating" data-rating="4">
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+          </div><button class="recipe-button"><i class="fa-solid fa-book-open"></i></button>
+          <div class="item__allergens"><span class="allergen wheat">W</span><span class="allergen dairy">D</span>
+          </div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item__image"><img src="assets/sw.png"/></div>
+        <div class="item__desc">
+          <div class="item__name">The Meatsquatch</div>
+          <div class="item__description">A legendary sandwich overflowing with every meat, spice, sauce, and topping imaginable</div>
+          <div class="rating" data-rating="5">
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+          </div><button class="recipe-button"><i class="fa-solid fa-book-open"></i></button>
+          <div class="item__allergens"><span class="allergen wheat">W</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="sides">
+      <h3>Frozen Gourmet</h3>
+      <div class="item">
+        <div class="item__desc">
+          <div class="item__name">Fry-Day the 13th</div>
+          <div class="item__description">A wild mix of fries, cheese, sauce, and questionable toppings</div>
+          <div class="rating" data-rating="4">
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+          </div><button class="recipe-button"><i class="fa-solid fa-book-open"></i></button>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item__desc">
+          <div class="item__name">Chick Nuggies</div>
+          <div class="item__description">I'm just a baby</div>
+          <div class="rating" data-rating="5">
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+          </div><button class="recipe-button"><i class="fa-solid fa-book-open"></i></button>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item__desc">
+          <div class="item__name">Sir Kebab-alot</div>
+          <div class="item__description">Sautéed kebab with caramelized onions</div>
+          <div class="rating" data-rating="5">
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+          </div><button class="recipe-button"><i class="fa-solid fa-book-open"></i></button>
+        </div>
+      </div>
+    </div>
+    <div class="tarts">
+      <h3>Sugar Crash</h3>
+      <div class="item">
+        <div class="item__image"><img src="https://static.vecteezy.com/system/resources/previews/027/522/308/original/chocolate-cake-happy-birthday-chocolate-cake-ai-generative-free-png.png"/></div>
+        <div class="item__desc">
+          <div class="item__name">Death By Chocolate</div>
+          <div class="item__description">You'll stuff your face in byyourself</div>
+          <div class="rating" data-rating="5">
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+          </div><button class="recipe-button"><i class="fa-solid fa-book-open"></i></button>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item__image"><img src="https://static.vecteezy.com/system/resources/thumbnails/010/834/011/small_2x/chocolate-cookies-isolated-on-white-background-full-depth-of-field-png.png"/></div>
+        <div class="item__desc">
+          <div class="item__name">Chunky Dunky</div>
+          <div class="item__description">Chewy cookies loaded with chocolate chips</div>
+          <div class="rating" data-rating="5">
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+          </div><button class="recipe-button"><i class="fa-solid fa-book-open"></i></button>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item__image"><img src="assets/cookies.png"/></div>
+        <div class="item__desc">
+          <div class="item__name">Triple Decker Bus</div>
+          <div class="item__description">Rich brownies studded with Oreo cookies and layered up with ice cream</div>
+          <div class="rating" data-rating="5">
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+          </div><button class="recipe-button"><i class="fa-solid fa-book-open"></i></button>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item__image"><img src="https://static.vecteezy.com/system/resources/previews/027/308/960/non_2x/brownie-with-ai-generated-free-png.png"/></div>
+        <div class="item__desc">
+          <div class="item__name">Fudgy Fugitive</div>
+          <div class="item__description">Dense, fudgy brownies that are practically begging to be stolen and devoured in secret</div>
+          <div class="rating" data-rating="5">
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+          </div><button class="recipe-button"><i class="fa-solid fa-book-open"></i></button>
+        </div>
+      </div>
+    </div>
+    <div class="latte">
+      <h3>Udderly Delicious</h3>
+      <div class="item">
+        <div class="item__image"><img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/567707/cof-chai.png"/></div>
+        <div class="item__desc">
+          <div class="item__name">Whey to Go Protein Shake</div>
+          <div class="item__description">for the after gym cravings</div>
+          <div class="rating" data-rating="5">
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+          </div><br><button class="recipe-button"><i class="fa-solid fa-book-open"></i></button>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item__image"><img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/567707/cof-hojicha.png"/></div>
+        <div class="item__desc">
+          <div class="item__name">Chocoholic's Dream Shake</div>
+          <div class="item__description">just add anything starting with cocoa</div>
+          <div class="rating" data-rating="5">
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+          </div><br><button class="recipe-button"><i class="fa-solid fa-book-open"></i></button>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item__image"><img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/567707/cof-turmeric.png"/></div>
+        <div class="item__desc">
+          <div class="item__name">Gone Bananas Shake</div>
+          <div class="item__description">Mom when bananas are left over</div>
+          <div class="rating" data-rating="2">
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+          </div><br><button class="recipe-button"><i class="fa-solid fa-book-open"></i></button>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item__image"><img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/567707/cof-chai.png"/></div>
+        <div class="item__desc">
+          <div class="item__name">Java Jolt Coffee Shake</div>
+          <div class="item__description">Don't talk to me till I've had this</div>
+          <div class="rating" data-rating="5">
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+          </div><br><button class="recipe-button"><i class="fa-solid fa-book-open"></i></button>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item__image"><img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/567707/cof-turmeric.png"/></div>
+        <div class="item__desc">
+          <div class="item__name">Mango Tango Shake</div>
+          <div class="item__description">Summertime happiness</div>
+          <div class="rating" data-rating="3">
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+          </div><br><button class="recipe-button"><i class="fa-solid fa-book-open"></i></button>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item__image"><img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/567707/cof-hojicha.png"/></div>
+        <div class="item__desc">
+          <div class="item__name">Cake Shake</div>
+          <div class="item__description">After eating cake, drinking it is the next logical step</div>
+          <div class="rating" data-rating="3">
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+          </div><br><button class="recipe-button"><i class="fa-solid fa-book-open"></i></button>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item__image"><img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/567707/cof-chai.png"/></div>
+        <div class="item__desc">
+          <div class="item__name">PBJ Shake</div>
+          <div class="item__description">Secret to a chiseled jawline.</div>
+          <div class="rating" data-rating="4">
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+          </div><br><button class="recipe-button"><i class="fa-solid fa-book-open"></i></button>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item__image"><img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/567707/cof-charcoal.png"/></div>
+        <div class="item__desc">
+          <div class="item__name">Oreo-gasmic Shake</div>
+          <div class="item__description">A blizzard in your mouth</div>
+          <div class="rating" data-rating="4">
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+            <label></label>
+          </div><br><button class="recipe-button"><i class="fa-solid fa-book-open"></i></button>
+        </div>
+      </div>
+    </div><a class="menu-cart" id="menu-cart">Bill:</a>
+  </div>
+</main>
+<div id="recipe-modal" class="modal">
+  <div class="modal-content">
+    <span class="close-button">&times;</span>
+    <h2 id="recipe-title"></h2>
+    <div id="recipe-ingredients"></div>
+    <div id="recipe-instructions"></div>
+  </div>
+</div>
+<footer>
+  <p> Check my other pages</p>
+  <a class="social-item" href="index.html" target="_blank"><i class="fa fa-home nav-icon"></i></a>
+  <a class="social-item" href="Music.html" target="_blank"><i class="fa fa-compact-disc nav-icon"></i></a>
+  <a class="social-item" href="MoviesTV.html" target="_blank"><i class="fa fa-film nav-icon"></i></a>
+  <a class="social-item" href="Games.html" target="_blank"><i class="fa fa-gamepad nav-icon"></i></a>
+  <a class="social-item" href="Travel.html" target="_blank"><i class="fa fa-suitcase nav-icon"></i></a>
+  <a class="social-item" href="Food.html" target="_blank"><i class="fa fa-cutlery nav-icon"></i></a>
+  <a class="social-item" href="Literature.html" target="_blank"><i class="fa fa-book nav-icon"></i></a>
+  <a class="social-item" href="art.html" target="_blank"><i class="fa fa-paint-brush nav-icon"></i></a>
+  <a class="social-item" href="sport.html" target="_blank"><i class="fa fa-futbol nav-icon"></i></a>
+  <a class="social-item" href="credits.html" target="_blank"><i class="fa fa-copyright nav-icon"></i></a>
+</footer>
+<!-- partial -->
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
+  <script  src="JavaScript/foodscript.js"></script>
+  <script src="JavaScript/recipes.js"></script>
+  <script src="JavaScript/recipe.js"></script>
+  <script src="https://www.youtube.com/iframe_api"></script>
+</body>
+</html>

@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kanav's</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;800&display=swap');
+        
+        body {
+            background-color: #050505;
+            overflow: hidden;
+            touch-action: none;
+            user-select: none;
+            font-family: 'Inter', sans-serif;
+            color: white;
+            cursor: crosshair;
+        }
+
+        canvas {
+            display: block;
+            image-rendering: pixelated;
+            width: 100%;
+            height: 100%;
+        }
+
+        .arcade-font { font-family: 'Press Start 2P', monospace; }
+        
+        .overlay {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        .interactive { pointer-events: auto; }
+
+        .control-btn {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(4px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            touch-action: none;
+            transition: transform 0.1s, background 0.1s;
+        }
+        .control-btn:active {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(0.95);
+        }
+        .btn-red { border-color: #ef4444; background: rgba(239, 68, 68, 0.2); }
+        .btn-blue { border-color: #3b82f6; background: rgba(59, 130, 246, 0.2); }
+
+        .scanlines {
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0),
+                rgba(255,255,255,0) 50%,
+                rgba(0,0,0,0.1) 50%,
+                rgba(0,0,0,0.1)
+            );
+            background-size: 100% 3px;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        #landscape-blocker { display: none; z-index: 100; background: #111; }
+        @media screen and (orientation: portrait) and (max-width: 900px) {
+            #landscape-blocker { display: flex !important; }
+            #main-interface { display: none !important; }
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body class="h-screen w-screen relative">
+
+    <div id="landscape-blocker" class="fixed inset-0 flex-col items-center justify-center text-center p-8">
+        <div class="text-6xl mb-4 animate-bounce">🔄</div>
+        <h2 class="text-xl font-bold mb-2 arcade-font text-yellow-400">ROTATE DEVICE</h2>
+    </div>
+
+    <div class="absolute inset-0 scanlines"></div>
+
+    <div id="main-interface" class="w-full h-full relative">
+        <canvas id="gameCanvas"></canvas>
+
+        <div id="mainMenu" class="overlay flex flex-col items-center justify-center bg-black/80 interactive z-40 backdrop-blur-sm">
+            <h1 class="text-4xl md:text-6xl mb-12 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600 arcade-font text-center leading-relaxed">
+                PORTFOLIO<br>ARCADE
+            </h1>
+            
+            <div class="flex flex-col md:flex-row gap-6 w-full max-w-4xl px-8">
+                <button onclick="app.loadGame('basketball')" class="flex-1 bg-gray-900 border border-gray-700 hover:border-orange-500 p-6 rounded-xl transition-all hover:-translate-y-2 group text-left relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 text-6xl">🏀</div>
+                    <div class="text-orange-500 arcade-font text-sm mb-2">FPS SPORT</div>
+                    <h3 class="text-2xl font-bold mb-2">Around the World</h3>
+                    <p class="text-gray-400 text-sm">Real Court Spots. 3D Physics.</p>
+                </button>
+
+                <button onclick="app.loadGame('golf')" class="flex-1 bg-gray-900 border border-gray-700 hover:border-green-500 p-6 rounded-xl transition-all hover:-translate-y-2 group text-left relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 text-6xl">⛳</div>
+                    <div class="text-green-500 arcade-font text-sm mb-2">SIMULATION</div>
+                    <h3 class="text-2xl font-bold mb-2">Pro Links 9</h3>
+                    <p class="text-gray-400 text-sm">9 Holes. Sand Traps. Wind.</p>
+                </button>
+
+                <button onclick="app.loadGame('martialArts')" class="flex-1 bg-gray-900 border border-gray-700 hover:border-red-500 p-6 rounded-xl transition-all hover:-translate-y-2 group text-left relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 text-6xl">🥊</div>
+                    <div class="text-red-500 arcade-font text-sm mb-2">ACTION</div>
+                    <h3 class="text-2xl font-bold mb-2">Dojo Legends</h3>
+                    <p class="text-gray-400 text-sm">Heavy Bag Physics. Combo System.</p>
+                </button>
+            </div>
+
+            <div class="mt-12 text-gray-500 text-xs md:text-sm font-mono flex gap-4">
+                <span>[MOUSE] Aim</span>
+                <span>[SPACE] Charge Power</span>
+                <span>[WASD] Adjust/Move</span>
+            </div>
+        </div>
+
+        <div id="gameHUD" class="overlay hidden flex flex-col justify-between p-4 z-30">
+            <div class="flex justify-between items-start">
+                <button onclick="app.exitGame()" class="interactive bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded font-bold arcade-font text-xs shadow-lg border-b-4 border-red-800 active:border-b-0 active:translate-y-1">
+                    EXIT
+                </button>
+                <div class="text-right">
+                    <div id="scoreLabel" class="text-gray-400 text-xs arcade-font mb-1">SCORE</div>
+                    <div id="scoreVal" class="text-yellow-400 text-2xl arcade-font">000</div>
+                    <div id="comboVal" class="text-cyan-400 text-sm font-bold mt-1 h-6"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="mobileControls" class="overlay hidden flex-col justify-end p-6 z-40 pb-12">
+            <div class="flex justify-between items-end w-full">
+                <div class="interactive w-40 h-40 grid grid-cols-3 gap-1">
+                    <div></div><div id="v-up" class="control-btn">▲</div><div></div>
+                    <div id="v-left" class="control-btn">◀</div><div class="control-btn bg-white/5 border-none"></div><div id="v-right" class="control-btn">▶</div>
+                    <div></div><div id="v-down" class="control-btn">▼</div><div></div>
+                </div>
+                <div class="interactive flex items-end gap-6 mb-2">
+                    <div id="v-b" class="control-btn w-20 h-20 btn-blue flex-col"><span class="text-xl font-bold">B</span><span id="label-b" class="text-[10px] uppercase opacity-70">Kick</span></div>
+                    <div id="v-a" class="control-btn w-20 h-20 btn-red flex-col -mt-8"><span class="text-xl font-bold">A</span><span id="label-a" class="text-[10px] uppercase opacity-70">Punch</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- INPUT ENGINE ---
+        class Input {
+            constructor() {
+                this.state = { x: 0, y: 0, a: false, b: false, aHeld: false, aReleased: false };
+                this.keys = {};
+                this.mouse = { x: 0, y: 0 };
+                this.prevA = false;
+                this.setupKeyboard();
+                this.setupMouse();
+                this.setupTouch();
+            }
+            setupKeyboard() {
+                window.addEventListener('keydown', e => this.keys[e.code] = true);
+                window.addEventListener('keyup', e => this.keys[e.code] = false);
+            }
+            setupMouse() {
+                window.addEventListener('mousemove', e => {
+                    this.mouse.x = e.clientX;
+                    this.mouse.y = e.clientY;
+                });
+                window.addEventListener('mousedown', () => this.keys['Space'] = true);
+                window.addEventListener('mouseup', () => this.keys['Space'] = false);
+            }
+            setupTouch() {
+                const bind = (id, key) => {
+                    const el = document.getElementById(id);
+                    if(!el) return;
+                    const start = (e) => { e.preventDefault(); this.keys[key] = true; };
+                    const end = (e) => { e.preventDefault(); this.keys[key] = false; };
+                    el.addEventListener('touchstart', start); el.addEventListener('touchend', end);
+                };
+                bind('v-up', 'ArrowUp'); bind('v-down', 'ArrowDown'); 
+                bind('v-left', 'ArrowLeft'); bind('v-right', 'ArrowRight'); 
+                bind('v-a', 'Space'); bind('v-b', 'KeyX');
+            }
+            update() {
+                let x = 0, y = 0;
+                if (this.keys['ArrowUp'] || this.keys['KeyW']) y -= 1;
+                if (this.keys['ArrowDown'] || this.keys['KeyS']) y += 1;
+                if (this.keys['ArrowLeft'] || this.keys['KeyA']) x -= 1;
+                if (this.keys['ArrowRight'] || this.keys['KeyD']) x += 1;
+                
+                const a = !!(this.keys['Space'] || this.keys['KeyZ']);
+                const b = !!(this.keys['KeyX'] || this.keys['ShiftLeft']);
+
+                this.state = {
+                    x, y, a, b,
+                    mouse: this.mouse,
+                    aHeld: a,
+                    aReleased: this.prevA && !a
+                };
+                this.prevA = a;
+                return this.state;
+            }
+        }
+
+        // --- GAME 1: BASKETBALL (FIXED & REVAMPED) ---
+        class BasketballGame {
+            constructor(w, h) {
+                this.resize(w, h);
+                // World Coordinates: Hoop at (0, 3.05, 0.5), Floor at y=0.
+                this.positions = [
+                    {x: 0, z: -4.6, name: "Free Throw"},
+                    {x: -6, z: -3, name: "Left Wing"},
+                    {x: 6, z: -3, name: "Right Wing"},
+                    {x: -6.7, z: 0, name: "Left Corner"},
+                    {x: 6.7, z: 0, name: "Right Corner"},
+                    {x: 0, z: -7.0, name: "Top of Key"}
+                ];
+                this.posIndex = 0;
+                
+                // Fixed Camera looking at hoop
+                this.cam = { x: 0, y: 2.5, z: -12 };
+                
+                this.resetRound();
+                app.setScore(this.positions[0].name);
+            }
+
+            resize(w, h) { this.w = w; this.h = h; }
+
+            resetRound() {
+                this.resetBall();
+            }
+
+            resetBall() {
+                const p = this.positions[this.posIndex];
+                this.ball = { x: p.x, y: 1.8, z: p.z, vx:0, vy:0, vz:0, active:false, scored:false };
+                this.aimOffset = { angle: 0, y: 0 };
+                this.power = 0;
+                this.powerDir = 1;
+                this.charging = false;
+            }
+
+            update(input) {
+                const dt = 0.016;
+
+                // Aiming
+                if (!this.ball.active) {
+                    this.aimOffset.angle += input.x * 0.02; // Left/Right
+                    this.aimOffset.y += input.y * 0.1;      // Arc height
+                    this.aimOffset.y = Math.max(-2, Math.min(5, this.aimOffset.y));
+
+                    // Power Charge
+                    if (input.aHeld) {
+                        this.charging = true;
+                        this.power += this.powerDir * 0.3; // Speed of charge
+                        if(this.power > 30) { this.power = 30; this.powerDir = -1; }
+                        if(this.power < 5) { this.power = 5; this.powerDir = 1; }
+                    } else if (this.charging && input.aReleased) {
+                        this.shoot();
+                    }
+                } else {
+                    // Physics
+                    this.ball.vy -= 9.8 * dt; // Gravity
+                    this.ball.x += this.ball.vx * dt;
+                    this.ball.y += this.ball.vy * dt;
+                    this.ball.z += this.ball.vz * dt;
+
+                    // Floor Collision
+                    if (this.ball.y < 0.12) {
+                        this.ball.y = 0.12;
+                        this.ball.vy *= -0.7; // Bounce
+                        this.ball.vx *= 0.9; this.ball.vz *= 0.9; // Friction
+                        
+                        if(Math.abs(this.ball.vy) < 0.5 && !this.ball.scored) {
+                            setTimeout(() => this.resetBall(), 800);
+                        }
+                    }
+
+                    // Backboard (Z=0.5, Size ~1.8 wide)
+                    // Simple AABB approximation
+                    if (this.ball.z > 0.5 && this.ball.z < 0.7 && this.ball.y > 2.9 && this.ball.y < 4.1 && Math.abs(this.ball.x) < 0.9) {
+                        this.ball.vz *= -0.5;
+                        this.ball.z = 0.5;
+                    }
+
+                    // Rim/Score Check
+                    // Hoop Center at (0, 3.05, 0.45)
+                    const dist = Math.sqrt(this.ball.x*this.ball.x + (this.ball.z - 0.45)**2);
+                    if (dist < 0.25 && Math.abs(this.ball.y - 3.05) < 0.25 && this.ball.vy < 0) {
+                        if (!this.ball.scored) {
+                            this.ball.scored = true;
+                            app.setScore("SWISH!");
+                            setTimeout(() => {
+                                // NEXT POSITION LOGIC
+                                this.posIndex = (this.posIndex + 1) % this.positions.length;
+                                app.setScore(this.positions[this.posIndex].name);
+                                this.resetRound();
+                            }, 1500);
+                        }
+                    }
+
+                    // Reset if too far
+                    if (this.ball.z > 5 || Math.abs(this.ball.x) > 10) {
+                        if(!this.ball.scored) this.resetBall();
+                    }
+                }
+            }
+
+            shoot() {
+                this.ball.active = true;
+                
+                // Vector from Ball to Hoop(0, 3.05, 0.45)
+                const dx = 0 - this.ball.x;
+                const dz = 0.45 - this.ball.z;
+                const dist = Math.sqrt(dx*dx + dz*dz);
+                
+                // Base speed needed to reach hoop approx
+                const speed = 7 + (this.power / 2); 
+                
+                // Direction
+                const angle = Math.atan2(dx, dz) + (this.aimOffset.angle * 0.2); // slight aim deviation
+                
+                this.ball.vx = Math.sin(angle) * speed;
+                this.ball.vz = Math.cos(angle) * speed;
+                this.ball.vy = 5 + (this.aimOffset.y) + (this.power/10); // Arc
+                
+                this.charging = false;
+                this.power = 0;
+            }
+
+            // Simple Perspective Projection
+            project(x, y, z) {
+                const depth = z - this.cam.z;
+                if (depth <= 0.1) return null; // CLIP BEHIND CAM (Fix for crash)
+
+                const scale = 700 / depth;
+                const screenX = (this.w / 2) + (x - this.cam.x) * scale;
+                const screenY = (this.h / 2) - (y - this.cam.y) * scale;
+                return { x: screenX, y: screenY, s: scale };
+            }
+
+            draw(ctx) {
+                // Sky
+                const grad = ctx.createLinearGradient(0,0,0,this.h);
+                grad.addColorStop(0, "#0f172a"); grad.addColorStop(1, "#334155");
+                ctx.fillStyle = grad; ctx.fillRect(0,0,this.w,this.h);
+
+                // Floor Grid
+                ctx.lineWidth = 1;
+                for(let z=-12; z<5; z+=1) {
+                    for(let x=-8; x<8; x+=1) {
+                        const p1 = this.project(x, 0, z);
+                        const p2 = this.project(x+1, 0, z);
+                        const p3 = this.project(x+1, 0, z+1);
+                        const p4 = this.project(x, 0, z+1);
+                        // Checker pattern
+                        if(p1&&p2&&p3&&p4) {
+                            ctx.fillStyle = (Math.abs(x+z)%2===0) ? "#475569" : "#64748b";
+                            ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.lineTo(p3.x, p3.y); ctx.lineTo(p4.x, p4.y); ctx.fill();
+                        }
+                    }
+                }
+
+                // 3pt Line (Arc)
+                ctx.strokeStyle = "white"; ctx.lineWidth = 3;
+                ctx.beginPath();
+                for(let i=0; i<=20; i++) {
+                    const angle = (i/20) * Math.PI;
+                    const lx = Math.cos(angle) * 6.75;
+                    const lz = Math.sin(angle) * 6.75 * 0.7 + 0.45; // Flattened circle
+                    const p = this.project(lx, 0.02, lz);
+                    if(p) i===0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y);
+                }
+                ctx.stroke();
+
+                // Pole & Board
+                const poleBot = this.project(0, 0, 0.6);
+                const poleTop = this.project(0, 3.5, 0.6);
+                if(poleBot && poleTop) {
+                    ctx.strokeStyle = "#1e293b"; ctx.lineWidth = 15 * poleBot.s/20;
+                    ctx.beginPath(); ctx.moveTo(poleBot.x, poleBot.y); ctx.lineTo(poleTop.x, poleTop.y); ctx.stroke();
+                }
+
+                const bb = this.project(0, 3.05+0.5, 0.5);
+                if(bb) {
+                    const bbW = 1.8 * bb.s; const bbH = 1.0 * bb.s;
+                    ctx.fillStyle = "rgba(255,255,255,0.9)";
+                    ctx.fillRect(bb.x - bbW/2, bb.y - bbH/2, bbW, bbH);
+                    ctx.strokeStyle = "red"; ctx.lineWidth=3;
+                    ctx.strokeRect(bb.x - bbW/6, bb.y + bbH/6, bbW/3, bbH/3);
+                }
+
+                // Rim
+                const rim = this.project(0, 3.05, 0.45);
+                if(rim) {
+                    ctx.strokeStyle = "orange"; ctx.lineWidth = 4;
+                    // Clamp radii to prevent negative crash
+                    const rx = Math.max(0.1, 0.25*rim.s);
+                    const ry = Math.max(0.1, 0.05*rim.s);
+                    ctx.beginPath(); ctx.ellipse(rim.x, rim.y, rx, ry, 0, 0, Math.PI*2); ctx.stroke();
+                }
+
+                // Ball
+                const ballP = this.project(this.ball.x, this.ball.y, this.ball.z);
+                
+                if(ballP) {
+                    const ballR = Math.max(0.1, 0.12 * ballP.s);
+                    
+                    // Shadow
+                    const shadP = this.project(this.ball.x, 0, this.ball.z);
+                    if(shadP) {
+                        ctx.fillStyle = "rgba(0,0,0,0.4)";
+                        const sRx = Math.max(0.1, ballR);
+                        const sRy = Math.max(0.1, ballR*0.3);
+                        ctx.beginPath(); ctx.ellipse(shadP.x, shadP.y, sRx, sRy, 0, 0, Math.PI*2); ctx.fill();
+                    }
+
+                    // Ball Body
+                    ctx.fillStyle = "#ea580c";
+                    ctx.beginPath(); ctx.arc(ballP.x, ballP.y, ballR, 0, Math.PI*2); ctx.fill();
+                    ctx.strokeStyle = "rgba(0,0,0,0.3)"; ctx.lineWidth = 2; ctx.stroke();
+                }
+
+                // Aim Guide (Trajectory)
+                if (!this.ball.active && ballP) {
+                    ctx.strokeStyle = "rgba(255,255,255,0.8)"; // More opaque
+                    ctx.lineWidth = 4; // Thicker
+                    ctx.setLineDash([10, 10]); // Longer dash
+                    ctx.beginPath();
+                    ctx.moveTo(ballP.x, ballP.y);
+                    
+                    // Sim
+                    let sx = this.ball.x, sy = this.ball.y, sz = this.ball.z;
+                    // Sim values
+                    const dx = 0 - sx; const dz = 0.45 - sz;
+                    const angle = Math.atan2(dx, dz) + (this.aimOffset.angle * 0.2);
+                    const speed = 7 + (this.power / 2);
+                    let svx = Math.sin(angle) * speed;
+                    let svz = Math.cos(angle) * speed;
+                    let svy = 5 + (this.aimOffset.y) + (this.power/10);
+
+                    // Draw longer arc (25 steps)
+                    for(let i=0; i<25; i++) {
+                        svy -= 9.8 * 0.05; sx += svx * 0.05; sy += svy * 0.05; sz += svz * 0.05;
+                        const p = this.project(sx, sy, sz);
+                        if(p) ctx.lineTo(p.x, p.y);
+                    }
+                    ctx.stroke(); ctx.setLineDash([]);
+
+                    // Power Meter
+                    if(this.charging) {
+                        ctx.fillStyle = "yellow";
+                        ctx.fillRect(this.w/2 - 100, this.h - 50, this.power * 6, 20);
+                        ctx.strokeStyle = "white"; ctx.strokeRect(this.w/2 - 100, this.h - 50, 200, 20);
+                    }
+                }
+            }
+        }
+
+        // --- GAME 2: GOLF (9 Levels) ---
+        class GolfGame {
+            constructor(w, h) {
+                this.resize(w, h);
+                this.friction = 0.97;
+                this.power = 0;
+                this.powerDir = 1;
+                this.charging = false;
+                this.strokes = 0;
+                this.levelIdx = 0;
+                
+                this.levels = [
+                    // 1: Basic
+                    { start: {x:0.1, y:0.8}, hole: {x:0.8, y:0.2}, grass: [{x:0.5, y:0.5, r:0.6}], sand: [], water: [], trees: [{x:0.3, y:0.3}, {x:0.7, y:0.6}] },
+                    // 2: Narrow Bridge
+                    { start: {x:0.1, y:0.5}, hole: {x:0.9, y:0.5}, grass: [{x:0.1, y:0.5, r:0.15}, {x:0.9, y:0.5, r:0.15}, {x:0.5, y:0.5, w:0.6, h:0.1, type:'rect'}], sand: [], water: [{x:0.5, y:0.5, w:1.0, h:1.0, type:'rect'}], trees: [] },
+                    // 3: L-Shape
+                    { start: {x:0.1, y:0.8}, hole: {x:0.8, y:0.2}, grass: [{x:0.2, y:0.5, w:0.15, h:0.7, type:'rect'}, {x:0.55, y:0.2, w:0.7, h:0.15, type:'rect'}], sand: [{x:0.2, y:0.4, r:0.08}], water: [], trees: [{x:0.5, y:0.5}] },
+                    // 4: Bunker Field
+                    { start: {x:0.5, y:0.9}, hole: {x:0.5, y:0.1}, grass: [{x:0.5, y:0.5, w:0.4, h:0.9, type:'rect'}], sand: [{x:0.4, y:0.3, r:0.05}, {x:0.6, y:0.3, r:0.05}, {x:0.5, y:0.5, r:0.05}, {x:0.4, y:0.7, r:0.05}, {x:0.6, y:0.7, r:0.05}], water: [], trees: [] },
+                    // 5: Island Green
+                    { start: {x:0.1, y:0.5}, hole: {x:0.8, y:0.5}, grass: [{x:0.1, y:0.5, r:0.15}, {x:0.8, y:0.5, r:0.15}], sand: [{x:0.8, y:0.5, r:0.18}], water: [{x:0.5, y:0.5, w:1.0, h:1.0, type:'rect'}], trees: [] },
+                    // 6: The Snake
+                    { start: {x:0.1, y:0.1}, hole: {x:0.9, y:0.9}, grass: [{x:0.2, y:0.2, r:0.15}, {x:0.5, y:0.5, r:0.15}, {x:0.8, y:0.8, r:0.15}, {x:0.35, y:0.35, w:0.4, h:0.05, type:'rect', rot:45}, {x:0.65, y:0.65, w:0.4, h:0.05, type:'rect', rot:45}], sand: [], water: [{x:0.2, y:0.8, r:0.3}, {x:0.8, y:0.2, r:0.3}], trees: [] },
+                    // 7: Forest Tunnel
+                    { start: {x:0.5, y:0.9}, hole: {x:0.5, y:0.1}, grass: [{x:0.5, y:0.5, w:0.2, h:0.9, type:'rect'}], sand: [], water: [], trees: [{x:0.3, y:0.2}, {x:0.7, y:0.2}, {x:0.3, y:0.4}, {x:0.7, y:0.4}, {x:0.3, y:0.6}, {x:0.7, y:0.6}, {x:0.3, y:0.8}, {x:0.7, y:0.8}] },
+                    // 8: Twin Lakes
+                    { start: {x:0.5, y:0.9}, hole: {x:0.5, y:0.1}, grass: [{x:0.5, y:0.5, w:0.1, h:0.9, type:'rect'}], sand: [], water: [{x:0.2, y:0.5, r:0.25}, {x:0.8, y:0.5, r:0.25}], trees: [] },
+                    // 9: The Wall
+                    { start: {x:0.1, y:0.5}, hole: {x:0.9, y:0.5}, grass: [{x:0.5, y:0.5, w:0.9, h:0.6, type:'rect'}], sand: [], water: [{x:0.5, y:0.5, w:0.1, h:0.4, type:'rect'}], trees: [{x:0.5, y:0.2}, {x:0.5, y:0.8}] }
+                ];
+                
+                this.resetLevel();
+            }
+
+            resize(w, h) { this.w = w; this.h = h; }
+
+            resetLevel() {
+                const l = this.levels[this.levelIdx];
+                this.ball = { x: l.start.x*this.w, y: l.start.y*this.h, vx: 0, vy: 0, r: 6 };
+                this.hole = { x: l.hole.x*this.w, y: l.hole.y*this.h, r: 12 };
+                app.setScore(`HOLE ${this.levelIdx+1} | +${this.strokes}`);
+            }
+
+            update(input) {
+                if(this.ball.vx === 0 && this.ball.vy === 0) {
+                    if(input.aHeld) {
+                        this.charging = true;
+                        this.power += this.powerDir * 0.2;
+                        if(this.power > 20) { this.power=20; this.powerDir=-1; }
+                        if(this.power < 0) { this.power=0; this.powerDir=1; }
+                    } else if(this.charging && input.aReleased) {
+                        this.shoot(input);
+                    }
+                }
+
+                let terrainSpeed = 0.97;
+                const l = this.levels[this.levelIdx];
+                let inFairway = false;
+                let inSand = false;
+                
+                l.grass.forEach(g => {
+                    if(g.type === 'rect') {
+                         if(this.rectCircle(g.x*this.w, g.y*this.h, g.w*this.w, g.h*this.h, this.ball.x, this.ball.y, this.ball.r)) inFairway = true;
+                    } else {
+                         if(this.dist(this.ball, {x:g.x*this.w, y:g.y*this.h}) < g.r*this.w) inFairway = true;
+                    }
+                });
+
+                l.sand.forEach(s => {
+                    if(this.dist(this.ball, {x:s.x*this.w, y:s.y*this.h}) < s.r*this.w) inSand = true;
+                });
+
+                if(l.water.length > 0 && !inFairway && !inSand) {
+                     if(Math.hypot(this.ball.vx, this.ball.vy) < 5) {
+                         this.strokes++;
+                         this.resetLevel();
+                         return;
+                     }
+                }
+
+                if(inSand) terrainSpeed = 0.9;
+                
+                this.ball.x += this.ball.vx;
+                this.ball.y += this.ball.vy;
+                this.ball.vx *= terrainSpeed;
+                this.ball.vy *= terrainSpeed;
+                
+                if(Math.hypot(this.ball.vx, this.ball.vy) < 0.1) {
+                    this.ball.vx = 0; this.ball.vy = 0;
+                }
+
+                if(this.ball.x < 0 || this.ball.x > this.w) this.ball.vx *= -1;
+                if(this.ball.y < 0 || this.ball.y > this.h) this.ball.vy *= -1;
+
+                if(this.dist(this.ball, this.hole) < this.hole.r && Math.hypot(this.ball.vx, this.ball.vy) < 5) {
+                    this.levelIdx = (this.levelIdx + 1) % this.levels.length;
+                    this.resetLevel();
+                }
+            }
+
+            shoot(input) {
+                const angle = Math.atan2(input.mouse.y - this.ball.y, input.mouse.x - this.ball.x);
+                const dx = Math.cos(angle);
+                const dy = Math.sin(angle);
+                
+                let powerMult = 1.5;
+                const l = this.levels[this.levelIdx];
+                l.sand.forEach(s => {
+                    if(this.dist(this.ball, {x:s.x*this.w, y:s.y*this.h}) < s.r*this.w) powerMult = 0.5;
+                });
+
+                this.ball.vx = dx * (this.power * powerMult);
+                this.ball.vy = dy * (this.power * powerMult);
+                this.strokes++;
+                this.power = 0;
+                this.charging = false;
+                app.setScore(`HOLE ${this.levelIdx+1} | +${this.strokes}`);
+            }
+
+            dist(a, b) { return Math.hypot(a.x - b.x, a.y - b.y); }
+            rectCircle(rx, ry, rw, rh, cx, cy, cr) {
+                const left = rx - rw/2; const right = rx + rw/2;
+                const top = ry - rh/2; const bot = ry + rh/2;
+                const closestX = Math.max(left, Math.min(cx, right));
+                const closestY = Math.max(top, Math.min(cy, bot));
+                const distanceX = cx - closestX;
+                const distanceY = cy - closestY;
+                return (distanceX*distanceX + distanceY*distanceY) < (cr*cr);
+            }
+
+            draw(ctx) {
+                ctx.fillStyle = "#064e3b"; ctx.fillRect(0,0,this.w,this.h);
+                const l = this.levels[this.levelIdx];
+                if(l.water.length > 0) { ctx.fillStyle = "#0ea5e9"; ctx.fillRect(0,0,this.w,this.h); }
+
+                ctx.fillStyle = "#4ade80"; ctx.strokeStyle = "#22c55e"; ctx.lineWidth=5;
+                l.grass.forEach(g => {
+                    ctx.beginPath();
+                    if(g.type==='rect') ctx.rect((g.x-g.w/2)*this.w, (g.y-g.h/2)*this.h, g.w*this.w, g.h*this.h);
+                    else ctx.arc(g.x*this.w, g.y*this.h, g.r*this.w, 0, Math.PI*2);
+                    ctx.fill(); ctx.stroke();
+                });
+
+                l.sand.forEach(s => {
+                    ctx.fillStyle = "#fde047";
+                    ctx.beginPath(); ctx.arc(s.x*this.w, s.y*this.h, s.r*this.w, 0, Math.PI*2); ctx.fill();
+                    ctx.fillStyle = "rgba(0,0,0,0.1)"; 
+                    for(let i=0; i<5; i++) ctx.fillRect(s.x*this.w + (Math.random()*20-10), s.y*this.h + (Math.random()*20-10), 2, 2);
+                });
+
+                l.water.forEach(w => {
+                    if(w.type === 'rect') {
+                        ctx.fillStyle = "#0ea5e9";
+                        ctx.fillRect((w.x-w.w/2)*this.w, (w.y-w.h/2)*this.h, w.w*this.w, w.h*this.h);
+                    }
+                });
+
+                ctx.fillStyle = "#111"; ctx.beginPath(); ctx.arc(this.hole.x, this.hole.y, this.hole.r, 0, Math.PI*2); ctx.fill();
+                ctx.fillStyle = "white"; ctx.beginPath(); ctx.arc(this.ball.x, this.ball.y, this.ball.r, 0, Math.PI*2); ctx.fill();
+
+                l.trees.forEach(t => {
+                    const tx = t.x*this.w; const ty = t.y*this.h;
+                    ctx.fillStyle = "#14532d";
+                    ctx.beginPath(); ctx.moveTo(tx, ty-30); ctx.lineTo(tx-15, ty); ctx.lineTo(tx+15, ty); ctx.fill();
+                    ctx.fillStyle = "#166534";
+                    ctx.beginPath(); ctx.moveTo(tx, ty-20); ctx.lineTo(tx-15, ty+10); ctx.lineTo(tx+15, ty+10); ctx.fill();
+                });
+
+                if(this.ball.vx === 0 && this.ball.vy === 0) {
+                    const angle = Math.atan2(app.input.mouse.y - this.ball.y, app.input.mouse.x - this.ball.x);
+                    const dx = Math.cos(angle);
+                    const dy = Math.sin(angle);
+                    ctx.strokeStyle = "white"; ctx.lineWidth = 3; ctx.setLineDash([5,5]);
+                    ctx.beginPath(); ctx.moveTo(this.ball.x, this.ball.y); 
+                    ctx.lineTo(this.ball.x + dx*100, this.ball.y + dy*100); ctx.stroke(); ctx.setLineDash([]);
+                    if(this.charging) {
+                        const w = 40; const h = 6;
+                        ctx.fillStyle = "white"; ctx.fillRect(this.ball.x - w/2, this.ball.y - 20, w, h);
+                        ctx.fillStyle = this.power > 15 ? "red" : "lime";
+                        ctx.fillRect(this.ball.x - w/2, this.ball.y - 20, w * (this.power/20), h);
+                    }
+                }
+            }
+        }
+
+        // --- GAME 3: DOJO (FIXED INITIALIZATION) ---
+        class MartialArtsGame {
+            constructor(w, h) {
+                // Init properties BEFORE resize
+                this.player = { x: 0, y: 0, state: 'IDLE', frame: 0 };
+                this.bag = { w: 60, h: 160 };
+                this.chain = [];
+                
+                this.resize(w, h);
+                
+                this.combo = "";
+                this.comboTimer = 0;
+                this.lastMoves = [];
+                this.hits = 0;
+                this.moveList = [
+                    { seq: "SSS", name: "RUSH (SPC-SPC-SPC)" },
+                    { seq: "XXS", name: "HEAVY (X-X-SPC)" },
+                    { seq: "SXS", name: "DRAGON (SPC-X-SPC)" }
+                ];
+                this.displayCombo = "";
+            }
+
+            resize(w, h) { 
+                this.w = w; this.h = h; 
+                this.player.y = h-150; 
+                this.player.x = w/3;
+                
+                // Rebuild chain based on new dimensions (LOWERED START)
+                this.chain = [];
+                const segments = 6;
+                const segLen = 30;
+                const startX = w*0.7;
+                const startY = 100; // Lowered from 50
+                for(let i=0; i<=segments; i++) {
+                    this.chain.push({ x: startX, y: startY + i*segLen, oldx: startX, oldy: startY + i*segLen, pinned: i===0 });
+                }
+            }
+
+            update(input) {
+                // VERLET CHAIN
+                const gravity = 0.5;
+                const friction = 0.95; // Increased friction to stabilize (0.98 -> 0.95)
+                
+                this.chain.forEach(p => {
+                    if(!p.pinned) {
+                        const vx = (p.x - p.oldx) * friction;
+                        const vy = (p.y - p.oldy) * friction;
+                        p.oldx = p.x;
+                        p.oldy = p.y;
+                        p.x += vx;
+                        p.y += vy;
+                        p.y += gravity; 
+                    }
+                });
+
+                // Constraints
+                for(let i=0; i<3; i++) { 
+                    for(let j=0; j<this.chain.length-1; j++) {
+                        const p1 = this.chain[j];
+                        const p2 = this.chain[j+1];
+                        const dx = p2.x - p1.x;
+                        const dy = p2.y - p1.y;
+                        const dist = Math.sqrt(dx*dx + dy*dy);
+                        const diff = 30 - dist; 
+                        const percent = diff / dist / 2;
+                        const offX = dx * percent;
+                        const offY = dy * percent;
+                        
+                        if(!p1.pinned) { p1.x -= offX; p1.y -= offY; }
+                        p2.x += offX; p2.y += offY;
+                    }
+                }
+
+                if (this.player.state === 'IDLE') {
+                    this.player.x += input.x * 6;
+                    if (input.aReleased) this.attack('PUNCH', 'S');
+                    else if (input.b) this.attack('KICK', 'X');
+                }
+
+                if (this.player.state !== 'IDLE') {
+                    this.player.frame++;
+                    if (this.player.frame === 5) this.checkHit();
+                    if (this.player.frame > 15) { this.player.state = 'IDLE'; this.player.frame = 0; }
+                }
+
+                if (this.comboTimer > 0) {
+                    this.comboTimer--;
+                    if(this.comboTimer === 0) {
+                        this.lastMoves = [];
+                        document.getElementById('comboVal').innerText = "";
+                    }
+                }
+            }
+
+            attack(type, code) {
+                this.player.state = type; 
+                this.player.frame = 0;
+                this.player.x += 40; 
+                
+                this.lastMoves.push(code);
+                if(this.lastMoves.length > 3) this.lastMoves.shift();
+                this.comboTimer = 60;
+                const seq = this.lastMoves.join("");
+                const match = this.moveList.find(m => seq.includes(m.seq));
+                if(match) {
+                    this.displayCombo = match.name.split(" (")[0] + "!";
+                    setTimeout(() => this.displayCombo = "", 1000);
+                    this.hits += 5;
+                    this.lastMoves = [];
+                }
+            }
+
+            checkHit() {
+                const last = this.chain[this.chain.length-1];
+                const reach = 60 + (this.bag.w/2);
+                const dist = Math.abs((this.player.x + 40) - last.x);
+                
+                if (dist < reach) {
+                    // Force Logic: REDUCED RECOIL (Push Away)
+                    const force = this.player.state === 'KICK' ? 10 : 5; // WAS 15/8, Further Reduced
+                    last.x += force;
+                    last.y -= 5; 
+                    
+                    this.hits++;
+                    app.setScore(`${this.hits} HITS`);
+                    this.hitEffect = { x: last.x, y: last.y, life: 15 };
+                }
+            }
+
+            draw(ctx) {
+                ctx.fillStyle = "#fde047"; ctx.fillRect(0,0,this.w,this.h);
+                ctx.fillStyle = "#78350f"; ctx.fillRect(0,this.h-100,this.w,100);
+                
+                ctx.fillStyle = "rgba(0,0,0,0.5)"; ctx.fillRect(10, 60, 250, 100);
+                ctx.fillStyle = "white"; ctx.font = "10px 'Press Start 2P'";
+                ctx.fillText("COMBOS:", 20, 80);
+                this.moveList.forEach((m, i) => {
+                    ctx.fillText(`${m.name}`, 20, 100 + i*20);
+                });
+
+                ctx.strokeStyle = "#333"; ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.moveTo(this.chain[0].x, this.chain[0].y);
+                for(let i=1; i<this.chain.length; i++) {
+                    ctx.lineTo(this.chain[i].x, this.chain[i].y);
+                }
+                ctx.stroke();
+
+                const last = this.chain[this.chain.length-1];
+                const prev = this.chain[this.chain.length-2];
+                const angle = Math.atan2(last.y - prev.y, last.x - prev.x);
+                
+                ctx.save();
+                ctx.translate(last.x, last.y);
+                ctx.rotate(angle - Math.PI/2);
+                ctx.fillStyle = "#b91c1c";
+                ctx.fillRect(-this.bag.w/2, 0, this.bag.w, this.bag.h);
+                ctx.restore();
+
+                if(this.displayCombo) {
+                    ctx.fillStyle = "cyan"; ctx.font = "30px 'Press Start 2P'";
+                    ctx.fillText(this.displayCombo, this.w/2 - 100, this.h/2);
+                }
+                
+                if(this.hitEffect && this.hitEffect.life > 0) {
+                    ctx.fillStyle = "orange"; ctx.font = "20px 'Press Start 2P'";
+                    ctx.fillText("POW!", this.hitEffect.x - 40, this.hitEffect.y);
+                    this.hitEffect.life--;
+                }
+
+                ctx.save();
+                ctx.translate(this.player.x, this.player.y);
+                ctx.fillStyle = "black"; ctx.strokeStyle = "black"; ctx.lineWidth = 8;
+                let ax = 0, lx = 0;
+                if(this.player.state==='PUNCH' && this.player.frame<8) ax = 60;
+                if(this.player.state==='KICK' && this.player.frame<8) lx = 60;
+
+                ctx.beginPath(); ctx.arc(0, -60, 20, 0, Math.PI*2); ctx.fill(); 
+                ctx.fillRect(-15, -40, 30, 60); 
+                ctx.beginPath(); ctx.moveTo(-10, 20); ctx.lineTo(-30, 80); ctx.stroke(); 
+                ctx.beginPath(); ctx.moveTo(10, 20); ctx.lineTo(30 + lx, 80 - lx/2); ctx.stroke(); 
+                ctx.beginPath(); ctx.moveTo(0, -30); ctx.lineTo(40 + ax, 0); ctx.stroke(); 
+                ctx.restore();
+            }
+        }
+
+        // --- CORE APP ---
+        const app = {
+            canvas: document.getElementById('gameCanvas'),
+            ctx: null,
+            input: new Input(),
+            game: null,
+            init() {
+                this.ctx = this.canvas.getContext('2d');
+                this.resize();
+                window.addEventListener('resize', () => this.resize());
+                
+                if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+                    document.getElementById('mobileControls').classList.remove('hidden');
+                }
+                requestAnimationFrame(() => this.loop());
+            },
+            resize() {
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+                if (this.game) this.game.resize(this.canvas.width, this.canvas.height);
+            },
+            loadGame(type) {
+                document.getElementById('mainMenu').classList.add('hidden');
+                document.getElementById('gameHUD').classList.remove('hidden');
+                const la=document.getElementById('label-a'), lb=document.getElementById('label-b');
+                
+                if(type === 'basketball') { this.game = new BasketballGame(this.canvas.width, this.canvas.height); la.innerText="Charge"; lb.innerText=""; }
+                if(type === 'golf') { this.game = new GolfGame(this.canvas.width, this.canvas.height); la.innerText="Power"; lb.innerText=""; }
+                if(type === 'martialArts') { this.game = new MartialArtsGame(this.canvas.width, this.canvas.height); la.innerText="Punch"; lb.innerText="Kick"; }
+            },
+            exitGame() {
+                this.game = null;
+                document.getElementById('mainMenu').classList.remove('hidden');
+                document.getElementById('gameHUD').classList.add('hidden');
+            },
+            setScore(txt) { document.getElementById('scoreVal').innerText = txt; },
+            loop() {
+                this.ctx.fillStyle = "#111"; this.ctx.fillRect(0,0,this.canvas.width,this.canvas.height);
+                const i = this.input.update();
+                if (this.game) { this.game.update(i); this.game.draw(this.ctx); }
+                else this.drawMenuBG();
+                requestAnimationFrame(() => this.loop());
+            },
+            drawMenuBG() {
+                const t = Date.now()/1000;
+                this.ctx.strokeStyle = "rgba(100, 20, 200, 0.3)";
+                this.ctx.lineWidth = 2;
+                for(let i=0; i<this.canvas.height; i+=40) {
+                    let y = (i + t*20) % this.canvas.height;
+                    this.ctx.beginPath(); this.ctx.moveTo(0, y); this.ctx.lineTo(this.canvas.width, y); this.ctx.stroke();
+                }
+            }
+        };
+        window.onload = () => app.init();
+    </script>
+</body>
+</html>

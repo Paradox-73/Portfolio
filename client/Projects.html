@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/x-icon" href="assets/profile.jpg">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kanav's Projects</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* --- CSS RESET & FONTS --- */
+        * { box-sizing: border-box; user-select: none; }
+        
+        /* XP Cursors */
+        body { 
+            margin: 0; padding: 0; overflow: hidden; 
+            font-family: 'Tahoma', sans-serif; 
+            height: 100vh; width: 100vw; 
+            background-color: #004E98;
+            cursor: url('https://archive.org/download/WindowsXPCursors/Arrow.cur'), default;
+        }
+        
+        a, button, .pointer, .start-item, .task-item, .desktop-icon, .menu-item, .control-btn { 
+            cursor: url('https://archive.org/download/WindowsXPCursors/Hand.cur'), pointer !important; 
+        }
+        
+        input, textarea, .notepad-area, .cmd-input { 
+            cursor: url('https://archive.org/download/WindowsXPCursors/Beam.cur'), text !important; 
+        }
+
+        /* --- WALLPAPER --- */
+        #desktop {
+            width: 100%; height: calc(100% - 30px);
+            background: url('assets/projects/bg.jpg') no-repeat center center fixed; 
+            background-size: cover;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            padding: 10px;
+        }
+
+        /* --- ICONS --- */
+        .desktop-icon {
+            width: 75px; height: 80px;
+            display: flex; flex-direction: column; align-items: center;
+            margin: 10px; text-align: center;
+            color: white; text-shadow: 1px 1px 2px black;
+        }
+        .desktop-icon:hover { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); border-radius: 3px; }
+        .desktop-icon i { font-size: 32px; margin-bottom: 5px; filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.5)); }
+        .desktop-icon img { width: 32px; height: 32px; margin-bottom: 5px; }
+        .icon-text { font-size: 11px; line-height: 1.2; padding: 0 2px; }
+
+        /* --- WINDOW MANAGER --- */
+        .window {
+            position: absolute; background: #ECE9D8;
+            border: 1px solid #0055EA;
+            border-top-left-radius: 8px; border-top-right-radius: 8px;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.4);
+            display: flex; flex-direction: column;
+            min-width: 200px; min-height: 150px;
+            overflow: hidden; 
+        }
+        .title-bar {
+            height: 30px;
+            background: linear-gradient(to bottom, #0058EE 0%, #3593FF 4%, #288EFB 18%, #2488FA 50%, #2083F8 51%, #0058EE 100%);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 5px; color: white; font-weight: bold; font-size: 13px;
+            text-shadow: 1px 1px #000;
+            cursor: default;
+            border-top-left-radius: 5px; border-top-right-radius: 5px;
+        }
+        .title-text { display: flex; align-items: center; gap: 5px; pointer-events: none; }
+        .window-controls { display: flex; gap: 2px; }
+        .control-btn {
+            width: 21px; height: 21px; border: 1px solid #fff; border-radius: 3px;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 12px; cursor: pointer; color: white; background: transparent;
+        }
+        .btn-close { background: #D7432E; border-color: #fff; font-weight: bold; }
+        .btn-close:hover { background: #ff5f4a; }
+        .window-body { flex: 1; padding: 0; position: relative; overflow: hidden; background: white; display: flex; flex-direction: column; }
+        .window-content { height: 100%; width: 100%; display: flex; flex-direction: column; }
+
+        /* --- MENUS --- */
+        .menubar { background: #ECE9D8; padding: 2px 0; font-size: 11px; display: flex; border-bottom: 1px solid #D4D0C8; user-select: none; flex-shrink: 0; }
+        .menu-wrap { position: relative; }
+        .menu-btn { padding: 2px 6px; cursor: pointer; color: #000; }
+        .menu-btn:hover, .menu-btn.active { background: #1660E8; color: white; }
+        .menu-dropdown { 
+            display: none; position: absolute; top: 100%; left: 0; 
+            background: white; border: 1px solid #808080; 
+            box-shadow: 2px 2px 2px rgba(0,0,0,0.3); z-index: 99999; min-width: 150px;
+            padding: 2px;
+        }
+        .menu-item { padding: 3px 20px 3px 10px; color: black; cursor: pointer; white-space: nowrap; display: block; font-size: 11px; text-decoration: none; }
+        .menu-item:hover { background: #1660E8; color: white; }
+        .menu-separator { height: 1px; background: #D4D0C8; margin: 3px 2px; }
+        .menu-disabled { color: #888; }
+        .menu-disabled:hover { background: none; color: #888; cursor: default; }
+
+        /* --- APP SPECIFIC STYLES --- */
+        /* CMD */
+        .cmd-body { background: black; color: white; font-family: 'Consolas', monospace; padding: 5px; flex: 1; overflow-y: auto; font-size: 14px; }
+        .cmd-input { background: transparent; border: none; color: white; outline: none; font-family: inherit; width: 80%; }
+        
+        /* Explorer */
+        .explorer-toolbar { background: #ECE9D8; padding: 5px; border-bottom: 1px solid #999; display: flex; gap: 5px; align-items: center; flex-shrink: 0; }
+        .explorer-address { flex: 1; display: flex; align-items: center; gap: 5px; }
+        .address-bar { width: 100%; border: 1px solid #7F9DB9; padding: 2px; }
+        .explorer-view { display: flex; flex-wrap: wrap; padding: 10px; gap: 10px; align-content: flex-start; overflow-y: auto; flex: 1; background: white; }
+        .file-item { width: 80px; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; }
+        .file-item:hover { background: #E8F0FA; border: 1px solid #B0C4DE; }
+        .file-icon { font-size: 32px; color: #333; margin-bottom: 5px; }
+        .file-icon.folder { color: #EBC657; }
+        .file-icon.text { color: #87CEEB; }
+        .file-icon.code { color: #4CAF50; }
+        
+        /* Notepad */
+        .notepad-area { width: 100%; flex: 1; resize: none; border: none; outline: none; padding: 5px; font-family: 'Lucida Console', monospace; font-size: 14px; overflow: auto; }
+
+        /* Calculator */
+        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; padding: 10px; background: #ECE9D8; height: 100%; }
+        .calc-display { grid-column: 1 / -1; background: white; border: 1px solid #7F9DB9; text-align: right; padding: 5px; margin-bottom: 5px; font-family: monospace; font-size: 20px; }
+        .calc-btn { padding: 5px; cursor: pointer; border: 1px solid #7F9DB9; background: linear-gradient(#fff, #ddd); text-align: center; border-radius: 3px; }
+        .calc-btn:active { background: #ccc; }
+
+        /* Paint Overhaul */
+        .paint-container { display: flex; flex-direction: column; flex: 1; background: #C0C0C0; overflow: hidden; }
+        .paint-main { flex: 1; display: flex; overflow: hidden; }
+        .paint-sidebar { width: 50px; background: #ECE9D8; border-right: 1px solid #808080; padding: 2px; display: grid; grid-template-columns: 1fr 1fr; gap: 2px; align-content: start; flex-shrink: 0; }
+        .paint-tool { width: 22px; height: 22px; border: 1px solid #fff; border-right-color: #808080; border-bottom-color: #808080; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .paint-tool:active, .paint-tool.active { border: 1px solid #808080; border-right-color: #fff; border-bottom-color: #fff; background: #e0e0e0; }
+        .paint-workspace { flex: 1; background: #808080; overflow: auto; padding: 10px; display: flex; }
+        #paint-canvas { background: white; cursor: crosshair; display: block; box-shadow: 2px 2px 5px rgba(0,0,0,0.5); }
+        .paint-footer { height: 45px; background: #ECE9D8; border-top: 1px solid #808080; display: flex; align-items: center; padding: 2px; flex-shrink: 0; }
+        .paint-palette { display: flex; flex-wrap: wrap; gap: 1px; width: 260px; height: 32px; border: 1px inset #fff; }
+        .color-swatch { width: 15px; height: 15px; border: 1px solid #808080; cursor: pointer; }
+        .current-colors { width: 30px; height: 30px; border: 1px inset #fff; margin-right: 10px; position: relative; background: #ECE9D8; cursor: pointer; }
+        .color-front { width: 15px; height: 15px; border: 1px solid #808080; position: absolute; top: 4px; left: 4px; z-index: 2; background: black; }
+        .color-back { width: 15px; height: 15px; border: 1px solid #808080; position: absolute; top: 10px; left: 10px; z-index: 1; background: white; }
+
+        /* Minesweeper */
+        .mine-header { background: #C0C0C0; border: 2px solid #808080; border-right-color: #fff; border-bottom-color: #fff; padding: 4px; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
+        .mine-counter { background: black; color: red; font-family: 'Courier New', monospace; font-size: 20px; font-weight: bold; padding: 0 2px; border: 1px inset #fff; }
+        .mine-face { width: 26px; height: 26px; border: 1px outset #fff; background: #C0C0C0; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; }
+        .mine-face:active { border: 1px inset #fff; }
+
+        /* --- TASKBAR --- */
+        #taskbar {
+            position: absolute; bottom: 0; width: 100%; height: 30px;
+            background: linear-gradient(to bottom, #4f86fd 0%, #3F8CF3 9%, #245EDB 18%, #245EDB 92%, #1941A5 100%);
+            display: flex; align-items: center; z-index: 9999; border-top: 1px solid #3F8CF3;
+        }
+        #start-btn {
+            height: 30px; width: 100px;
+            background: transparent;
+            border-top-right-radius: 10px; border-bottom-right-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-style: italic; font-weight: bold; font-size: 16px; color: white; text-shadow: 1px 1px 1px #000;
+            cursor: pointer; box-shadow: inset 2px 2px 2px rgba(255,255,255,0.4);
+        }
+        #start-btn:hover { filter: brightness(1.1); }
+
+        
+        #taskbar-divider { width: 2px; height: 20px; background: rgba(0,0,0,0.2); margin: 0 5px; border-right: 1px solid rgba(255,255,255,0.2); }
+        
+        #task-list { flex: 1; display: flex; gap: 2px; padding-left: 5px; overflow: hidden; }
+        .task-item {
+            width: 150px; height: 24px; background: #3C81F3;
+            border-radius: 3px; border: 1px solid #16367F;
+            display: flex; align-items: center; padding: 0 5px;
+            color: white; font-size: 11px; cursor: pointer;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.3);
+        }
+        .task-item:hover { background: #5394F8; }
+        .task-item.active { background: #1E52B7; box-shadow: inset 1px 1px 2px rgba(0,0,0,0.5); font-weight: bold; }
+        .task-item img { width: 16px; height: 16px; margin-right: 5px; }
+
+        #system-tray {
+            background: #0B74C9; height: 30px; padding: 0 10px;
+            display: flex; align-items: center; gap: 10px;
+            color: white; font-size: 11px; border-left: 1px solid #143F8C;
+        }
+
+        /* --- START MENU --- */
+        #start-menu {
+            position: absolute; bottom: 30px; left: 0; width: 380px; height: 480px;
+            background: white; border-top-right-radius: 10px; border-top-left-radius: 10px;
+            box-shadow: 2px -2px 5px rgba(0,0,0,0.5);
+            display: none; flex-direction: column; z-index: 10000;
+            border: 2px solid #245EDB; border-bottom: none;
+        }
+        .start-header {
+            height: 60px; background: linear-gradient(#245EDB, #3F8CF3);
+            border-top-right-radius: 8px; border-top-left-radius: 8px;
+            display: flex; align-items: center; padding: 0 10px;
+            color: white; font-weight: bold; font-size: 16px; text-shadow: 1px 1px 1px #000;
+        }
+        .user-avatar { width: 40px; height: 40px; border: 2px solid white; border-radius: 3px; margin-right: 10px; background: #FFD27D; overflow: hidden; }
+        .start-body { flex: 1; display: flex; border-top: 2px solid #E57D23; }
+        .start-left { width: 50%; background: white; padding: 5px; display: flex; flex-direction: column; gap: 5px; }
+        .start-right { width: 50%; background: #D3E5FA; padding: 5px; border-left: 1px solid #99BBEE; display: flex; flex-direction: column; gap: 5px; }
+        .start-footer {
+            height: 35px; background: linear-gradient(#3F8CF3, #245EDB);
+            display: flex; align-items: center; justify-content: flex-end; padding: 0 10px;
+            color: white; font-size: 11px;
+        }
+        .start-item {
+            display: flex; align-items: center; padding: 5px; cursor: pointer; color: #333; font-size: 11px;
+            height: 36px;
+        }
+        .start-item:hover { background: #2F71CD; color: white; }
+        .start-item i, .start-item img { font-size: 20px; width: 24px; text-align: center; margin-right: 8px; }
+        .start-right .start-item { height: 28px; }
+        .bold-item { font-weight: bold; color: #333; }
+        .start-item:hover .bold-item { color: white; }
+
+        /* Helper for separator */
+        .separator { height: 1px; background: linear-gradient(to right, transparent, #D4D0C8, transparent); margin: 2px 0; }
+    </style>
+</head>
+<body>
+
+    <div id="desktop">
+        <!-- Desktop Icons generated by JS -->
+    </div>
+
+    <!-- Start Menu -->
+    <div id="start-menu">
+        <div class="start-header">
+            <div class="user-avatar"><img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="User"></div>
+            <span>Administrator</span>
+        </div>
+        <div class="start-body">
+            <div class="start-left">
+                <div class="start-item" onclick="openApp('ie')">
+                    <i class="fab fa-internet-explorer" style="color: #3593FF;"></i>
+                    <div class="bold-item">Internet Explorer</div>
+                </div>
+                <div class="start-item" onclick="openApp('email')">
+                    <i class="fas fa-envelope" style="color: #3593FF;"></i>
+                    <div class="bold-item">Outlook Express</div>
+                </div>
+                <div class="separator"></div>
+                <div class="start-item" onclick="openApp('wmp')">
+                    <i class="fas fa-film" style="color: #E67E22;"></i>
+                    <div>Windows Media Player</div>
+                </div>
+                <div class="start-item" onclick="openApp('paint')">
+                    <i class="fas fa-paint-brush" style="color: #C0392B;"></i>
+                    <div>Paint</div>
+                </div>
+                <div class="start-item" onclick="openApp('cmd')">
+                    <i class="fas fa-terminal" style="color: #333;"></i>
+                    <div>Command Prompt</div>
+                </div>
+                 <div class="start-item" onclick="openApp('minesweeper')">
+                    <i class="fas fa-bomb" style="color: black;"></i>
+                    <div>Minesweeper</div>
+                </div>
+                <div class="start-item" onclick="openApp('calc')">
+                    <i class="fas fa-calculator" style="color: #27AE60;"></i>
+                    <div>Calculator</div>
+                </div>
+                
+                <div style="margin-top: auto; text-align: center; padding: 5px; font-weight: bold; background: #fff;">
+                    All Programs <i class="fas fa-caret-right" style="color: green;"></i>
+                </div>
+            </div>
+            <div class="start-right">
+                <div class="start-item" onclick="openPath('My Documents')"><i class="fas fa-folder-open" style="color: #F1C40F;"></i> <b>My Documents</b></div>
+                <div class="start-item" onclick="openPath('My Computer')"><i class="fas fa-desktop" style="color: #3593FF;"></i> <b>My Computer</b></div>
+                <div class="separator"></div>
+                <div class="start-item"><i class="fas fa-cog" style="color: #7F8C8D;"></i> Control Panel</div>
+                <div class="start-item"><i class="fas fa-print" style="color: #7F8C8D;"></i> Printers and Faxes</div>
+                <div class="separator"></div>
+                <div class="start-item"><i class="fas fa-question-circle" style="color: #2980B9;"></i> Help and Support</div>
+                <div class="start-item"><i class="fas fa-search" style="color: #2980B9;"></i> Search</div>
+                <div class="start-item"><i class="fas fa-running" style="color: #2980B9;"></i> Run...</div>
+            </div>
+        </div>
+        <div class="start-footer">
+            <div class="start-item" onclick="window.close()" style="color: white;"><i class="fas fa-power-off" style="color: #E74C3C;"></i> Turn Off Computer</div>
+        </div>
+    </div>
+
+    <!-- Taskbar -->
+    <div id="taskbar">
+        <div id="start-btn" onclick="toggleStartMenu()">
+            <img src="assets/projects/start.png" alt="Start Button" style="height: 110%; width: 100%; object-fit: contain; padding: 2px;">
+        </div>
+        <div id="taskbar-divider"></div>
+        <div id="task-list">
+            <!-- Open windows appear here -->
+        </div>
+        <div id="system-tray">
+            <i class="fas fa-shield-alt" style="color: #E74C3C;"></i>
+            <i class="fas fa-volume-up"></i>
+            <span id="clock">12:00 PM</span>
+        </div>
+    </div>
+
+<script>
+    /** --- FILE SYSTEM & DATA --- */
+    const fileSystem = {
+        "Desktop": {
+            "My Computer": { type: "system", icon: "fas fa-desktop", color: "#3593FF" },
+            "Recycle Bin": { type: "system", icon: "fas fa-trash-alt", color: "#95A5A6" },
+            "Command Prompt": { type: "app", appId: "cmd" },
+            "Calculator": { type: "app", appId: "calc" },
+            "Minesweeper": { type: "app", appId: "minesweeper" },
+            "Projects": {
+                type: "folder",
+                content: {
+                    "Portfolio Website": {
+                        "readme.txt": "This is a React-based portfolio showing my skills in UI/UX.",
+                        "demo.mp4": "video",
+                        "github.url": "https://github.com/user/portfolio"
+                    },
+                    "E-Commerce App": {
+                        "readme.txt": "Full stack MERN application with Stripe integration.",
+                        "backend.js": "console.log('Server started on port 8080');",
+                        "demo.mp4": "video"
+                    },
+                    "AI Chatbot": {
+                        "readme.txt": "Python Flask app using OpenAI API.",
+                        "model.py": "import torch\n# Neural network logic here"
+                    }
+                }
+            },
+            "Resume.txt": "John Doe\nSoftware Engineer\nExperience: 5 Years\nSkills: JS, HTML, CSS",
+            "Internet Explorer": { type: "app", appId: "ie", icon: "fab fa-internet-explorer", color: "#3498DB" }
+        },
+        "My Documents": {
+            "Notes": { "todo.txt": "1. Buy milk\n2. Code XP clone" },
+            "Images": { "sunset.jpg": "image_data" }
+        },
+        "My Computer": {
+            "Local Disk (C:)": {},
+            "CD Drive (D:)": {}
+        }
+    };
+
+    /** --- STATE MANAGEMENT --- */
+    let windows = [];
+    let windowIdCounter = 0;
+    let zIndexCounter = 100;
+    let activeWindow = null;
+    let clipboard = "";
+    
+    // Initial Render
+    renderDesktop();
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    /** --- CORE FUNCTIONS --- */
+    
+    function updateClock() {
+        const now = new Date();
+        document.getElementById('clock').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function toggleStartMenu() {
+        const menu = document.getElementById('start-menu');
+        menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
+    }
+
+    // Global click listener to close things
+    document.addEventListener('click', (e) => {
+        // Close start menu
+        const menu = document.getElementById('start-menu');
+        const btn = document.getElementById('start-btn');
+        if (!menu.contains(e.target) && !btn.contains(e.target) && menu.style.display === 'flex') {
+            menu.style.display = 'none';
+        }
+
+        // Close dropdown menus
+        if (!e.target.classList.contains('menu-btn')) {
+            document.querySelectorAll('.menu-dropdown').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.menu-btn').forEach(el => el.classList.remove('active'));
+        }
+    });
+
+    function toggleMenu(id, btn) {
+        // Close others
+        const allMenus = document.querySelectorAll('.menu-dropdown');
+        const allBtns = document.querySelectorAll('.menu-btn');
+        let wasVisible = false;
+        
+        const target = document.getElementById(id);
+        if(target.style.display === 'block') wasVisible = true;
+
+        allMenus.forEach(el => el.style.display = 'none');
+        allBtns.forEach(el => el.classList.remove('active'));
+
+        if (!wasVisible) {
+            target.style.display = 'block';
+            btn.classList.add('active');
+        }
+        
+        // Stop propagation to prevent immediate close by global listener
+        event.stopPropagation();
+    }
+
+    function renderDesktop() {
+        const desktop = document.getElementById('desktop');
+        desktop.innerHTML = "";
+        
+        const root = fileSystem["Desktop"];
+        Object.keys(root).forEach(key => {
+            const item = root[key];
+            const el = document.createElement('div');
+            el.className = 'desktop-icon';
+            
+            // Icon selection logic
+            let iconHtml = `<i class="fas fa-file" style="color: white;"></i>`; // Default Font Awesome file icon
+            let onClick = () => openFile('Desktop', key); // Default open file logic
+
+            if (key === 'Projects') {
+                iconHtml = `<img src="assets/projects/folder.png" alt="Projects" width="32" height="32">`;
+                onClick = () => openExplorer('Desktop/' + key);
+            } else if (key === 'My Computer') {
+                iconHtml = `<img src="assets/projects/My Computer.ico" alt="My Computer" width="32" height="32">`;
+                onClick = () => openExplorer('My Computer');
+            } else if (key === 'Internet Explorer') {
+                iconHtml = `<img src="assets/projects/Internet Explorer 6.png" alt="Internet Explorer" width="32" height="32">`;
+                onClick = () => openApp('ie');
+            } else if (key === 'Command Prompt') {
+                iconHtml = `<img src="assets/projects/Command Prompt.png" alt="Command Prompt" width="32" height="32">`;
+                onClick = () => openApp('cmd');
+            } else if (key === 'Calculator') {
+                iconHtml = `<img src="assets/projects/Calculator.png" alt="Calculator" width="32" height="32">`;
+                onClick = () => openApp('calc');
+            } else if (key === 'Minesweeper') {
+                iconHtml = `<img src="assets/projects/Minesweeper.png" alt="Minesweeper" width="32" height="32">`;
+                onClick = () => openApp('minesweeper');
+            } else if (key.endsWith('.txt')) {
+                iconHtml = `<img src="assets/projects/notepad.png" alt="Text File" width="32" height="32">`;
+            } else if (typeof item === 'object' && item.type === 'folder') {
+                iconHtml = `<img src="assets/projects/folder.png" alt="Folder" width="32" height="32">`;
+                onClick = () => openExplorer('Desktop/' + key);
+            } else if (key === "Recycle Bin") {
+                iconHtml = `<i class="fas fa-trash-alt" style="color: #95A5A6;"></i>`; // Keep Font Awesome for now
+            }
+            // Fallback for other app types not explicitly covered by images
+            else if (item.type === 'app') {
+                iconHtml = `<i class="${item.icon}" style="color: ${item.color || '#3498DB'};"></i>`;
+                onClick = () => openApp(item.appId);
+            }
+
+
+            el.innerHTML = `${iconHtml}<div class="icon-text">${key}</div>`;
+            el.ondblclick = onClick;
+            // Mobile support
+            let tapCount = 0;
+            el.addEventListener('touchstart', () => {
+                tapCount++;
+                if (tapCount === 2) { onClick(); tapCount = 0; }
+                setTimeout(() => tapCount = 0, 500);
+            });
+            desktop.appendChild(el);
+        });
+    }
+
+    /** --- WINDOW MANAGER LOGIC --- */
+
+    function createWindow(title, width, height, iconClass = "fas fa-window-maximize") {
+        const id = windowIdCounter++;
+        const win = document.createElement('div');
+        win.className = 'window';
+        win.id = `win-${id}`;
+        win.style.width = width + 'px';
+        win.style.height = height + 'px';
+        win.style.top = (50 + (id * 20)) + 'px';
+        win.style.left = (50 + (id * 20)) + 'px';
+        win.style.zIndex = ++zIndexCounter;
+
+        win.innerHTML = `
+            <div class="title-bar" onmousedown="startDrag(event, '${id}')">
+                <div class="title-text"><i class="${iconClass}"></i> ${title}</div>
+                <div class="window-controls">
+                    <button class="control-btn" onclick="minimizeWindow('${id}')">_</button>
+                    <button class="control-btn" onclick="toggleMaximize('${id}')">□</button>
+                    <button class="control-btn btn-close" onclick="closeWindow('${id}')">X</button>
+                </div>
+            </div>
+            <div class="window-body">
+                <div class="window-content" id="win-content-${id}"></div>
+            </div>
+        `;
+
+        win.onmousedown = () => focusWindow(id);
+        document.body.appendChild(win);
+        
+        // Add to Taskbar
+        const taskItem = document.createElement('div');
+        taskItem.className = 'task-item active';
+        taskItem.id = `task-${id}`;
+        taskItem.innerHTML = `<i class="${iconClass}" style="margin-right:5px"></i> ${title}`;
+        taskItem.onclick = () => focusWindow(id);
+        document.getElementById('task-list').appendChild(taskItem);
+
+        windows.push({ id, title, minimized: false, maximized: false, lastRect: null });
+        focusWindow(id);
+        
+        // Return content div specifically
+        return document.getElementById(`win-content-${id}`);
+    }
+
+    function closeWindow(id) {
+        const win = document.getElementById(`win-${id}`);
+        if(win) win.remove();
+        const task = document.getElementById(`task-${id}`);
+        if(task) task.remove();
+        windows = windows.filter(w => w.id != id);
+    }
+
+    function focusWindow(id) {
+        const win = document.getElementById(`win-${id}`);
+        if(win) {
+            win.style.zIndex = ++zIndexCounter;
+            win.style.display = 'flex';
+            document.querySelectorAll('.task-item').forEach(t => t.classList.remove('active'));
+            const task = document.getElementById(`task-${id}`);
+            if(task) task.classList.add('active');
+            activeWindow = id;
+        }
+    }
+
+    function minimizeWindow(id) {
+        const win = document.getElementById(`win-${id}`);
+        win.style.display = 'none';
+        document.getElementById(`task-${id}`).classList.remove('active');
+    }
+
+    function toggleMaximize(id) {
+        const win = document.getElementById(`win-${id}`);
+        const obj = windows.find(w => w.id == id);
+        if (!obj.maximized) {
+            obj.lastRect = { top: win.style.top, left: win.style.left, width: win.style.width, height: win.style.height };
+            win.style.top = '0px';
+            win.style.left = '0px';
+            win.style.width = '100%';
+            win.style.height = 'calc(100% - 30px)'; // Account for taskbar
+            obj.maximized = true;
+        } else {
+            win.style.top = obj.lastRect.top;
+            win.style.left = obj.lastRect.left;
+            win.style.width = obj.lastRect.width;
+            win.style.height = obj.lastRect.height;
+            obj.maximized = false;
+        }
+    }
+
+    // Dragging Logic
+    let dragObj = null;
+    let offsetX, offsetY;
+    function startDrag(e, id) {
+        // Prevent drag if maximizing
+        const wObj = windows.find(w => w.id == id);
+        if (wObj && wObj.maximized) return;
+
+        dragObj = document.getElementById(`win-${id}`);
+        const rect = dragObj.getBoundingClientRect();
+        offsetX = e.clientX - rect.left;
+        offsetY = e.clientY - rect.top;
+        document.addEventListener('mousemove', doDrag);
+        document.addEventListener('mouseup', stopDrag);
+    }
+    function doDrag(e) {
+        if (!dragObj) return;
+        dragObj.style.top = (e.clientY - offsetY) + 'px';
+        dragObj.style.left = (e.clientX - offsetX) + 'px';
+    }
+    function stopDrag() {
+        dragObj = null;
+        document.removeEventListener('mousemove', doDrag);
+        document.removeEventListener('mouseup', stopDrag);
+    }
+
+    /** --- APP LAUNCHERS --- */
+
+    function openApp(appId) {
+        document.getElementById('start-menu').style.display = 'none';
+        if (appId === 'cmd') launchCMD();
+        else if (appId === 'notepad') launchNotepad();
+        else if (appId === 'calc') launchCalculator();
+        else if (appId === 'paint') launchPaint();
+        else if (appId === 'ie') launchIE();
+        else if (appId === 'wmp') launchWMP();
+        else if (appId === 'minesweeper') launchMinesweeper();
+        else alert('Application not installed.');
+    }
+
+    function openPath(path) {
+        document.getElementById('start-menu').style.display = 'none';
+        openExplorer(path);
+    }
+
+    function openFile(path, filename) {
+        // Find file content
+        // Simple traversal for demo
+        let content = "File not found.";
+        if (path === 'Desktop' && fileSystem.Desktop[filename]) content = fileSystem.Desktop[filename];
+        else {
+             // traverse path string "Desktop/Projects/Project A"
+             const parts = path.split('/');
+             let current = fileSystem;
+             for(let p of parts) {
+                 if(current[p]) current = current[p];
+                 else if (current.content && current.content[p]) current = current.content[p];
+             }
+             if (current[filename]) content = current[filename];
+             else if (current.content && current.content[filename]) content = current.content[filename];
+        }
+
+        if (filename.endsWith('.txt') || filename.endsWith('.js') || filename.endsWith('.py')) {
+            launchNotepad(filename, typeof content === 'string' ? content : "Error reading file.");
+        } else if (filename.endsWith('.mp4') || filename === 'demo.mp4') {
+            launchWMP(filename);
+        } else if (filename.endsWith('.url')) {
+            launchIE(content);
+        }
+    }
+
+    /** --- APP IMPLEMENTATIONS --- */
+
+    // 1. EXPLORER
+    function openExplorer(path) {
+        const container = createWindow(path, 600, 400, "fas fa-folder-open");
+        
+        // Resolve path to object
+        let currentDir = fileSystem;
+        const parts = path.split('/');
+        // Mock traversal logic for the specific VFS structure
+        if (path === 'Desktop') currentDir = fileSystem['Desktop'];
+        else if (path === 'My Computer') currentDir = fileSystem['My Computer'];
+        else {
+            // Traverse
+             let curr = fileSystem['Desktop']; // Assumption for demo
+             if(path.includes('Projects')) {
+                 curr = curr['Projects'].content;
+                 const sub = path.split('/').pop();
+                 if(sub !== 'Projects' && curr[sub]) curr = curr[sub];
+             }
+             currentDir = curr;
+        }
+
+        let itemsHtml = '';
+        const items = currentDir.content || currentDir; // Handle folder wrapper
+
+        Object.keys(items).forEach(key => {
+            if(key === 'type' || key === 'icon' || key === 'color') return;
+            const item = items[key];
+            let icon = "fas fa-file";
+            let color = "#333";
+            let typeClass = "text";
+            let dblClick = `openFile('${path}', '${key}')`;
+
+            if (typeof item === 'object' && item.type !== 'app') {
+                icon = "fas fa-folder";
+                color = "#EBC657";
+                typeClass = "folder";
+                dblClick = `openExplorer('${path}/${key}')`;
+            } else if (key.endsWith('.js')) { icon = "fab fa-js"; color = "#F1C40F"; typeClass="code"; }
+            else if (key.endsWith('.mp4')) { icon = "fas fa-film"; color = "#9B59B6"; }
+            
+            itemsHtml += `
+                <div class="file-item" onclick="this.style.background='#CCE8FF'; this.style.border='1px solid #99D1FF'" ondblclick="${dblClick}">
+                    <i class="${icon} file-icon ${typeClass}" style="color: ${color}"></i>
+                    <div style="font-size:11px; word-break: break-all;">${key}</div>
+                </div>
+            `;
+        });
+
+        container.innerHTML = `
+            <div class="explorer-toolbar">
+                <div class="control-btn" style="color:black; border:1px solid #ccc; width:60px;">Back</div>
+                <div class="explorer-address">
+                    <span>Address</span>
+                    <input type="text" class="address-bar" value="${path}" readonly>
+                </div>
+            </div>
+            <div class="explorer-view">
+                ${itemsHtml}
+            </div>
+        `;
+    }
+
+    // 2. CMD
+    function launchCMD() {
+        const container = createWindow("C:\\WINDOWS\\system32\\cmd.exe", 500, 300, "fas fa-terminal");
+        container.innerHTML = `
+            <div class="cmd-body" id="cmd-out">
+                <div>Microsoft Windows XP [Version 5.1.2600]</div>
+                <div>(C) Copyright 1985-2001 Microsoft Corp.</div>
+                <br>
+                <div id="cmd-history"></div>
+                <div>C:\\Documents and Settings\\Administrator> <input type="text" class="cmd-input" id="cmd-in" autofocus></div>
+            </div>
+        `;
+        const input = container.querySelector('#cmd-in');
+        const history = container.querySelector('#cmd-history');
+        
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const cmd = input.value.trim();
+                const line = document.createElement('div');
+                line.innerHTML = `C:\\Documents and Settings\\Administrator> ${cmd}`;
+                history.appendChild(line);
+                
+                // Process Command
+                const response = document.createElement('div');
+                response.style.marginBottom = "10px";
+                
+                if (cmd === 'help') response.innerText = "Supported commands: dir, cls, help, ver, echo, exit";
+                else if (cmd === 'dir') response.innerHTML = " Volume in drive C has no label.<br> Directory of C:\\Desktop<br><br>Projects &lt;DIR&gt;<br>My Computer &lt;LNK&gt;<br>Recycle Bin &lt;LNK&gt;";
+                else if (cmd === 'ver') response.innerText = "Microsoft Windows XP [Version 5.1.2600]";
+                else if (cmd === 'cls') { history.innerHTML = ""; response.innerText = ""; }
+                else if (cmd.startsWith('echo ')) response.innerText = cmd.substring(5);
+                else if (cmd === 'exit') closeWindow(container.parentElement.parentElement.id.replace('win-', ''));
+                else if (cmd !== '') response.innerText = `'${cmd}' is not recognized as an internal or external command.`;
+                
+                if(cmd !== 'cls') history.appendChild(response);
+                input.value = "";
+                container.querySelector('.cmd-body').scrollTop = container.querySelector('.cmd-body').scrollHeight;
+            }
+        });
+    }
+
+    // 3. NOTEPAD
+    function launchNotepad(filename = "Untitled", content = "") {
+        const container = createWindow(`${filename} - Notepad`, 400, 300, "fas fa-file-alt");
+        // Get window ID for menus
+        const winId = container.parentElement.parentElement.id.split('-')[1];
+        
+        container.innerHTML = `
+            <div class="menubar">
+                <div class="menu-wrap">
+                    <div class="menu-btn" onclick="toggleMenu('np-file-${winId}', this)">File</div>
+                    <div class="menu-dropdown" id="np-file-${winId}">
+                        <div class="menu-item" onclick="closeWindow('${winId}')">Exit</div>
+                    </div>
+                </div>
+                <div class="menu-wrap">
+                    <div class="menu-btn" onclick="toggleMenu('np-edit-${winId}', this)">Edit</div>
+                    <div class="menu-dropdown" id="np-edit-${winId}">
+                        <div class="menu-item menu-disabled">Undo</div>
+                        <div class="menu-separator"></div>
+                        <div class="menu-item menu-disabled">Cut</div>
+                        <div class="menu-item menu-disabled">Copy</div>
+                        <div class="menu-item menu-disabled">Paste</div>
+                        <div class="menu-item menu-disabled">Delete</div>
+                        <div class="menu-separator"></div>
+                        <div class="menu-item">Select All</div>
+                    </div>
+                </div>
+                <div class="menu-wrap"><div class="menu-btn">Format</div></div>
+                <div class="menu-wrap"><div class="menu-btn">View</div></div>
+                <div class="menu-wrap">
+                    <div class="menu-btn" onclick="toggleMenu('np-help-${winId}', this)">Help</div>
+                    <div class="menu-dropdown" id="np-help-${winId}">
+                        <div class="menu-item" onclick="alert('Notepad v1.0\\nWindows XP Clone')">About Notepad</div>
+                    </div>
+                </div>
+            </div>
+            <textarea class="notepad-area" spellcheck="false">${content}</textarea>
+        `;
+    }
+
+    // 4. CALCULATOR
+    function launchCalculator() {
+        const container = createWindow("Calculator", 250, 300, "fas fa-calculator");
+        let expr = "";
+        const btns = [
+            '7','8','9','/',
+            '4','5','6','*',
+            '1','2','3','-',
+            '0','.','=','+'
+        ];
+        
+        let btnHtml = btns.map(b => `<button class="calc-btn" onclick="calcInput('${b}')">${b}</button>`).join('');
+        
+        container.innerHTML = `
+            <div class="menubar">
+                <div class="menu-wrap"><div class="menu-btn">Edit</div></div>
+                <div class="menu-wrap"><div class="menu-btn">View</div></div>
+                <div class="menu-wrap"><div class="menu-btn">Help</div></div>
+            </div>
+            <div class="calc-grid">
+                <input type="text" class="calc-display" id="calc-disp" value="0" readonly>
+                <button class="calc-btn" onclick="calcClear()" style="grid-column: span 2; color: red;">C</button>
+                <button class="calc-btn" onclick="calcInput('BS')" style="grid-column: span 2;">Backspace</button>
+                ${btnHtml}
+            </div>
+        `;
+        
+        const disp = container.querySelector('#calc-disp');
+
+        // Logic
+        window.calcInput = (val) => {
+            if(val === '=') {
+                try { disp.value = eval(expr); expr = disp.value; } catch { disp.value = 'Error'; expr = ""; }
+            } else if (val === 'BS') {
+                disp.value = disp.value.slice(0, -1);
+                expr = disp.value;
+            } else {
+                if(disp.value === '0' || disp.value === 'Error') { disp.value = ""; expr = ""; }
+                expr += val;
+                disp.value += val;
+            }
+        };
+        window.calcClear = () => { disp.value = "0"; expr = ""; };
+
+        // Keyboard Support
+        container.tabIndex = 0; // Make focusable
+        container.addEventListener('keydown', (e) => {
+            e.preventDefault();
+            const key = e.key;
+            if (/[0-9]/.test(key)) calcInput(key);
+            else if (['+', '-', '*', '/'].includes(key)) calcInput(key);
+            else if (key === 'Enter') calcInput('=');
+            else if (key === 'Backspace') calcInput('BS');
+            else if (key === 'Escape') calcClear();
+        });
+        container.focus();
+    }
+
+    // 5. PAINT (Enhanced)
+    function launchPaint() {
+        const container = createWindow("untitled - Paint", 600, 480, "fas fa-paint-brush");
+        const winId = container.parentElement.parentElement.id.split('-')[1];
+        
+        // Extended Tools
+        const tools = [
+            {id: 'free', icon: 'fas fa-star-of-life'},
+            {id: 'select', icon: 'far fa-square-full'},
+            {id: 'eraser', icon: 'fas fa-eraser'},
+            {id: 'fill', icon: 'fas fa-fill-drip'}, // Bucket
+            {id: 'picker', icon: 'fas fa-eye-dropper'},
+            {id: 'zoom', icon: 'fas fa-search'},
+            {id: 'pencil', icon: 'fas fa-pencil-alt'},
+            {id: 'brush', icon: 'fas fa-paint-brush'},
+            {id: 'spray', icon: 'fas fa-spray-can'}, // Spray
+            {id: 'text', icon: 'fas fa-font'},
+            {id: 'line', icon: 'fas fa-slash'},
+            {id: 'curve', icon: 'fas fa-bezier-curve'},
+            {id: 'rect', icon: 'far fa-square'}, 
+            {id: 'poly', icon: 'fas fa-draw-polygon'},
+            {id: 'ellipse', icon: 'far fa-circle'}, // Ellipse
+            {id: 'roundrect', icon: 'far fa-square'}
+        ];
+        
+        const colors = ['#000000', '#808080', '#800000', '#808000', '#008000', '#008080', '#000080', '#800080', '#808040', '#004040', '#0080FF', '#004080', '#4000FF', '#804000',
+                        '#FFFFFF', '#C0C0C0', '#FF0000', '#FFFF00', '#00FF00', '#00FFFF', '#0000FF', '#FF00FF', '#FFFF80', '#00FF80', '#80FFFF', '#8080FF', '#FF0080', '#FF8040'];
+
+        container.innerHTML = `
+            <div class="menubar">
+                <div class="menu-wrap">
+                    <div class="menu-btn" onclick="toggleMenu('paint-file-${winId}', this)">File</div>
+                    <div class="menu-dropdown" id="paint-file-${winId}">
+                        <div class="menu-item" onclick="paintNew('${winId}')">New</div>
+                        <div class="menu-item">Open...</div>
+                        <div class="menu-item">Save</div>
+                        <div class="menu-separator"></div>
+                        <div class="menu-item" onclick="closeWindow('${winId}')">Exit</div>
+                    </div>
+                </div>
+                <div class="menu-wrap">
+                    <div class="menu-btn" onclick="toggleMenu('paint-edit-${winId}', this)">Edit</div>
+                    <div class="menu-dropdown" id="paint-edit-${winId}">
+                        <div class="menu-item menu-disabled">Undo</div>
+                        <div class="menu-item menu-disabled">Repeat</div>
+                        <div class="menu-separator"></div>
+                        <div class="menu-item" onclick="paintNew('${winId}')">Clear Image</div>
+                    </div>
+                </div>
+                <div class="menu-wrap">
+                    <div class="menu-btn" onclick="toggleMenu('paint-view-${winId}', this)">View</div>
+                    <div class="menu-dropdown" id="paint-view-${winId}">
+                        <div class="menu-item">Tool Box</div>
+                        <div class="menu-item">Color Box</div>
+                        <div class="menu-item">Status Bar</div>
+                    </div>
+                </div>
+                <div class="menu-wrap">
+                    <div class="menu-btn" onclick="toggleMenu('paint-image-${winId}', this)">Image</div>
+                    <div class="menu-dropdown" id="paint-image-${winId}">
+                        <div class="menu-item menu-disabled">Flip/Rotate...</div>
+                        <div class="menu-item menu-disabled">Stretch/Skew...</div>
+                        <div class="menu-item" onclick="paintInvert('${winId}')">Invert Colors</div>
+                        <div class="menu-item menu-disabled">Attributes...</div>
+                    </div>
+                </div>
+                <div class="menu-wrap">
+                    <div class="menu-btn" onclick="toggleMenu('paint-colors-${winId}', this)">Colors</div>
+                    <div class="menu-dropdown" id="paint-colors-${winId}">
+                        <div class="menu-item" onclick="paintCustomColor('${winId}')">Edit Colors...</div>
+                    </div>
+                </div>
+                <div class="menu-wrap">
+                    <div class="menu-btn" onclick="toggleMenu('paint-help-${winId}', this)">Help</div>
+                    <div class="menu-dropdown" id="paint-help-${winId}">
+                        <div class="menu-item">Help Topics</div>
+                        <div class="menu-separator"></div>
+                        <div class="menu-item" onclick="alert('MS Paint\\nWindows XP Clone')">About Paint</div>
+                    </div>
+                </div>
+            </div>
+            <div class="paint-container">
+                <div class="paint-main">
+                    <div class="paint-sidebar">
+                        ${tools.map(t => `<div class="paint-tool" id="tool-${t.id}-${winId}" onclick="setTool('${t.id}', '${winId}')"><i class="${t.icon}" style="font-size:12px;"></i></div>`).join('')}
+                    </div>
+                    <div class="paint-workspace">
+                        <canvas id="paint-canvas-${winId}" width="600" height="400"></canvas>
+                    </div>
+                </div>
+                <div class="paint-footer">
+                    <!-- Hidden Custom Picker -->
+                    <input type="color" id="paint-picker-${winId}" style="display:none" onchange="setPaintColor(this.value, '${winId}', 0)">
+                    
+                    <div class="current-colors" ondblclick="paintCustomColor('${winId}')" title="Double click to edit color">
+                        <div class="color-front" id="fg-color-${winId}"></div>
+                        <div class="color-back" id="bg-color-${winId}"></div>
+                    </div>
+                    <div class="paint-palette">
+                        ${colors.map(c => `<div class="color-swatch" style="background:${c}" onmousedown="handleSwatchClick(event, '${c}', '${winId}')" oncontextmenu="return false;"></div>`).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        const canvas = container.querySelector(`#paint-canvas-${winId}`);
+        const ctx = canvas.getContext('2d');
+        let painting = false;
+        let fgColor = "black";
+        let bgColor = "white";
+        let tool = "pencil";
+        let startX, startY;
+        let snapshot;
+        let sprayInterval;
+
+        // --- SCOPED HELPERS ---
+
+        window.setTool = (t, wid) => {
+            tool = t;
+            const cnt = document.getElementById(`win-content-${wid}`);
+            cnt.querySelectorAll('.paint-tool').forEach(el => el.classList.remove('active'));
+            const btn = cnt.querySelector(`#tool-${t}-${wid}`);
+            if(btn) btn.classList.add('active');
+        };
+
+        window.handleSwatchClick = (e, color, wid) => {
+            if(e.button === 0) setPaintColor(color, wid, 0); // Left Click -> FG
+            else if (e.button === 2) setPaintColor(color, wid, 2); // Right Click -> BG
+        }
+
+        window.setPaintColor = (c, wid, button) => {
+            const cnt = document.getElementById(`win-content-${wid}`);
+            if(button === 0) {
+                fgColor = c;
+                cnt.querySelector(`#fg-color-${wid}`).style.background = c;
+            } else {
+                bgColor = c;
+                cnt.querySelector(`#bg-color-${wid}`).style.background = c;
+            }
+        };
+
+        window.paintCustomColor = (wid) => {
+            document.getElementById(`paint-picker-${wid}`).click();
+        }
+
+        window.paintNew = (wid) => {
+             const cvs = document.getElementById(`paint-canvas-${wid}`);
+             const c = cvs.getContext('2d');
+             c.fillStyle = "white";
+             c.fillRect(0,0, cvs.width, cvs.height);
+        };
+
+        window.paintInvert = (wid) => {
+            const cvs = document.getElementById(`paint-canvas-${wid}`);
+            const c = cvs.getContext('2d');
+            const imgData = c.getImageData(0,0, cvs.width, cvs.height);
+            const data = imgData.data;
+            for(let i=0; i < data.length; i+=4) {
+                data[i] = 255 - data[i];     
+                data[i+1] = 255 - data[i+1]; 
+                data[i+2] = 255 - data[i+2]; 
+            }
+            c.putImageData(imgData, 0, 0);
+        };
+        
+        // --- FLOOD FILL ALGORITHM (Stack Based) ---
+        function floodFill(x, y, fillColor) {
+            const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imgData.data;
+            
+            // Hex to RGBA
+            const r = parseInt(fillColor.slice(1,3), 16);
+            const g = parseInt(fillColor.slice(3,5), 16);
+            const b = parseInt(fillColor.slice(5,7), 16);
+            const a = 255;
+
+            const startIdx = (y * canvas.width + x) * 4;
+            const startR = data[startIdx], startG = data[startIdx+1], startB = data[startIdx+2], startA = data[startIdx+3];
+
+            if(startR === r && startG === g && startB === b && startA === a) return;
+
+            const matchStartColor = (idx) => {
+                return data[idx] === startR && data[idx+1] === startG && data[idx+2] === startB && data[idx+3] === startA;
+            }
+            
+            const colorPixel = (idx) => {
+                data[idx] = r; data[idx+1] = g; data[idx+2] = b; data[idx+3] = a;
+            }
+
+            const stack = [[x, y]];
+            
+            while(stack.length) {
+                const [cx, cy] = stack.pop();
+                const idx = (cy * canvas.width + cx) * 4;
+                
+                if(matchStartColor(idx)) {
+                    colorPixel(idx);
+                    if(cx > 0) stack.push([cx-1, cy]);
+                    if(cx < canvas.width - 1) stack.push([cx+1, cy]);
+                    if(cy > 0) stack.push([cx, cy-1]);
+                    if(cy < canvas.height - 1) stack.push([cx, cy+1]);
+                }
+            }
+            ctx.putImageData(imgData, 0, 0);
+        }
+
+        // --- DRAWING LOGIC ---
+        // Init defaults
+        window.setTool('pencil', winId);
+        window.setPaintColor('black', winId, 0);
+        window.setPaintColor('white', winId, 2);
+        ctx.fillStyle = "white";
+        ctx.fillRect(0,0, canvas.width, canvas.height);
+        
+        function getPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            return { x: Math.floor(e.clientX - rect.left), y: Math.floor(e.clientY - rect.top) };
+        }
+
+        function draw(e) {
+            if(!painting) return;
+            const pos = getPos(e);
+            
+            // Logic for Eraser: uses BG color
+            const isEraser = tool === 'eraser';
+            const currentColor = isEraser ? bgColor : fgColor;
+
+            ctx.lineWidth = tool === 'brush' ? 6 : (isEraser ? 15 : 1);
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = currentColor;
+            ctx.fillStyle = currentColor;
+
+            if (tool === 'pencil' || tool === 'brush' || isEraser) {
+                ctx.lineTo(pos.x, pos.y);
+                ctx.stroke();
+            } else if (tool === 'line') {
+                ctx.putImageData(snapshot, 0, 0);
+                ctx.beginPath();
+                ctx.moveTo(startX, startY);
+                ctx.lineTo(pos.x, pos.y);
+                ctx.stroke();
+            } else if (tool === 'rect') {
+                ctx.putImageData(snapshot, 0, 0);
+                ctx.strokeRect(startX, startY, pos.x - startX, pos.y - startY);
+            } else if (tool === 'ellipse') {
+                ctx.putImageData(snapshot, 0, 0);
+                ctx.beginPath();
+                // Ellipse logic using scaling
+                let radiusX = (pos.x - startX) * 0.5;
+                let radiusY = (pos.y - startY) * 0.5;
+                let centerX = startX + radiusX;
+                let centerY = startY + radiusY;
+                ctx.ellipse(centerX, centerY, Math.abs(radiusX), Math.abs(radiusY), 0, 0, 2 * Math.PI);
+                ctx.stroke();
+            }
+        }
+
+        function spray() {
+            if(!painting) return;
+            ctx.fillStyle = fgColor;
+            for(let i=0; i<10; i++) {
+                const angle = Math.random() * 2 * Math.PI;
+                const radius = Math.random() * 10; // Spray radius
+                const x = startX + radius * Math.cos(angle);
+                const y = startY + radius * Math.sin(angle);
+                ctx.fillRect(x, y, 1, 1);
+            }
+        }
+
+        canvas.addEventListener('mousedown', (e) => { 
+            const pos = getPos(e);
+            startX = pos.x; startY = pos.y;
+            
+            if (tool === 'fill') {
+                floodFill(startX, startY, e.button === 2 ? bgColor : fgColor);
+                return;
+            }
+
+            painting = true;
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+            
+            if(tool === 'line' || tool === 'rect' || tool === 'ellipse') {
+                snapshot = ctx.getImageData(0,0, canvas.width, canvas.height);
+            }
+            
+            if(tool === 'spray') {
+                 sprayInterval = setInterval(() => {
+                     // Update startX/Y to current mouse pos if moving
+                     // But here we rely on mousemove updating a global or similar.
+                     // Simple Spray: just spray at initial click, and update in mousemove
+                     spray(); 
+                 }, 50);
+                 spray(); // Initial burst
+            }
+        });
+        
+        canvas.addEventListener('mouseup', () => { 
+            painting = false; 
+            ctx.beginPath();
+            if(sprayInterval) clearInterval(sprayInterval);
+        });
+        
+        canvas.addEventListener('mousemove', (e) => {
+            const pos = getPos(e);
+            if(tool === 'spray' && painting) {
+                startX = pos.x; 
+                startY = pos.y;
+            } else {
+                draw(e);
+            }
+        });
+        
+        canvas.addEventListener('mouseleave', () => {
+             painting = false;
+             if(sprayInterval) clearInterval(sprayInterval);
+        });
+    }
+
+    // 6. INTERNET EXPLORER
+    function launchIE(url = "https://www.google.com/webhp?igu=1") {
+        const container = createWindow("Internet Explorer", 700, 500, "fab fa-internet-explorer");
+        container.innerHTML = `
+             <div class="explorer-toolbar">
+                <div class="control-btn" style="color:black; border:1px solid #ccc;">Back</div>
+                <div class="explorer-address">
+                    <span>Address</span>
+                    <input type="text" class="address-bar" value="${url}" id="ie-url">
+                    <button onclick="document.getElementById('ie-frame').src = document.getElementById('ie-url').value">Go</button>
+                </div>
+            </div>
+            <iframe id="ie-frame" src="${url}" style="width:100%; height: calc(100% - 35px); border:none;"></iframe>
+        `;
+    }
+
+    // 7. WINDOWS MEDIA PLAYER
+    function launchWMP(file = "Sample Video") {
+        const container = createWindow("Windows Media Player", 400, 350, "fas fa-film");
+        container.style.background = "black";
+        container.innerHTML = `
+            <div style="height: calc(100% - 50px); display:flex; align-items:center; justify-content:center; color:white;">
+                ${file === "video" || file.endsWith('.mp4') 
+                  ? '<div style="text-align:center"><i class="fas fa-play-circle" style="font-size:50px; opacity:0.5;"></i><br>Playing Project Demo...</div>' 
+                  : '<div style="background: linear-gradient(to bottom, #000, #003366); width:100%; height:100%; display:flex; align-items:center; justify-content:center;"><i class="fas fa-music" style="font-size:60px; color:#ff9900;"></i></div>'}
+            </div>
+            <div style="height: 50px; background: #silver; display:flex; align-items:center; justify-content:center; gap:10px; background: linear-gradient(#eee, #ccc);">
+                <i class="fas fa-stop-circle" style="font-size:24px; cursor:pointer"></i>
+                <i class="fas fa-play-circle" style="font-size:32px; color: #245edb; cursor:pointer"></i>
+                <i class="fas fa-pause-circle" style="font-size:24px; cursor:pointer"></i>
+                <div style="width: 100px; height: 5px; background: #555; border-radius:3px;">
+                    <div style="width: 40%; height: 100%; background: #27AE60;"></div>
+                </div>
+            </div>
+        `;
+    }
+
+    // 8. MINESWEEPER
+    function launchMinesweeper() {
+        const container = createWindow("Minesweeper", 250, 300, "fas fa-bomb");
+        const winId = container.parentElement.parentElement.id.split('-')[1];
+        let gameOver = false;
+        
+        container.innerHTML = `
+            <div class="menubar">
+                <div class="menu-wrap">
+                    <div class="menu-btn" onclick="toggleMenu('mine-game-${winId}', this)">Game</div>
+                    <div class="menu-dropdown" id="mine-game-${winId}">
+                        <div class="menu-item" onclick="resetMinesweeper('${winId}')">New Game</div>
+                        <div class="menu-separator"></div>
+                        <div class="menu-item" onclick="closeWindow('${winId}')">Exit</div>
+                    </div>
+                </div>
+                <div class="menu-wrap">
+                    <div class="menu-btn" onclick="toggleMenu('mine-help-${winId}', this)">Help</div>
+                    <div class="menu-dropdown" id="mine-help-${winId}">
+                         <div class="menu-item" onclick="alert('Minesweeper\\nWindows XP Clone')">About Minesweeper</div>
+                    </div>
+                </div>
+            </div>
+            <div style="background:#C0C0C0; padding:10px; flex:1; display:flex; flex-direction:column; align-items:center; overflow: auto;">
+                <div class="mine-header" style="width: 100%;">
+                    <div class="mine-counter">010</div>
+                    <div class="mine-face" onclick="resetMinesweeper('${winId}')"><i class="fas fa-smile" style="color:#FFFF00; text-shadow:1px 1px 0 #000; -webkit-text-stroke: 1px black;"></i></div>
+                    <div class="mine-counter">000</div>
+                </div>
+                <div id="mine-grid-${winId}" style="display:grid; grid-template-columns:repeat(8, 20px); gap:1px; border:3px inset white; background:#7b7b7b;">
+                    <!-- Grid Generated via JS -->
+                </div>
+            </div>
+        `;
+        
+        window.resetMinesweeper = (wid) => {
+            gameOver = false;
+            const cnt = document.getElementById(`win-content-${wid}`);
+            cnt.querySelector('.mine-face i').className = "fas fa-smile";
+            const grid = cnt.querySelector(`#mine-grid-${wid}`);
+            grid.innerHTML = "";
+            
+            // Create 64 cells
+            for(let i=0; i<64; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.style.cssText = "width:20px; height:20px; background:#C0C0C0; border:2px outset white; cursor:pointer; font-size:12px; text-align:center; line-height:16px; font-weight:bold;";
+                
+                // Mine Logic
+                const isMine = Math.random() > 0.85; 
+                cell.dataset.mine = isMine;
+                
+                cell.onclick = function() {
+                    if(gameOver) return;
+                    this.style.border = '1px solid #7b7b7b';
+                    if(this.dataset.mine === 'true') {
+                        this.innerHTML = '<i class="fas fa-bomb"></i>';
+                        this.style.background = "red";
+                        gameOver = true;
+                        cnt.querySelector('.mine-face i').className = "fas fa-dizzy";
+                        // Reveal all mines
+                        cnt.querySelectorAll('.cell').forEach(c => {
+                            if(c.dataset.mine === 'true') {
+                                c.style.border = '1px solid #7b7b7b';
+                                c.innerHTML = '<i class="fas fa-bomb"></i>';
+                            }
+                        });
+                    } else {
+                        const num = Math.floor(Math.random() * 3);
+                        if(num > 0) {
+                            this.innerText = num;
+                            this.style.color = ['blue', 'green', 'red'][num-1];
+                        }
+                    }
+                };
+                grid.appendChild(cell);
+            }
+        };
+
+        window.resetMinesweeper(winId);
+    }
+
+</script>
+</body>
+</html>
