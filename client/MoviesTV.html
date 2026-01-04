@@ -1095,12 +1095,17 @@
                 <span id="mEpisodesCount" style="color: #aaa; margin-left: 10px;"></span>
             `;
 
-            let descText = d.overview || "No description available.";
+            let descText = d.overview;
             if (isItemRecommended(item)) {
                 const rec = getRecommendation(item);
-                if (rec && rec.recommender) {
-                    descText += `<br><br><i style="color: #ccc;">Recommended by: ${rec.recommender}</i>`;
+                if (rec) {
+                    descText = rec.itemDetails.overview || rec.overview || "No description available."; // Prioritize itemDetails.overview
+                    if (rec.recommender) {
+                        descText += `<br><br><i style="color: #ccc;">Recommended by: ${rec.recommender}</i>`;
+                    }
                 }
+            } else {
+                descText = descText || "No description available."; // Fallback for non-recommended items
             }
             document.getElementById('mDesc').innerHTML = descText;
             document.getElementById('mCast').innerText = d.credits ? d.credits.cast.slice(0,3).map(c=>c.name).join(', ') : '-';
@@ -1188,7 +1193,7 @@
                 recBtn.className = 'btn btn-white';
                 recBtn.innerText = 'Recommend This';
                 recBtn.onclick = () => {
-                    pendingRecommendation = item; 
+                    pendingRecommendation = currentOpenItem.details; 
                     document.getElementById('recNameInput').value = '';
                     document.getElementById('recDialog').style.display = 'flex';
                 };
