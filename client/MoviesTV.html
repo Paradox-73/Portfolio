@@ -588,8 +588,8 @@
             if (app) app.classList.remove('hidden');
 
             initSeenList();
-            initRecommendedList();
-            loadDataFromAPI();
+            await initRecommendedList(); // Await this async function
+            await loadDataFromAPI();     // Await this async function
             renderRecommendedRow();
         };
 
@@ -1004,7 +1004,7 @@
                         item = rec.itemDetails;
                     } catch (e) { continue; }
                 }
-                createCard(item, track, true, rec.recommender);
+                createCard(rec, track, true, rec.recommender);
             }
         }
 
@@ -1022,15 +1022,17 @@
         function createCard(item, track, isRec = false, recommender = '') {
             const div = document.createElement('div');
             div.className = 'movie-box';
-            div.setAttribute('data-item-id', item.tmdb_id || item.id);
-            let src = item.poster_path;
+            // Access itemId or fall back to itemDetails IDs
+            div.setAttribute('data-item-id', item.itemId || item.itemDetails.tmdb_id || item.itemDetails.id);
+            
+            let src = item.itemDetails.poster_path; // Poster path is within itemDetails
             if (src && !src.startsWith('http')) src = IMG_URL + src;
             
-            let hoverText = item.title || item.name;
+            let hoverText = item.title; // Use the main title from the recommendation object
 
             div.innerHTML = `
-                <img src="${src || ''}" class="${src ? 'loaded' : ''}" data-title="${item.title || item.name}">
-                <div class="placeholder-title" ${src ? 'style="display:none"' : ''}>${item.title || item.name}</div>
+                <img src="${src || ''}" class="${src ? 'loaded' : ''}" data-title="${item.title}">
+                <div class="placeholder-title" ${src ? 'style="display:none"' : ''}>${item.title}</div>
                 <div class="hover-details">${hoverText}</div>
             `;
             div.onclick = () => openDetails(item); 
