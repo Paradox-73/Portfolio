@@ -593,9 +593,9 @@
             renderRecommendedRow();
         };
 
-                // --- Constants & Config ---
-
-                const API_BASE_URL = 'http://localhost:3000';
+        const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? 'http://localhost:3000'
+            : '';
 
         
 
@@ -848,7 +848,9 @@
         async function loadDataFromAPI() {
             try {
                 console.log("Starting to load data from API...");
-                const API_BASE_URL = 'http://localhost:3000';
+                const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? 'http://localhost:3000'
+        : '';
                 const [moviesRes, showsRes] = await Promise.all([
                     fetch(`${API_BASE_URL}/api/movies`).catch(() => null),
                     fetch(`${API_BASE_URL}/api/shows`).catch(() => null)

@@ -720,7 +720,7 @@
         
                         try {
                             console.log(`Attempting to toggle played status for ${title} (ID: ${itemId})...`);
-                            const response = await fetch(`http://localhost:3000/api/wishlist/games/${itemId}/togglePlayed`, {
+                            const response = await fetch(`/api/wishlist/games/${itemId}/togglePlayed`, {
                                 method: 'PUT',
                                 headers: {
                                     'Content-Type': 'application/json',
@@ -781,7 +781,7 @@
 
     async function loadGamesFromAPI() {
         try {
-            const response = await fetch('http://localhost:3000/api/games');
+            const response = await fetch('/api/games');
             const fetchedGames = await response.json();
             playedGameTitles.clear();
             gameLibrary = fetchedGames.map(game => {
@@ -803,7 +803,7 @@
 
     async function loadWishlistData() { // Renamed and refactored
         try {
-            const response = await fetch('http://localhost:3000/api/wishlist/games');
+            const response = await fetch('/api/wishlist/games');
             if (response.ok) {
                 const fetchedWishlist = await response.json();
                 wishlist = fetchedWishlist.map(item => ({
@@ -1419,7 +1419,7 @@
         }
 
         try {
-            const response = await fetch('http://localhost:3000/api/wishlist/games', {
+            const response = await fetch('/api/wishlist/games', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1446,7 +1446,7 @@
 
     async function loadWishlist() {
         try {
-            const response = await fetch('http://localhost:3000/api/wishlist/games');
+            const response = await fetch('/api/wishlist/games');
             if (response.ok) {
                 wishlist = await response.json();
                 wishlistGameTitles.clear();
@@ -1508,7 +1508,7 @@
                     }
 
                     try {
-                        const response = await fetch(`http://localhost:3000/api/wishlist/games/${game._id}/togglePlayed`, {
+                        const response = await fetch(`/api/wishlist/games/${game._id}/togglePlayed`, {
                             method: 'PUT',
                             headers: {
                                 'Content-Type': 'application/json',

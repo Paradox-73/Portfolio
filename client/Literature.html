@@ -672,7 +672,7 @@
     const recommender = name.trim() === "" ? "Anonymous" : name;
 
     try {
-        const response = await fetch('http://localhost:3000/api/recommendations', {
+        const response = await fetch('/api/recommendations', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -763,7 +763,7 @@
 
                                 // 1. Add to read collection
 
-                                const addResponse = await fetch('http://localhost:3000/api/books', {
+                                const addResponse = await fetch('/api/books', {
 
                                     method: 'POST',
 
@@ -789,7 +789,7 @@
 
                                 // 2. Remove from wishlist
 
-                                const deleteResponse = await fetch(`http://localhost:3000/api/wishlist/${docId}`, {
+                                const deleteResponse = await fetch(`/api/wishlist/${docId}`, {
 
                                     method: 'DELETE'
 
@@ -901,7 +901,7 @@
 
     
 
-                fetch('http://localhost:3000/api/works')
+                fetch('/api/works')
 
                     .then(response => response.json())
 
@@ -969,7 +969,7 @@
 
                 try {
 
-                    const response = await fetch('http://localhost:3000/api/books');
+                    const response = await fetch('/api/books');
 
                     if (!response.ok) throw new Error('Network response was not ok');
 
@@ -1037,7 +1037,7 @@
 
                 try {
 
-                    const response = await fetch('http://localhost:3000/api/wishlist');
+                    const response = await fetch('/api/wishlist');
 
                     if (!response.ok) throw new Error('Network response was not ok');
 
