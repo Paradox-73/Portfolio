@@ -1,0 +1,273 @@
+        :root {
+            --wood-dark: #1a0f0a;
+            --wood-medium: #3d2817;
+            --wood-light: #5c4033;
+            --gold: #ffd700;
+            --paper-texture-url: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/937765/seamless_paper_texture.png');
+        }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: #050302;
+            background-image: radial-gradient(circle at 50% 50%, #1a120b 0%, #000000 100%);
+            color: #e5e5e5;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* --- Realistic Wood Texture for Shelves --- */
+        .wood-texture {
+            background-color: #2a1b12;
+            position: relative;
+            z-index: 1;
+        }
+        .wood-texture::before {
+            content: "";
+            position: absolute; inset: 0; opacity: 0.15;
+            background-image: url("data:image/svg+xml,%3Csvg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+            pointer-events: none; z-index: -1;
+        }
+        .wood-texture::after {
+            content: "";
+            position: absolute; inset: 0;
+            background: repeating-linear-gradient(90deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 1px, transparent 1px, transparent 10px);
+            opacity: 0.3; pointer-events: none; z-index: -1;
+        }
+
+        /* --- Bookshelf Structure --- */
+        .bookshelf-container {
+            max-width: 1200px; margin: 0 auto;
+            border-left: 20px solid #1a0f0a; border-right: 20px solid #1a0f0a; border-top: 15px solid #1a0f0a;
+            background: #1e140e; box-shadow: 0 0 100px rgba(0,0,0,0.95);
+            position: relative; padding-top: 30px; padding-bottom: 80px;
+        }
+
+        .shelf {
+            position: relative; background: inherit;
+            padding: 50px 20px 25px 20px;
+            border-bottom: 30px solid #281810; 
+            border-image: linear-gradient(to right, #1a0f0a, #4a3022, #1a0f0a) 1;
+            box-shadow: inset 0 20px 40px rgba(0,0,0,0.95), 0 15px 30px rgba(0,0,0,0.8);
+            display: flex; align-items: flex-end; justify-content: center;
+            flex-wrap: wrap; gap: 15px; perspective: 1000px; margin-bottom: 5px;
+        }
+        .shelf::after {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 40px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent);
+            pointer-events: none; z-index: 1;
+        }
+        
+        .plaque-text {
+            font-family: 'Cinzel', serif; color: var(--gold);
+            text-shadow: 0px 0px 5px rgba(255, 215, 0, 0.4), 2px 2px 0px rgba(0, 0, 0, 0.9);
+            letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700;
+        }
+        .shelf-plaque {
+            position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
+            background: linear-gradient(to bottom, #1a0f0a, #000);
+            padding: 6px 20px; border: 2px solid #5c4033; border-radius: 4px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.9); z-index: 20; pointer-events: none; white-space: nowrap;
+        }
+
+        /* --- Book Items --- */
+        .book-face {
+            width: 80px; height: 120px; position: relative;
+            transition: transform 0.3s; cursor: pointer;
+            transform-style: preserve-3d; transform-origin: center bottom;
+            background-size: cover; background-position: center;
+            border-radius: 2px 4px 4px 2px;
+            box-shadow: inset 3px 0 5px rgba(255,255,255,0.1), 5px 5px 15px rgba(0,0,0,0.7);
+            flex-shrink: 0; display: flex;
+        }
+        @media (min-width: 768px) { .book-face { width: 100px; height: 150px; } }
+        .book-face:hover { transform: scale(1.15) translateY(-10px) rotateX(5deg); z-index: 100; }
+        
+        .book-generated-cover {
+            flex-direction: column; align-items: center; justify-content: center;
+            padding: 5px; text-align: center; border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* --- Controls --- */
+        .control-panel { position: fixed; top: 15px; left: 15px; z-index: 5000; display: flex; align-items: center; gap: 10px; }
+        .glass-btn {
+            background: rgba(0, 0, 0, 0.85); border: 1px solid #c5a028; color: #ffd700;
+            width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; position: relative; z-index: 5002;
+        }
+        .search-container {
+            position: relative; height: 40px; display: flex; align-items: center;
+            background: rgba(0, 0, 0, 0.85); border: 1px solid #5c4033; border-radius: 22px;
+            padding: 0 5px; transition: all 0.3s; z-index: 5002;
+        }
+        .search-input {
+            width: 0; background: transparent; border: none; color: #ffd700;
+            padding: 0; transition: width 0.3s; opacity: 0; pointer-events: none;
+        }
+        .search-container.active .search-input { width: 180px; padding: 0 10px; opacity: 1; pointer-events: auto; }
+        .search-container.active { background: #1a0f0a; border-color: #ffd700; }
+        
+        #nav-dropdown {
+            position: absolute; top: 55px; left: 0; width: 200px;
+            background: #1a0f0a; border: 2px solid #c5a028; border-radius: 8px;
+            display: none; flex-direction: column; z-index: 5001;
+        }
+        .show-menu { display: flex !important; }
+        #nav-dropdown a { padding: 12px; color: #aaa; border-bottom: 1px solid #333; text-decoration: none; }
+        #nav-dropdown a:hover { background: #3d2817; color: #ffd700; }
+
+        #search-results {
+            position: absolute; top: 50px; left: 0; right: 0; background: #1a0f0a;
+            border: 1px solid #c5a028; border-radius: 8px; max-height: 60vh; overflow-y: auto;
+            display: none; z-index: 5003;
+        }
+        .search-item { padding: 10px; border-bottom: 1px solid #333; cursor: pointer; display: flex; gap: 10px; }
+        .search-item:hover { background: #3d2817; }
+
+        /* --- MAGAZINE / TURN.JS STYLES (Adapted from Travel.html) --- */
+        .reader-overlay {
+            position: fixed; inset: 0; z-index: 6000; background: rgba(0,0,0,0.95);
+            overflow: hidden;
+            display: none; /* Ensure this is the only and final display property for initial state */
+            place-items: center; /* This property is only effective with display: grid or flex, will be set in JS */
+        }
+        
+        #magazine {
+            /* Texture applied by Turn.js via pages or container */
+        }
+
+        /* Specific styles for turn.js pages to match scrapbook feel */
+        #magazine .page {
+            background-color: white;
+            background-image: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/937765/linedpaper.png);
+            border: solid 1px grey;
+            overflow: hidden;
+        }
+
+        #magazine .hard {
+            background-image: url('https://www.textures4photoshop.com/tex/thumbs/black-texture-background-high-res-thumb33.jpg') !important;
+            color: gold !important;
+            font-family: "Zilla Slab Highlight", cursive;
+            border: solid 1px #444;
+            box-shadow: inset 0 0 30px #000;
+            text-align: center;
+        }
+        
+        /* Content Styling inside Magazine */
+        .page-content-inner {
+            padding: 20px;
+            font-family: "Indie Flower", cursive;
+            font-size: 1.2rem;
+            color: #333;
+            height: 100%;
+            overflow-y: hidden;
+            max-width: 80%; /* Add this for better centering on larger screens */
+            margin: 0 auto; /* Add this to center the content block */
+        }
+        
+        .page-content-inner h1 { 
+            font-family: "Zilla Slab Highlight", cursive; 
+            font-size: 2.5rem; 
+            border-bottom: 1px solid #ccc; 
+            margin-bottom: 20px; 
+            text-align: center;
+            padding-top: 50px;
+        }
+        
+        .page-content-inner p { 
+            margin-bottom: 15px; 
+            line-height: 1.6; 
+            text-align: justify; /* Add this to justify text */
+        }
+
+        /* Ensure mobile text is left-aligned and full width */
+        .page-content-inner p { 
+            margin-bottom: 15px; 
+            line-height: 1.6; 
+            text-align: justify; /* Add this to justify text */
+        }
+
+        /* Mobile scrollable view specific styles */
+        .mobile-scroll-view {
+            /* These styles are applied via JS now directly to #magazine, 
+               but keeping this here as a reference or if JS changes */
+            /* width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            overflow-x: hidden;
+            background-color: white; 
+            background-image: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/937765/linedpaper.png);
+            border: solid 1px grey;
+            max-width: 600px; */
+            padding-bottom: 20px; /* Add some space at the bottom */
+            box-sizing: border-box;
+        }
+
+        .mobile-page, .mobile-hard-page {
+            width: 100%; /* Full width within scroll container */
+            min-height: fit-content; /* Ensure content is not cut off */
+            padding: 0 20px; /* Horizontal padding for content */
+            box-sizing: border-box;
+            margin-bottom: 20px; /* Space between "pages" */
+            border: none !important; /* Remove individual page borders */
+            background: none !important; /* Remove individual page backgrounds */
+        }
+        
+        .mobile-page-content-inner-h1 h1 {
+            padding-top: 20px; /* Adjust padding for mobile titles */
+        }
+
+        /* Ensure mobile text is left-aligned and full width */
+        .mobile-page-content-inner {
+            max-width: 100%;
+            margin: 0;
+            overflow-y: visible; /* Allow content to dictate height */
+            height: auto; /* Allow content to define height */
+            padding-top: 0; /* Reset padding-top from desktop h1 rule */
+        }
+
+        .mobile-page-content-inner p {
+            text-align: left; /* Default text alignment for mobile readability */
+        }
+
+        /* Ensure mobile text is left-aligned and full width */
+        .page-content-inner p { 
+            margin-bottom: 15px; 
+            line-height: 1.6; 
+            text-align: justify; /* Add this to justify text */
+        }
+
+        /* Mobile scrollable view specific styles */
+        .mobile-scroll-view {
+            padding-bottom: 20px; /* Add some space at the bottom */
+            box-sizing: border-box;
+        }
+
+        .mobile-page, .mobile-hard-page {
+            width: 100%; /* Full width within scroll container */
+            min-height: fit-content; /* Ensure content is not cut off */
+            padding: 0 20px; /* Horizontal padding for content */
+            box-sizing: border-box;
+            margin-bottom: 20px; /* Space between "pages" */
+            border: none !important; /* Remove individual page borders */
+            background: none !important; /* Remove individual page backgrounds */
+        }
+        
+        .mobile-page-content-inner-h1 h1 {
+            padding-top: 20px; /* Adjust padding for mobile titles */
+        }
+
+        /* Ensure mobile text is left-aligned and full width */
+        .mobile-page-content-inner {
+            max-width: 100%;
+            margin: 0;
+            overflow-y: visible; /* Allow content to dictate height */
+            height: auto; /* Allow content to define height */
+            padding-top: 0; /* Reset padding-top from desktop h1 rule */
+        }
+
+        .mobile-page-content-inner p {
+            text-align: left; /* Default text alignment for mobile readability */
+        }
+
+        /* Modal Background */
+        .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 9000; display: none; justify-content: center; align-items: center; backdrop-filter: blur(5px); }

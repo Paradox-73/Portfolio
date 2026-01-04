@@ -229,6 +229,7 @@ async function run() {
         const TMDB_API_KEY = process.env.TMDB_API_KEY;
         const OMDB_API_KEY = process.env.OMDB_API_KEY;
         const OMDB_BASE_URL = 'http://www.omdbapi.com/';
+        const RAWG_API_KEY = process.env.RAWG_API_KEY; // New RAWG API Key
 
         if (!TMDB_API_KEY) {
             console.error('FATAL ERROR: TMDB_API_KEY is not defined in the .env file.');
@@ -240,13 +241,48 @@ async function run() {
             // Do not exit, just warn, as TMDB is primary.
         }
 
+        if (!RAWG_API_KEY) {
+            console.error('FATAL ERROR: RAWG_API_KEY is not defined in the .env file. Game search will not function.');
+            process.exit(1);
+        }
+
         const WISHLIST_PASSWORD = process.env.WISHLIST_PASSWORD;
         if (!WISHLIST_PASSWORD) {
             console.error('FATAL ERROR: WISHLIST_PASSWORD is not defined in the .env file.');
             process.exit(1);
         }
 
-        // Helper function to fetch data from OMDB and transform it to resemble TMDB format
+        // ... existing helper functions and proxy endpoints ...
+
+        // Proxy for RAWG API
+        app.get('/api/rawg/games', async (req, res) => {
+            if (!RAWG_API_KEY) {
+                return res.status(500).json({ message: 'RAWG API key is not configured.' });
+            }
+            const { search, id, page_size = 5 } = req.query; // Added page_size for search
+
+            try {
+                let url;
+                if (id) {
+                    url = `https://api.rawg.io/api/games/${id}?key=${RAWG_API_KEY}`;
+                } else if (search) {
+                    url = `https://api.rawg.io/api/games?key=${RAWG_API_KEY}&search=${encodeURIComponent(search)}&page_size=${page_size}`;
+                } else {
+                    return res.status(400).json({ message: 'Missing search query or game ID.' });
+                }
+
+                const response = await axios.get(url);
+                res.json(response.data);
+            } catch (error) {
+                console.error('RAWG API Proxy Error:', error.response ? error.response.data : error.message);
+                res.status(error.response?.status || 500).json({
+                    message: 'Error fetching data from RAWG API.',
+                    details: error.message
+                });
+            }
+        });
+
+        // Admin Password Verification Endpoint
         async function fetchOmdbData(query, type = 'movie') {
             if (!OMDB_API_KEY) {
                 console.warn("OMDB_API_KEY not available, cannot use OMDB fallback.");
