@@ -1022,19 +1022,32 @@
         function createCard(item, track, isRec = false, recommender = '') {
             const div = document.createElement('div');
             div.className = 'movie-box';
-            // Access itemId or fall back to itemDetails IDs
-            div.setAttribute('data-item-id', item.itemId || item.itemDetails.tmdb_id || item.itemDetails.id);
+
+            let displayId, displayTitle, displayPosterPath;
+
+            if (isRec) { // Item is a recommendation object
+                displayId = item.itemId || item.itemDetails.tmdb_id || item.itemDetails.id;
+                displayTitle = item.title;
+                displayPosterPath = item.itemDetails.poster_path;
+            } else { // Item is a raw movie/show object
+                displayId = item.tmdb_id || item.id;
+                displayTitle = item.title || item.name;
+                displayPosterPath = item.poster_path;
+            }
             
-            let src = item.itemDetails.poster_path; // Poster path is within itemDetails
+            div.setAttribute('data-item-id', displayId);
+            
+            let src = displayPosterPath;
             if (src && !src.startsWith('http')) src = IMG_URL + src;
             
-            let hoverText = item.title; // Use the main title from the recommendation object
+            let hoverText = displayTitle;
 
             div.innerHTML = `
-                <img src="${src || ''}" class="${src ? 'loaded' : ''}" data-title="${item.title}">
-                <div class="placeholder-title" ${src ? 'style="display:none"' : ''}>${item.title}</div>
+                <img src="${src || ''}" class="${src ? 'loaded' : ''}" data-title="${displayTitle}">
+                <div class="placeholder-title" ${src ? 'style="display:none"' : ''}>${displayTitle}</div>
                 <div class="hover-details">${hoverText}</div>
             `;
+            // Keep openDetails receiving the original 'item' so it has all necessary data
             div.onclick = () => openDetails(item); 
             track.appendChild(div);
         }
