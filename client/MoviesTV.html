@@ -832,7 +832,11 @@
 
         // --- Data Loading & CSV ---
         async function fetchTmdbData(endpoint, queryParams = {}) {
-            const url = new URL(`${API_BASE_URL}/api/tmdb/${endpoint}`);
+            let baseUrl = `${API_BASE_URL}/api/tmdb/${endpoint}`;
+            if (!API_BASE_URL) { // If API_BASE_URL is empty, prepend window.location.origin
+                baseUrl = `${window.location.origin}/api/tmdb/${endpoint}`;
+            }
+            const url = new URL(baseUrl);
             for (const key in queryParams) {
                 if (queryParams[key]) url.searchParams.append(key, queryParams[key]);
             }
@@ -879,19 +883,23 @@
                     country: m.country,
                     genre_str: m.genre,
                     release_date: m.year,
-                    user_rating: m.user_rating // Add user_rating for movies
+                    user_rating: m.user_rating, // Add user_rating for movies
+                    overview: m.overview || m.description || m.plot || "No description available."
                 })).filter(m => m.title);
 
                 const mappedShows = showsFromAPI.map(s => ({
                     title: s.title,
                     name: s.title,
-                    id: s.tmdb_id || `show-${Math.random()}`,
                     tmdb_id: s.tmdb_id,
+                    id: s.tmdb_id || `show-${Math.random()}`,
                     poster_path: s.poster,
                     media_type: 'tv',
-                    country: s['network country'] || s.network_country,
-                    genre_str: s.genres,
-                    my_rating: s.my_rating // Add my_rating for shows
+                    lang: s.language,
+                    country: s.country,
+                    genre_str: s.genre,
+                    release_date: s.year, // Or first_air_date
+                    my_rating: s.my_rating, // Add my_rating for shows
+                    overview: s.overview || s.description || s.plot || "No description available."
                 })).filter(s => s.title);
                 
                 console.log(`Mapped and filtered ${mappedMovies.length} movies.`);
@@ -1176,7 +1184,7 @@
         // --- Helpers ---
         function renderStars(rating) {
             if (rating === undefined || rating === null || isNaN(rating)) return '';
-            const normalizedRating = rating / 2; // Assuming rating is out of 10, normalize to 5
+            const normalizedRating = rating; // Ratings are already out of 5
             let starsHtml = '';
             for (let i = 1; i <= 5; i++) {
                 if (normalizedRating >= i) {
