@@ -1,4 +1,4 @@
-        /* Reset and Body */
+/* Reset and Body */
         body, html {
             margin: 0;
             padding: 0;
@@ -11,6 +11,11 @@
             align-items: center;
             overflow: hidden; /* Prevent scrolling if possible */
             cursor: url('assets/Home/cursor1.png'), auto; /* Default cursor */
+        }
+        
+        .pixel-font {
+            font-family: 'Press Start 2P', cursive;
+            image-rendering: pixelated;
         }
 
         /* The Room Container 
@@ -250,18 +255,70 @@
 
         /* --- LOADING OVERLAY (Optional but nice) --- */
         #loader {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
+            position: fixed; /* Use fixed to ensure it covers the whole viewport even if body doesn't */
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
             background: #1a1a1a;
             color: white;
-            display: flex;
+            display: flex; /* Use flexbox for centering loader content */
             justify-content: center;
             align-items: center;
-            z-index: 999;
-            transition: opacity 0.5s;
+            z-index: 9999; /* Ensure it's on top of everything */
+            transition: opacity 0.5s ease-out; /* Smooth fade-out */
+            flex-direction: column; /* Stack content vertically */
+            gap: 20px; /* Space between text and progress bar */
+        }
+
+        .loader-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px; /* Space between loading text and progress bar */
+        }
+
+        .loading-text {
+            font-family: 'Press Start 2P', cursive; /* Apply pixelated font */
+            font-size: 1.5em; /* Adjust size as needed */
+            text-align: center;
+            white-space: nowrap; /* Prevent text from wrapping */
+        }
+
+        .progress-bar-container {
+            width: 300px; /* Fixed width for the progress bar */
+            height: 24px; /* Height of the progress bar */
+            border: 2px solid white; /* Pixelated border */
+            background-color: #555;
+            box-sizing: border-box; /* Include border in width/height */
+            image-rendering: pixelated; /* Keep border crisp */
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.5); /* Add depth */
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%; /* Starts at 0% */
+            background-color: #00ff00; /* Base green fill color */
+            background-image: repeating-linear-gradient(
+                -45deg, /* Slanted lines */
+                black 0, black 4px, /* Black line 4px wide */
+                transparent 4px, transparent 8px /* Transparent gap 4px wide */
+            );
+            background-size: 16px 16px; /* Adjust size for slanted lines */
+            animation: move-lines 0.5s linear infinite; /* Animation for rightward movement */
+            transition: width 0.1s linear; /* Smooth transition for progress */
+            image-rendering: pixelated;
+        }
+
+        /* Ellipsis animation - Removed @keyframes here as JS directly updates content */
+        #ellipsis {
+            display: inline-block; /* Ensure it respects width/height for animation */
+            width: 1.5em; /* Allocate space for three dots */
+            text-align: left; /* Align dots to the left of the allocated space */
         }
 
         /* Dialogue Box */
+
         #dialogue-box {
             position: absolute;
             /* Positioning relative to the cyborg - will be adjusted by JS */
@@ -364,4 +421,9 @@
             transform: scale(1.05);
             filter: drop-shadow(0 0 8px rgba(0, 153, 255, 0.1)); /* Green glow */
             transition: transform 0.3s ease, filter 0.3s ease;
+        }
+
+        @keyframes move-lines {
+            from { background-position-x: 0; }
+            to { background-position-x: 16px; } /* Must match background-size horizontal value */
         }

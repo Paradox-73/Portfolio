@@ -22,10 +22,8 @@
             }
         }
 
-        // This function will be called when the YouTube IFrame API is ready
-        function onYouTubeIframeAPIReady() {
-            console.log("YouTube IFrame API is ready. Initializing player.");
-            player = new YT.Player('youtube-player-container', {
+                    // This function will be called when the YouTube IFrame API is ready
+                    function onYouTubeIframeAPIReady() {            player = new YT.Player('youtube-player-container', {
                 videoId: 'yajJ_QVIKwU', // The extracted video ID from https://youtu.be/t8NqwxeGVyY
                 playerVars: {
                     'autoplay': 1,      // Autoplay the video
@@ -49,7 +47,6 @@
 
         // This function fires once the video player is ready
         function onPlayerReady(event) {
-            console.log("Player is ready. Attempting to play video.");
             event.target.playVideo();
             event.target.setVolume(50); // Ensure volume is set to a reasonable level
 
@@ -58,8 +55,6 @@
                 const playerState = event.target.getPlayerState();
                 const speaker = document.getElementById('speaker'); // Get speaker here for check
 
-                console.log(`Initial player state after 1s: ${playerState}, isMuted: ${event.target.isMuted()}`);
-
                 // If not playing, or if it's playing but muted due to policy, then autoplay failed user expectation
                 if (playerState !== YT.PlayerState.PLAYING || (playerState === YT.PlayerState.PLAYING && event.target.isMuted())) {
                     autoplayBlockedMessageActive = true;
@@ -67,63 +62,151 @@
                         speaker.classList.add('speaker-active-feedback'); // Add a class for visual feedback
                     }
                     event.target.mute(); // Ensure it's muted if it started playing silently
-                    console.log("Autoplay blocked. Fallback message will be displayed after welcome messages.");
                 } else {
                     // Autoplay successful and unmuted, music is playing
                     autoplayBlockedMessageActive = false;
                     hideDialogue(); // Ensure dialogue is hidden if it was showing for other reasons
-                    console.log("Autoplay successful. Music playing.");
                 }
             }, 1000); // 1 second to allow autoplay to attempt and browser to set state
         }
 
         // This function fires when the player's state changes
         function onPlayerStateChange(event) {
-            console.log(`Player state changed to: ${event.data}`);
             // We can add logic here if needed for state changes, e.g., if video ends, ensure it loops.
             // However, 'loop: 1' and 'playlist: VIDEO_ID' in playerVars should handle looping.
         }
 
         window.onload = function() {
             const loader = document.getElementById('loader');
-            const dialogueBox = document.getElementById('dialogue-box'); // Reintroduced
-            const dialogueText = document.getElementById('dialogue-text'); // Reintroduced
-            const beanBag = document.getElementById('bean-bag'); // The cyborg on the bean bag
-            const speaker = document.getElementById('speaker'); // Get the speaker element once here
+            const progressBarFill = document.querySelector('.progress-bar-fill');
+            const ellipsisSpan = document.getElementById('ellipsis');
+            const dialogueBox = document.getElementById('dialogue-box');
+            const beanBag = document.getElementById('bean-bag');
+            const speaker = document.getElementById('speaker');
 
-            loader.style.opacity = '0';
-            setTimeout(() => {
-                loader.style.display = 'none';
-            }, 500);
+            const images = document.querySelectorAll('img');
+            let imagesLoaded = 0;
+            const totalImages = images.length;
+            let actualLoadingComplete = false; // True when all images are reported loaded (or window.load fires)
+            let minTimeElapsed = false; // True when minDisplayTime has passed
+            let loaderHidden = false; // Flag to ensure loader is hidden only once
 
-            // Initial welcome message sequence
-            const welcomeMessages = [
-                "Welcome to my digital room. I'm Kanav.",
-                "Every item here tells a story, and some lead to pages I've crafted.",
-                "Hover over objects that subtly shift, then click to explore them!"
-            ];
-            const messageDisplayDuration = 4000; // 2 seconds per message
+            const minDisplayTime = 1500; // Minimum 1.5 seconds display time for the loader
+            let startTime = Date.now();
 
-            let currentMessageIndex = 0;
+            // Function to check if all conditions are met to hide the loader
+            function checkAndHideLoader() {
+                if (actualLoadingComplete && minTimeElapsed && !loaderHidden) {
+                    loaderHidden = true;
+                    loader.style.opacity = '0';
+                    setTimeout(() => {
+                        loader.style.display = 'none';
+                    }, 500); // Allow time for fade-out transition
+                    clearInterval(ellipsisInterval); // Stop ellipsis animation
 
-            function displayNextWelcomeMessage() {
-                if (currentMessageIndex < welcomeMessages.length) {
-                    showDialogue(welcomeMessages[currentMessageIndex]);
-                    currentMessageIndex++;
-                    setTimeout(displayNextWelcomeMessage, messageDisplayDuration);
-                } else {
-                    hideDialogue();
-                    beanBag.src = 'assets/Home/bean bag2.png'; // Revert bean bag after welcome sequence
-                    // After welcome messages, check if autoplay was blocked and display the message
-                    if (autoplayBlockedMessageActive) {
-                        showDialogue("Autoplay blocked. Click the speaker for ambient music!");
+                    // Initial welcome message sequence
+                    const welcomeMessages = [
+                        "Welcome to my digital room. I'm Kanav.",
+                        "Every item here tells a story, and some lead to pages I've crafted.",
+                        "Hover over objects that subtly shift, then click to explore them!"
+                    ];
+                    const messageDisplayDuration = 4000; // 4 seconds per message
+
+                    let currentMessageIndex = 0;
+
+                    function displayNextWelcomeMessage() {
+                        if (currentMessageIndex < welcomeMessages.length) {
+                            showDialogue(welcomeMessages[currentMessageIndex]);
+                            currentMessageIndex++;
+                            setTimeout(displayNextWelcomeMessage, messageDisplayDuration);
+                        } else {
+                            hideDialogue();
+                            beanBag.src = 'assets/Home/bean bag2.png'; // Revert bean bag after welcome sequence
+                            // After welcome messages, check if autoplay was blocked and display the message
+                            if (autoplayBlockedMessageActive) {
+                                showDialogue("Autoplay blocked. Click the speaker for ambient music!");
+                            }
+                        }
                     }
+
+                    // Start with bean bag3 for the welcome message
+                    beanBag.src = 'assets/Home/bean bag3.png';
+                    displayNextWelcomeMessage(); // Start the welcome message sequence
                 }
             }
 
-            // Start with bean bag3 for the welcome message
-            beanBag.src = 'assets/Home/bean bag3.png';
-            displayNextWelcomeMessage(); // Start the welcome message sequence
+            function updateProgressBar() {
+                let progress = 0;
+                if (totalImages === 0) {
+                    progress = 100; // No images, so consider it loaded
+                } else {
+                    progress = (imagesLoaded / totalImages) * 100;
+                }
+                progressBarFill.style.width = `${progress}%`;
+
+                // Update ellipsis animation manually
+                const dotCount = Math.floor((Date.now() / 500) % 3); // Cycle every 500ms
+                if (dotCount === 0) ellipsisSpan.textContent = '.';
+                else if (dotCount === 1) ellipsisSpan.textContent = '..';
+                else if (dotCount === 2) ellipsisSpan.textContent = '...';
+            }
+
+            // Set up a continuous ellipsis animation and progress check
+            const ellipsisInterval = setInterval(() => {
+                updateProgressBar();
+                // Check if minimum display time has passed
+                if (Date.now() - startTime >= minDisplayTime) {
+                    minTimeElapsed = true;
+                }
+                checkAndHideLoader();
+            }, 160); // Roughly 60fps for visual updates
+
+            images.forEach(image => {
+                if (image.complete) {
+                    imagesLoaded++;
+                    if (imagesLoaded === totalImages) {
+                        actualLoadingComplete = true;
+                        updateProgressBar();
+                        checkAndHideLoader();
+                    }
+                } else {
+                    image.addEventListener('load', () => {
+                        imagesLoaded++;
+                        updateProgressBar();
+                        if (imagesLoaded === totalImages) {
+                            actualLoadingComplete = true;
+                            checkAndHideLoader();
+                        }
+                    });
+                    image.addEventListener('error', () => {
+                        imagesLoaded++;
+                        updateProgressBar();
+                        if (imagesLoaded === totalImages) {
+                            actualLoadingComplete = true;
+                            checkAndHideLoader();
+                        }
+                    });
+                }
+            });
+
+            // Initial progress bar update for already loaded images
+            updateProgressBar();
+
+            // Use window.addEventListener('load') for final completion check of all assets
+            window.addEventListener('load', () => {
+                actualLoadingComplete = true;
+                // Force imagesLoaded to totalImages to ensure progress reaches 100%
+                imagesLoaded = totalImages;
+                updateProgressBar(); // Update progress bar to 100% visually
+                checkAndHideLoader(); // Attempt to hide loader
+            });
+
+            // Also check if minDisplayTime has already passed on initial load
+            if (Date.now() - startTime >= minDisplayTime) {
+                minTimeElapsed = true;
+                checkAndHideLoader();
+            }
+
 
             // Preload the hover images to prevent a flash on first hover
             const hoverImageBeanBag3 = new Image();
@@ -138,7 +221,7 @@
             });
             beanBag.addEventListener('mouseleave', () => {
                 // Only revert if no dialogue is active from other assets
-                if (dialogueBox.style.visibility === 'hidden') { 
+                if (dialogueBox.style.visibility === 'hidden') {
                     beanBag.src = 'assets/Home/bean bag2.png';
                 }
             });
@@ -146,17 +229,13 @@
             // Speaker click listener for music toggle
             if (speaker) {
                 speaker.addEventListener('click', () => {
-                    console.log("Speaker clicked.");
                     if (player) {
                         if (player.isMuted()) {
                             player.unMute();
                             player.setVolume(50); // Ensure volume is set upon unmuting
                             player.playVideo(); // Always attempt to play on unMute click
-                            console.log("Player unmuted and playing.");
-                            console.log(`State after playVideo call: ${player.getPlayerState()}, isMuted: ${player.isMuted()}`);
                         } else {
                             player.mute();
-                            console.log("Player muted.");
                         }
                     }
 
@@ -166,7 +245,7 @@
                         autoplayBlockedMessageActive = false;
                         speaker.classList.remove('speaker-active-feedback');
                         // Hide the dialogue after a short delay so it doesn't persist
-                        setTimeout(hideDialogue, 2000); 
+                        setTimeout(hideDialogue, 2000);
                     }
                 });
             }
@@ -214,7 +293,6 @@
                     // or the initial state. Its 'click' functionality is still implicitly handled if it were interactive.
                 } else {
                     asset.addEventListener('click', () => {
-                        console.log(`You clicked on: ${asset.alt}`);
                     });
                 }
             });
