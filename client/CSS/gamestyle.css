@@ -94,11 +94,10 @@
         }
 
         #base-wave {
-            background: linear-gradient(135deg, #001a3d 0%, #000 100%);
-            background-image: url('https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHp1eXF5MHF4eHJ4eHJ4eHJ4eHJ4eHJ4eHJ4eHJ4eHJ4eHJ4eHJ4ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7TKDkDbIDJieKbVm/giphy.gif');
+            background-image: url('../assets/Game/videoplayback.gif');
             background-size: cover;
             background-position: center;
-            opacity: 0.3;
+            opacity: 1;
         }
 
         #dynamic-bg-img {
@@ -452,5 +451,24 @@
         }
         #input-modal-submit:hover {
             background: var(--ps-light-blue);
+        }
+
+        /* Settings menu links */
+        #settings-menu .menu-list li a {
+            color: #F8F8F8; /* Off-white color */
+            text-decoration: none; /* Remove underline if any */
+            display: block; /* Make the whole list item clickable */
+            padding: 15px 20px; /* Match menu-item padding */
+            border-radius: 10px; /* Match menu-item border-radius */
+            transition: 0.2s;
+        }
+
+        #settings-menu .menu-list li a[href="Games.html"] {
+            color: var(--ps-blue); /* PlayStation blue for Games link */
+        }
+
+        #settings-menu .menu-list li a:hover {
+            color: purple; /* Purple on hover */
+            background: rgba(255,255,255,0.1); /* Add background on hover for better UX */
         }
     
