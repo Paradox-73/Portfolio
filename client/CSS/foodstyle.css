@@ -706,3 +706,14 @@ button:active {
   line-height: 1.6;
   color: #333;
 }
+@media (max-width: 549px) {
+  .item {
+    padding: 2.5rem 2.5rem; /* Increased padding for mobile */
+  }
+  .item__name {
+    font-size: x-large; /* Keep current large size for names */
+  }
+  .item__description {
+    font-size: 1rem; /* Slightly increase description font size */
+  }
+}

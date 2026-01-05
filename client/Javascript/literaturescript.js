@@ -438,11 +438,13 @@
 
                     };
 
-                    footer.appendChild(label);
+                                        footer.appendChild(label);
 
-                }
+                                    }
 
-                modal.style.display = 'flex';
+                                    modal.style.display = 'flex';
+
+                                    document.body.style.overflow = 'hidden';
 
             }
 

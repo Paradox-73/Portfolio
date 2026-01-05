@@ -6,6 +6,24 @@ let scene, camera, renderer, ceiling;
     let doorMesh;
     let isStarryNight = false;
 
+    // Joystick variables
+    let joystickActive = false;
+    let joystickCenter = { x: 0, y: 0 };
+    let joystickHandle = null;
+    let joystickBase = null;
+    let joystickRadius = 0;
+    
+    // Touch look variables
+    let lastTouchX = 0;
+    let lastTouchY = 0;
+    let touchLookActive = false;
+
+    // Helper to detect mobile devices
+    function isMobileDevice() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    }
+
+
     // Artwork positions
     const artworks = [
         // Front wall
@@ -300,6 +318,22 @@ let scene, camera, renderer, ceiling;
 
         camera.position.set(0, 1.6, 14); 
         animate();
+
+        // Mobile joystick initialization
+        if (isMobileDevice()) {
+            joystickHandle = document.querySelector('#virtual-joystick-left .joystick-handle');
+            joystickBase = document.getElementById('virtual-joystick-left');
+            if (joystickBase && joystickHandle) {
+                const rect = joystickBase.getBoundingClientRect();
+                joystickCenter = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+                joystickRadius = rect.width / 2;
+
+                // Set initial handle position to center
+                joystickHandle.style.transform = `translate(-50%, -50%)`;
+                joystickHandle.style.left = '50%';
+                joystickHandle.style.top = '50%';
+            }
+        }
     }
 
     // --- Texture Loading Helpers ---
@@ -333,37 +367,61 @@ let scene, camera, renderer, ceiling;
     // --- Movement & Logic ---
     const keys = { w: false, a: false, s: false, d: false };
     let doorOpen = false;
-    let doorAngle = 0;
+    // let doorAngle = 0; // Not used, can be removed
     
+    // --- Action Functions (refactored for reusability) ---
+    function toggleDoorMenu() {
+        doorOpen = !doorOpen;
+        if (doorOpen) {
+            document.getElementById('nav-menu').style.display = 'block';
+            document.exitPointerLock();
+        } else {
+            document.getElementById('nav-menu').style.display = 'none';
+            // Only request pointer lock if on desktop (no virtual controls)
+            if (!isMobileDevice()) {
+                document.body.requestPointerLock();
+            }
+        }
+    }
+
+    function toggleCeiling() {
+        isStarryNight = !isStarryNight;
+        const newTexture = isStarryNight ? loadStarryNightTexture() : loadCloudySkyTexture();
+        ceiling.children.forEach(c => { c.material.map = newTexture; c.material.needsUpdate = true; });
+    }
+
+    function toggleHints() {
+        isDetailedHintsOpen = !isDetailedHintsOpen;
+        const controlsDetailed = document.getElementById('controls-detailed');
+        if (controlsDetailed) { // Check if desktop hints exist
+            controlsDetailed.style.display = isDetailedHintsOpen ? 'block' : 'none';
+        }
+        // Also toggle visibility of virtual buttons if they exist
+        const hiddenVirtualBtns = document.getElementById('hidden-virtual-btns');
+        if (hiddenVirtualBtns && window.innerWidth <= 768) { // Only for mobile
+             hiddenVirtualBtns.classList.toggle('visible', isDetailedHintsOpen);
+        }
+    }
+
+    function toggleMusic() {
+        const music = document.getElementById('music');
+        music.muted = !music.muted;
+        isMusicPlaying = !music.muted; // Update state
+    }
+
+    function toggleSpeed() {
+        speedMultiplier = (speedMultiplier === 1) ? 2 : 1;
+    }
+
     document.addEventListener('keydown', (e) => {
         const key = e.key.toLowerCase();
         if (key in keys) keys[key] = true;
 
-        if (key === 'o') {
-            doorOpen = !doorOpen;
-            if (doorOpen) {
-                document.getElementById('nav-menu').style.display = 'block';
-                document.exitPointerLock();
-            } else {
-                document.getElementById('nav-menu').style.display = 'none';
-                document.body.requestPointerLock();
-            }
-        }
-        if (key === 'n') {
-            isStarryNight = !isStarryNight;
-            const newTexture = isStarryNight ? loadStarryNightTexture() : loadCloudySkyTexture();
-            ceiling.children.forEach(c => { c.material.map = newTexture; c.material.needsUpdate = true; });
-        }
-        if (key === 'h') {
-            isDetailedHintsOpen = !isDetailedHintsOpen;
-            document.getElementById('controls-detailed').style.display = isDetailedHintsOpen ? 'block' : 'none';
-        }
-        if (key === 'm') {
-            document.getElementById('music').muted = !document.getElementById('music').muted;
-        }
-        if (key === '2') {
-            speedMultiplier = (speedMultiplier === 1) ? 2 : 1;
-        }
+        if (key === 'o') toggleDoorMenu();
+        if (key === 'n') toggleCeiling();
+        if (key === 'h') toggleHints();
+        if (key === 'm') toggleMusic();
+        if (key === '2') toggleSpeed();
     });
 
     document.addEventListener('keyup', (e) => {
@@ -461,10 +519,130 @@ let scene, camera, renderer, ceiling;
         renderer.render(scene, camera);
     }
 
+    // Function to update joystick handle position and movement keys
+    function updateJoystick(clientX, clientY) {
+        if (!joystickHandle || !joystickBase || !joystickActive) return;
+
+        const rect = joystickBase.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+
+        let offsetX = clientX - centerX;
+        let offsetY = clientY - centerY;
+
+        // Constrain handle within joystickRadius
+        const distance = Math.sqrt(offsetX * offsetX + offsetY * offsetY);
+        if (distance > joystickRadius) {
+            const angle = Math.atan2(offsetY, offsetX);
+            offsetX = joystickRadius * Math.cos(angle);
+            offsetY = joystickRadius * Math.sin(angle);
+        }
+
+        joystickHandle.style.left = `${50 + (offsetX / joystickRadius) * 50}%`;
+        joystickHandle.style.top = `${50 + (offsetY / joystickRadius) * 50}%`;
+        joystickHandle.style.transform = `translate(-50%, -50%)`;
+
+        // Map joystick position to movement keys
+        keys.w = keys.a = keys.s = keys.d = false; // Reset all
+
+        const threshold = 0.2; // Sensitivity for movement
+        const normalizedX = offsetX / joystickRadius;
+        const normalizedY = offsetY / joystickRadius;
+
+        if (normalizedY < -threshold) keys.w = true;
+        if (normalizedY > threshold) keys.s = true;
+        if (normalizedX < -threshold) keys.a = true;
+        if (normalizedX > threshold) keys.d = true;
+    }
+
     window.addEventListener('resize', () => {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
     });
+
+    // --- Virtual Button Event Listeners (Mobile) ---
+    if (isMobileDevice()) {
+        const btnH = document.getElementById('btn-h');
+        const hiddenVirtualBtns = document.getElementById('hidden-virtual-btns');
+
+        if (btnH) {
+            btnH.addEventListener('click', () => {
+                hiddenVirtualBtns.classList.toggle('visible');
+            });
+        }
+
+        document.getElementById('btn-2')?.addEventListener('click', toggleSpeed);
+        document.getElementById('btn-m')?.addEventListener('click', toggleMusic);
+        document.getElementById('btn-n')?.addEventListener('click', toggleCeiling);
+        document.getElementById('btn-o')?.addEventListener('click', toggleDoorMenu);
+
+        // Virtual Joystick Movement
+        if (joystickBase) {
+            joystickBase.addEventListener('touchstart', (e) => {
+                e.preventDefault(); // Prevent scrolling
+                joystickActive = true;
+                const touch = e.touches[0];
+                updateJoystick(touch.clientX, touch.clientY);
+            });
+
+            joystickBase.addEventListener('touchmove', (e) => {
+                e.preventDefault(); // Prevent scrolling
+                if (joystickActive) {
+                    const touch = e.touches[0];
+                    updateJoystick(touch.clientX, touch.clientY);
+                }
+            });
+
+            joystickBase.addEventListener('touchend', () => {
+                joystickActive = false;
+                // Reset keys
+                keys.w = keys.a = keys.s = keys.d = false;
+                // Snap handle back to center
+                if (joystickHandle) {
+                    joystickHandle.style.left = '50%';
+                    joystickHandle.style.top = '50%';
+                    joystickHandle.style.transform = `translate(-50%, -50%)`;
+                }
+            });
+        }
+
+        // Touch Look (on the canvas, excluding joystick and buttons)
+        let lastTouchLookX = 0;
+        let lastTouchLookY = 0;
+        let touchLookIsActive = false;
+
+        renderer.domElement.addEventListener('touchstart', (e) => {
+            // Only activate touch look if not touching joystick or virtual buttons
+            const target = e.target;
+            if (target.closest('#virtual-joystick-left') || target.closest('#virtual-buttons-right')) {
+                touchLookIsActive = false;
+                return;
+            }
+            touchLookIsActive = true;
+            lastTouchLookX = e.touches[0].clientX;
+            lastTouchLookY = e.touches[0].clientY;
+        });
+
+        renderer.domElement.addEventListener('touchmove', (e) => {
+            if (touchLookIsActive) {
+                e.preventDefault(); // Prevent scrolling
+                const touch = e.touches[0];
+                const deltaX = touch.clientX - lastTouchLookX;
+                const deltaY = touch.clientY - lastTouchLookY;
+
+                yaw -= deltaX * 0.005; // Adjust sensitivity
+                pitch -= deltaY * 0.005; // Adjust sensitivity
+                pitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, pitch));
+
+                lastTouchLookX = touch.clientX;
+                lastTouchLookY = touch.clientY;
+            }
+        });
+
+        renderer.domElement.addEventListener('touchend', () => {
+            touchLookIsActive = false;
+        });
+    }
 
     init();

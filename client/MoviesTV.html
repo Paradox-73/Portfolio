@@ -52,7 +52,20 @@
         .nav-links { list-style: none; display: flex; gap: 20px; }
         .nav-links li a { text-decoration: none; color: #e5e5e5; font-size: 0.9rem; transition: color 0.3s; cursor: pointer; }
         .nav-links li a:hover, .nav-links li a.active { color: var(--white); font-weight: 500; }
-        @media (max-width: 900px) { .nav-links { display: none; } }
+        @media (max-width: 900px) {
+            .nav-links {
+                display: flex; /* Make them visible */
+                flex-wrap: wrap; /* Allow wrapping */
+                gap: 10px; /* Reduced gap */
+                margin-top: 10px; /* Some spacing from logo */
+                justify-content: center; /* Center align when wrapped */
+                width: 100%; /* Take full width */
+            }
+            .nav-links li a {
+                font-size: 0.8rem; /* Smaller font size */
+                padding: 5px 8px; /* Add some padding */
+            }
+        }
 
         .icon-btn { cursor: pointer; color: white; display: flex; align-items: center; }
         .avatar { width: 32px; height: 32px; border-radius: 4px; overflow: hidden; background: #333; }
@@ -61,10 +74,16 @@
 
         /* --- Billboard --- */
         .billboard {
-            position: relative; height: 56.25vw; /* 16:9 Aspect Ratio */
-            max-height: 85vh; min-height: 400px;
+            position: relative; height: 50vw; /* Reduced from 56.25vw */
+            max-height: 70vh; /* Reduced from 85vh */ min-height: 400px;
             width: 100%; background: #141414; overflow: hidden;
             transition: opacity 0.5s ease;
+        }
+        @media (max-width: 768px) {
+            .billboard {
+                max-height: 45vh; /* Further reduced for mobile */
+                min-height: 250px; /* Adjust min-height for mobile */
+            }
         }
         
         .billboard-video {
@@ -113,6 +132,14 @@
             font-size: 1.1rem; font-weight: bold; cursor: pointer;
             display: inline-flex; align-items: center; gap: 0.8rem; margin-right: 1rem;
             transition: transform 0.2s;
+        }
+        @media (max-width: 768px) {
+            .btn {
+                padding: 0.4rem 1.2rem; /* Smaller padding for mobile */
+                font-size: 0.9rem; /* Smaller font size for mobile */
+                gap: 0.5rem; /* Reduce gap for mobile */
+                margin-right: 0.5rem; /* Reduce margin for mobile */
+            }
         }
         .btn:hover { transform: scale(1.05); }
         .btn-white { background: white; color: black; }
@@ -166,6 +193,12 @@
         .media-grid {
             display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 50px 15px; 
         }
+        @media (max-width: 768px) {
+            .media-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); /* Smaller grid items for mobile */
+                gap: 20px 10px; /* Adjust gap for mobile */
+            }
+        }
 
         /* --- Cards --- */
         .movie-box, .grid-card {
@@ -175,6 +208,12 @@
             display: flex; align-items: center; justify-content: center;
         }
         .movie-box { flex: 0 0 auto; width: 240px; height: 135px; }
+        @media (max-width: 768px) {
+            .movie-box {
+                width: 160px; /* Reduced width for mobile */
+                height: 90px; /* Reduced height for mobile */
+            }
+        }
         .grid-card { width: 100%; aspect-ratio: 16/9; }
 
         .movie-box img, .grid-card img { 
@@ -244,6 +283,16 @@
         .search-bar-large {
             width: 100%; background: transparent; border: none; border-bottom: 2px solid #555;
             padding: 15px 0; color: white; font-size: 2rem; outline: none;
+        }
+        @media (max-width: 768px) {
+            .search-container {
+                width: 90%;
+                padding: 20px;
+            }
+            .search-bar-large {
+                font-size: 1.2rem;
+                padding: 10px 0;
+            }
         }
         .search-close { 
             position: absolute; top: 15px; right: 20px; font-size: 2.5rem; color: #888; cursor: pointer; 
@@ -334,7 +383,7 @@
 
     <!-- Profile Screen -->
     <div class="profile-layer" id="profileLayer">
-        <h1 style="font-weight: 400; font-size: 3rem;">Who's watching?</h1>
+        <h1 style="font-weight: 400; font-size: 3rem; text-align: center;">Who's watching?</h1>
         <div class="profile-row">
             <!-- Added ID for safer JS attachment -->
             <div class="profile-card" id="profileCardKanav" onclick="window.startApp()">
@@ -500,7 +549,7 @@
                 </div>
 
                 <div class="row-container">
-                    <h2 class="row-header">Movies</h2>
+                    <h2 class="row-header" onclick="showGrid('movies')">Movies</h2>
                     <div class="row-content">
                         <div class="slider-handle left-handle" onclick="scrollRow('moviesTrack', -1)">&#8249;</div>
                         <div class="slider-track" id="moviesTrack"></div>
@@ -509,7 +558,7 @@
                 </div>
 
                 <div class="row-container">
-                    <h2 class="row-header">Shows</h2>
+                    <h2 class="row-header" onclick="showGrid('shows')">Shows</h2>
                     <div class="row-content">
                         <div class="slider-handle left-handle" onclick="scrollRow('showsTrack', -1)">&#8249;</div>
                         <div class="slider-track" id="showsTrack"></div>
@@ -518,7 +567,7 @@
                 </div>
 
                 <div class="row-container">
-                    <h2 class="row-header">Anime</h2>
+                    <h2 class="row-header" onclick="showGrid('anime')">Anime</h2>
                     <div class="row-content">
                         <div class="slider-handle left-handle" onclick="scrollRow('animeTrack', -1)">&#8249;</div>
                         <div class="slider-track" id="animeTrack"></div>

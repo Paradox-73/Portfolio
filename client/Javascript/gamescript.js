@@ -347,11 +347,14 @@
         }
         // Use SPACEBAR to start
         if (e.code === 'Space') {
-            dashboardStarted = true;
-            document.getElementById('intro-container').style.opacity = '0';
-            mainContainer.style.opacity = '1';
-            setTimeout(() => { document.getElementById('intro-container').style.display = 'none'; }, 1500);
-                        loadGamesFromAPI();
+            startGamepadDashboard();
+        }
+    });
+
+    // Add click/tap listener for intro screen
+    document.getElementById('intro-container').addEventListener('click', () => {
+        if (!dashboardStarted) {
+            startGamepadDashboard();
         }
     });
 
@@ -506,6 +509,33 @@
                 moveRight();
             }
         }, 100); // Debounce time
+    });
+
+    // --- Touch/Swipe for Carousel ---
+    let touchStartX = 0;
+    let touchEndX = 0;
+    const swipeThreshold = 50; // Minimum distance for a swipe
+
+    container.addEventListener('touchstart', (e) => {
+        touchStartX = e.touches[0].clientX;
+    });
+
+    container.addEventListener('touchmove', (e) => {
+        touchEndX = e.touches[0].clientX;
+    });
+
+    container.addEventListener('touchend', () => {
+        if (touchEndX < touchStartX - swipeThreshold) {
+            // Swiped left
+            moveRight();
+        }
+        if (touchEndX > touchStartX + swipeThreshold) {
+            // Swiped right
+            moveLeft();
+        }
+        // Reset touch positions
+        touchStartX = 0;
+        touchEndX = 0;
     });
 
     let queuedTrailer = null; // New variable to queue trailers

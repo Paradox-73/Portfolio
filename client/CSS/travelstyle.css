@@ -36,7 +36,9 @@ body {
   background-image: url(../assets/Travel/Cover.png) !important;
   text-align: center;
   color: white;
-  background-size: 100% auto;
+  background-size: cover; /* Changed from 100% auto */
+  background-position: center; /* Ensure image is centered */
+  background-repeat: no-repeat; /* Prevent repeating */
 }
 
 .hard.cover-front-inside,
@@ -100,7 +102,7 @@ h3 a{
 .image-one {
   width: 300px;
   height: 199px;
-  background-image: url(https://lh3.googleusercontent.com/pw/AP1GczORvYR4JZaCb7YHBka6ySaY9j237wgSAH8-ojHEPu8QyDhytbUb1W-WjgZ5p6oL21nDGNr_oOPKBS5oPfQ_3bqCS0cMLzfY5N_eP0vaheE8oUP9AejrRbGYGypviAeclZNadtwLRFayeyV49u614svP=w698-h927-s-no-gm?authuser=0);
+  background-image: url(https://lh3.googleusercontent.com/pw/AP1GczORvYR4JZaCb7YHBka6ySaY9j237wgSAH8-ojHEPu8QyDhytbUb1W-WjgZ5p6oL21nDGNr_oOPKBS5oPfQ_3bqCS0cMLzfY5N_eP0vaheE8oUP9AejrRbGYGypviAeclZNadtwLRFayeyV49u6yD-DhytbUb1W-WjgZ5p6oL21nDGNr_oOPKBS5oPfQ_3bqCS0cMLzfY5N_eP0vaheE8oUP9AejrRbGYGypviAeclZNadtwLRFayeyV49u614svP=w698-h927-s-no-gm?authuser=0);
   background-size: contain;
   background-repeat: no-repeat;
   border: solid 4px grey;
@@ -329,4 +331,24 @@ h3 a{
 .tooltip:hover .tooltiptext {
   visibility: visible;
   left: 100%;
+}
+@media (max-width: 768px) {
+  body {
+    height: auto;
+    overflow-y: auto;
+    align-items: flex-start;
+  }
+  #magazine {
+    width: 100vw;
+    height: 98vh; /* Slightly less for some margin */
+    margin: 1vh auto;
+  }
+  .scrapbook, .hard {
+    width: 100%;
+    height: 100%;
+    /* Ensure borders and shadows are correctly rendered within this size */
+  }
+  .scrapbook {
+    border-radius: 0; /* Remove specific corner radii for mobile */
+  }
 }
