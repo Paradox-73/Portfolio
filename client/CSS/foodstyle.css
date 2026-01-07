@@ -708,12 +708,16 @@ button:active {
 }
 @media (max-width: 549px) {
   .item {
-    padding: 2.5rem 2.5rem; /* Increased padding for mobile */
+    padding: 2rem;
+  }
+  .item__image {
+    max-width: 100%;
+    text-align: center;
   }
   .item__name {
-    font-size: x-large; /* Keep current large size for names */
+    font-size: 1.8rem;
   }
   .item__description {
-    font-size: 1rem; /* Slightly increase description font size */
+    font-size: 1.3rem;
   }
 }

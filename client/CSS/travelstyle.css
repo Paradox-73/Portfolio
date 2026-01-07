@@ -348,6 +348,9 @@ h3 a{
     height: 100%;
     /* Ensure borders and shadows are correctly rendered within this size */
   }
+  .hard {
+    
+  }
   .scrapbook {
     border-radius: 0; /* Remove specific corner radii for mobile */
   }

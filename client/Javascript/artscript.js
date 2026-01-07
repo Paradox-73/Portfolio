@@ -226,7 +226,13 @@ let scene, camera, renderer, ceiling;
             const artWidth = 2;
             const artHeight = 1.5;
             const artGeometry = new THREE.PlaneGeometry(artWidth, artHeight);
-            const artMaterial = new THREE.MeshBasicMaterial({ map: loader.load(artwork.url) });
+            const artMaterial = new THREE.MeshBasicMaterial({ map: loader.load(artwork.url, 
+                    undefined, // onLoad
+                    undefined, // onProgress
+                    function (err) {
+                        console.error('An error happened loading artwork texture:', artwork.url, err);
+                    }
+                ) });
             const artMesh = new THREE.Mesh(artGeometry, artMaterial);
             
             // 2. The Hollow Frame
@@ -339,7 +345,7 @@ let scene, camera, renderer, ceiling;
     // --- Texture Loading Helpers ---
     function loadCarpetTexture() {
         const loader = new THREE.TextureLoader();
-        const t = loader.load('https://cms-assets.tutsplus.com/cdn-cgi/image/width=850/uploads/users/523/posts/27364/final_image/project-preview-large.png');
+        const t = loader.load('https://cms-assets.tutsplus.com/cdn-cgi/image/width=850/uploads/users/523/posts/27364/final_image/project-preview-large.png', undefined, undefined, function(err){console.error('Error loading carpet texture:', err);});
         t.wrapS = THREE.RepeatWrapping;
         t.wrapT = THREE.RepeatWrapping;
         t.repeat.set(1, 8); 
@@ -348,7 +354,7 @@ let scene, camera, renderer, ceiling;
 
     function loadStarryNightTexture() {
         const loader = new THREE.TextureLoader();
-        const t = loader.load('https://assets.pexels.com/photos/1341279/pexels-photo-1341279.jpeg?cs=srgb&dl=pexels-kaip-1341279.jpg&fm=jpg');
+        const t = loader.load('https://assets.pexels.com/photos/1341279/pexels-photo-1341279.jpeg?cs=srgb&dl=pexels-kaip-1341279.jpg&fm=jpg', undefined, undefined, function(err){console.error('Error loading starry night texture:', err);});
         t.wrapS = THREE.RepeatWrapping;
         t.wrapT = THREE.RepeatWrapping;
         t.repeat.set(1, 4);
@@ -357,7 +363,7 @@ let scene, camera, renderer, ceiling;
 
     function loadCloudySkyTexture() {
         const loader = new THREE.TextureLoader();
-        const t = loader.load('https://cdn.mos.cms.futurecdn.net/FRdq8ZbPetwNDRV9R3hYpP-1200-80.jpg');
+        const t = loader.load('https://cdn.mos.cms.futurecdn.net/FRdq8ZbPetwNDRV9R3hYpP-1200-80.jpg', undefined, undefined, function(err){console.error('Error loading cloudy sky texture:', err);});
         t.wrapS = THREE.RepeatWrapping;
         t.wrapT = THREE.RepeatWrapping;
         t.repeat.set(1, 4);
@@ -435,12 +441,17 @@ let scene, camera, renderer, ceiling;
     let yaw = 0;
 
     document.addEventListener('click', () => {
-        if (!isMouseLocked) {
-            document.body.requestPointerLock();
-            const music = document.getElementById('music');
-            if (music.paused) music.play().catch(e => console.log("Audio play failed", e));
-        }
-    });
+    // For desktop, lock pointer on click
+    if (!isMobileDevice() && !isMouseLocked) {
+        document.body.requestPointerLock();
+    }
+
+    // For all devices, play music on the first interaction
+    const music = document.getElementById('music');
+    if (music.paused) {
+        music.play().catch(e => console.log("Audio play failed. User interaction might be required.", e));
+    }
+});
 
     document.addEventListener('pointerlockchange', () => {
         isMouseLocked = document.pointerLockElement === document.body;
@@ -561,8 +572,25 @@ let scene, camera, renderer, ceiling;
         renderer.setSize(window.innerWidth, window.innerHeight);
     });
 
-    // --- Virtual Button Event Listeners (Mobile) ---
+window.onload = function() {
+    init(); // Call init only after all resources are loaded
+
+    // Mobile joystick initialization
     if (isMobileDevice()) {
+        joystickHandle = document.querySelector('#virtual-joystick-left .joystick-handle');
+        joystickBase = document.getElementById('virtual-joystick-left');
+        if (joystickBase && joystickHandle) {
+            const rect = joystickBase.getBoundingClientRect();
+            joystickCenter = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+            joystickRadius = rect.width / 2;
+
+            // Set initial handle position to center
+            joystickHandle.style.transform = `translate(-50%, -50%)`;
+            joystickHandle.style.left = '50%';
+            joystickHandle.style.top = '50%';
+        }
+
+        // --- Virtual Button Event Listeners (Mobile) ---
         const btnH = document.getElementById('btn-h');
         const hiddenVirtualBtns = document.getElementById('hidden-virtual-btns');
 
@@ -643,6 +671,7 @@ let scene, camera, renderer, ceiling;
         renderer.domElement.addEventListener('touchend', () => {
             touchLookIsActive = false;
         });
-    }
+        }
+    }; // End of window.onload
 
-    init();
+    

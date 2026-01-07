@@ -1,15 +1,26 @@
-
-
-mobile 
-
-
-literature-when book description open and i scroll the previous library scrolles instead of the desc of the book opened
-moviesTv- the who's watching isnt centered, decrease the size of billboard, and play and more button are overallping with carousel below it so make them smaller. also make the thumbnails of the items smaller. make the seach bar smaller (i cant read the search movies, shows, anime whole gets cutt off at movies) i also cant see the movies, shows and anime navigation header on mobile so fix that and also make the headings of the carousel also link to them. 
-games- not repsonive at all and on mobile it should just be a tap 
-food- increase the size of recipies a small bit on mobile 
-travel- the cover page are doubling one below another. when in mobile mode it should just show one page and when i flip alternate between left right etc. also a small swip on left or right edge f the screen should be enough. 
-art- make it responive with virtual controls (like in pubg) and for both portrait and landscape modes/ and for 2, M, N, O, H add virtual buttons (only show H and when clickd on H roll out the other, when again clicked roll the back)
-
-
-
-
+[{
+	"resource": "/e:/Projects/PortfolioV2/client/Javascript/artscript.js",
+	"owner": "typescript",
+	"code": "1128",
+	"severity": 8,
+	"message": "Declaration or statement expected.",
+	"source": "ts",
+	"startLineNumber": 668,
+	"startColumn": 14,
+	"endLineNumber": 668,
+	"endColumn": 15,
+	"origin": "extHost1"
+}]
+[{
+	"resource": "/E:/Projects/PortfolioV2/client/CSS/moviestvstyle.css",
+	"owner": "_generated_diagnostic_collection_name_#2",
+	"code": "vendorPrefix",
+	"severity": 4,
+	"message": "Also define the standard property 'line-clamp' for compatibility",
+	"source": "css",
+	"startLineNumber": 173,
+	"startColumn": 17,
+	"endLineNumber": 173,
+	"endColumn": 35,
+	"origin": "extHost1"
+}]

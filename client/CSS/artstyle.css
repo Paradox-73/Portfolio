@@ -61,14 +61,17 @@ body { margin: 0; overflow: hidden; background-color: #000; }
         }
 
         #nav-menu a:hover { color: #fff; }
-
-        @media (max-width: 768px), (orientation: landscape) {
+        
+        #mobile-controls {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
             /* Hide desktop hints on mobile */
             #ui-container #hint-toggle,
             #ui-container #controls-detailed {
                 display: none;
             }
-
             /* Mobile Controls Container */
             #mobile-controls {
                 display: block; /* Show on mobile */
@@ -148,5 +151,11 @@ body { margin: 0; overflow: hidden; background-color: #000; }
 
             #hidden-virtual-btns.visible {
                 display: flex;
+            }
+        }
+
+        @media (min-width: 769px) {
+            #mobile-controls {
+                display: none;
             }
         }

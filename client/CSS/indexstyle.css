@@ -10,7 +10,7 @@
             justify-content: center;
             align-items: center;
             overflow: hidden; /* Prevent scrolling if possible */
-            cursor: url('assets/Home/cursor1.png'), auto; /* Default cursor */
+            cursor: url('../assets/Home/cursor1.png'), auto; /* Default cursor */
         }
         
         .pixel-font {
@@ -36,7 +36,7 @@
             display: block;
             image-rendering: pixelated; /* Keeps pixel art crisp */
             transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Bouncy smooth transition */
-            cursor: url('assets/Home/cursor2.png'), auto;
+            cursor: url('../assets/Home/cursor2.png'), auto;
             user-select: none;
             z-index: 10;
         }
@@ -284,9 +284,16 @@
             text-align: center;
             white-space: nowrap; /* Prevent text from wrapping */
         }
+        @media (max-width: 768px) {
+            .loading-text {
+                font-size: 0.8em; /* Smaller font for mobile */
+                white-space: normal; /* Allow text to wrap */
+            }
+        }
 
         .progress-bar-container {
-            width: 300px; /* Fixed width for the progress bar */
+            width: 80vw; /* Use viewport width for responsiveness */
+            max-width: 300px; /* Maximum width on larger screens */
             height: 24px; /* Height of the progress bar */
             border: 2px solid white; /* Pixelated border */
             background-color: #555;
