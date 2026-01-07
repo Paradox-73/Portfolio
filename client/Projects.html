@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <link rel="icon" type="image/x-icon" href="assets/profile.jpg">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Kanav's Projects</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -219,6 +219,105 @@
 
         /* Helper for separator */
         .separator { height: 1px; background: linear-gradient(to right, transparent, #D4D0C8, transparent); margin: 2px 0; }
+
+        /* --- MOBILE RESPONSIVE OVERRIDES --- */
+        @media screen and (max-width: 768px) {
+            /* 1. Reset Cursor styling (mobiles don't have cursors) */
+            body, a, button, input { cursor: auto !important; }
+
+            /* 2. Desktop Icons: Grid Layout */
+            #desktop {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+                grid-template-rows: repeat(auto-fill, 100px);
+                gap: 10px;
+                align-content: start;
+                justify-content: center;
+                padding-top: 20px;
+            }
+            .desktop-icon {
+                margin: 0;
+                width: 100%;
+                height: auto;
+            }
+            .desktop-icon i, .desktop-icon img {
+                width: 48px; height: 48px; /* Bigger icons */
+                font-size: 40px;
+            }
+            .icon-text { font-size: 13px; text-shadow: 2px 2px 4px black; }
+
+            /* 3. Windows: Force Full Screen Mode */
+            .window {
+                width: 100% !important;
+                height: calc(100% - 30px) !important; /* Subtract taskbar height */
+                top: 0 !important;
+                left: 0 !important;
+                border-radius: 0;
+                border: none;
+                display: flex;
+                flex-direction: column;
+            }
+
+            /* Hide Minimize/Maximize on mobile (confusing UX) */
+            .window-controls button:nth-child(1),
+            .window-controls button:nth-child(2) {
+                display: none;
+            }
+            
+            /* Make Close button huge for thumbs */
+            .btn-close {
+                width: 40px !important;
+                font-size: 16px !important;
+            }
+
+            .title-bar {
+                height: 40px; /* Taller for touch */
+                font-size: 16px;
+            }
+
+            /* 4. Start Menu: Full Screen Drawer */
+            #start-menu {
+                width: 100% !important;
+                height: calc(100% - 30px) !important;
+                bottom: 30px !important;
+                left: 0 !important;
+                border-radius: 0;
+                border: none;
+            }
+            .start-body { flex-direction: column; }
+            .start-left, .start-right { width: 100%; height: 50%; overflow-y: auto; }
+            .start-item { padding: 12px 10px; font-size: 14px; } /* Fat finger friendly */
+
+            /* 5. App Specific Fixes */
+            /* Explorer: List View instead of grid for readability */
+            .explorer-view {
+                flex-direction: column;
+                flex-wrap: nowrap;
+            }
+            .file-item {
+                width: 100%;
+                flex-direction: row;
+                text-align: left;
+                padding: 15px;
+                border-bottom: 1px solid #eee;
+                height: auto;
+            }
+            .file-item i, .file-item img { margin-bottom: 0; margin-right: 15px; }
+            
+            /* Paint: Hide sidebar tools or make scrollable */
+            .paint-main { flex-direction: column-reverse; } /* Tools at bottom */
+            .paint-sidebar { 
+                width: 100%; 
+                height: 50px; 
+                grid-template-columns: repeat(auto-fill, 30px);
+                overflow-x: auto;
+                border-right: none; border-top: 1px solid #808080;
+            }
+            
+            /* Calculator: Bigger grid */
+            .calc-grid { gap: 10px; }
+            .calc-btn { font-size: 18px; padding: 15px; }
+        }
     </style>
 </head>
 <body>
@@ -235,38 +334,53 @@
         </div>
         <div class="start-body">
             <div class="start-left">
-                <div class="start-item" onclick="openApp('ie')">
-                    <i class="fab fa-internet-explorer" style="color: #3593FF;"></i>
-                    <div class="bold-item">Internet Explorer</div>
+                <div class="start-item" onclick="openExplorer('Desktop/My Projects')">
+                    <i class="fas fa-briefcase" style="color: #FFC107;"></i>
+                    <div class="bold-item">My Projects</div>
                 </div>
-                <div class="start-item" onclick="openApp('email')">
-                    <i class="fas fa-envelope" style="color: #3593FF;"></i>
-                    <div class="bold-item">Outlook Express</div>
+                <div class="start-item" onclick="window.open('../Resume.pdf', '_blank')">
+                    <i class="fas fa-file-pdf" style="color: #D32F2F;"></i>
+                    <div class="bold-item">My Resume</div>
                 </div>
-                <div class="separator"></div>
-                <div class="start-item" onclick="openApp('wmp')">
-                    <i class="fas fa-film" style="color: #E67E22;"></i>
-                    <div>Windows Media Player</div>
+                <div class="start-item" onclick="alert('About Me content coming soon!')">
+                    <i class="fas fa-user-circle" style="color: #00796B;"></i>
+                    <div class="bold-item">About Me</div>
                 </div>
-                <div class="start-item" onclick="openApp('paint')">
-                    <i class="fas fa-paint-brush" style="color: #C0392B;"></i>
-                    <div>Paint</div>
-                </div>
-                <div class="start-item" onclick="openApp('cmd')">
-                    <i class="fas fa-terminal" style="color: #333;"></i>
-                    <div>Command Prompt</div>
-                </div>
-                 <div class="start-item" onclick="openApp('minesweeper')">
-                    <i class="fas fa-bomb" style="color: black;"></i>
-                    <div>Minesweeper</div>
-                </div>
-                <div class="start-item" onclick="openApp('calc')">
-                    <i class="fas fa-calculator" style="color: #27AE60;"></i>
-                    <div>Calculator</div>
+                <div class="start-item" onclick="window.open('mailto:kanavbhardwaj5150@gmail.com', '_blank')">
+                    <i class="fas fa-envelope" style="color: #0072C6;"></i>
+                    <div class="bold-item">Contact Me</div>
                 </div>
                 
-                <div style="margin-top: auto; text-align: center; padding: 5px; font-weight: bold; background: #fff;">
+                <div class="separator"></div>
+                
+                <div style="margin-top: auto; text-align: center; padding: 5px; font-weight: bold; background: #fff;" onclick="toggleAllProgramsMenu()">
                     All Programs <i class="fas fa-caret-right" style="color: green;"></i>
+                </div>
+                <div id="all-programs-menu" class="menu-dropdown" style="bottom: 30px; left: 100%; height: auto; width: 250px; display: none; padding: 5px; position: absolute; border-top-left-radius: 5px; border-top-right-radius: 5px;">
+                    <div class="start-item" onclick="openApp('ie')">
+                        <i class="fab fa-internet-explorer" style="color: #3593FF;"></i>
+                        <div class="bold-item">Internet Explorer</div>
+                    </div>
+                    <div class="start-item" onclick="openApp('wmp')">
+                        <i class="fas fa-film" style="color: #E67E22;"></i>
+                        <div>Windows Media Player</div>
+                    </div>
+                    <div class="start-item" onclick="openApp('paint')">
+                        <i class="fas fa-paint-brush" style="color: #C0392B;"></i>
+                        <div>Paint</div>
+                    </div>
+                    <div class="start-item" onclick="openApp('cmd')">
+                        <i class="fas fa-terminal" style="color: #333;"></i>
+                        <div>Command Prompt</div>
+                    </div>
+                    <div class="start-item" onclick="openApp('minesweeper')">
+                        <i class="fas fa-bomb" style="color: black;"></i>
+                        <div>Minesweeper</div>
+                    </div>
+                    <div class="start-item" onclick="openApp('calc')">
+                        <i class="fas fa-calculator" style="color: #27AE60;"></i>
+                        <div>Calculator</div>
+                    </div>
                 </div>
             </div>
             <div class="start-right">
@@ -278,7 +392,7 @@
                 <div class="separator"></div>
                 <div class="start-item"><i class="fas fa-question-circle" style="color: #2980B9;"></i> Help and Support</div>
                 <div class="start-item"><i class="fas fa-search" style="color: #2980B9;"></i> Search</div>
-                <div class="start-item"><i class="fas fa-running" style="color: #2980B9;"></i> Run...</div>
+                <div class="start-item" onclick="openRunDialog()"><i class="fas fa-running" style="color: #2980B9;"></i> Run...</div>
             </div>
         </div>
         <div class="start-footer">
@@ -306,32 +420,81 @@
     /** --- FILE SYSTEM & DATA --- */
     const fileSystem = {
         "Desktop": {
-            "My Computer": { type: "system", icon: "fas fa-desktop", color: "#3593FF" },
+            "My Computer": { type: "system", icon: "assets/projects/My Computer.ico" }, // Use image path for system icons
             "Recycle Bin": { type: "system", icon: "fas fa-trash-alt", color: "#95A5A6" },
-            "Command Prompt": { type: "app", appId: "cmd" },
-            "Calculator": { type: "app", appId: "calc" },
-            "Minesweeper": { type: "app", appId: "minesweeper" },
-            "Projects": {
+            "My Projects": {
                 type: "folder",
+                icon: "assets/projects/folder.png", // Use image path for folder icon
                 content: {
-                    "Portfolio Website": {
-                        "readme.txt": "This is a React-based portfolio showing my skills in UI/UX.",
-                        "demo.mp4": "video",
-                        "github.url": "https://github.com/user/portfolio"
+                    "Personal_Media_Hub.url": {
+                        type: "ie_render",
+                        html: `
+                            <div style="padding:15px;">
+                                <h2>Personal Media Intelligence Hub (ML)</h2>
+                                <p>This project uses machine learning to provide personalized media recommendations.</p>
+                                <p><b>Tech Stack:</b> Python, Scikit-Learn, Flask</p>
+                                <a href="https://github.com/Paradox-73" target="_blank" style="color:blue">View Code</a>
+                            </div>
+                        `
                     },
-                    "E-Commerce App": {
-                        "readme.txt": "Full stack MERN application with Stripe integration.",
-                        "backend.js": "console.log('Server started on port 8080');",
-                        "demo.mp4": "video"
+                    "MusicBucket.url": {
+                        type: "ie_render",
+                        html: `
+                            <div style="padding:15px;">
+                                <h2>MusicBucket (Full Stack)</h2>
+                                <p>A full-stack application for managing and streaming music.</p>
+                                <p><b>Tech Stack:</b> Node.js, Express, React, MongoDB</p>
+                                <a href="https://github.com/Paradox-73" target="_blank" style="color:blue">View Code</a>
+                            </div>
+                        `
                     },
-                    "AI Chatbot": {
-                        "readme.txt": "Python Flask app using OpenAI API.",
-                        "model.py": "import torch\n# Neural network logic here"
+                    "Portfolio_Website.url": {
+                        type: "ie_render",
+                        html: `
+                            <div style="padding:15px;">
+                                <h2>Portfolio Website</h2>
+                                <p>This is a React-based portfolio showcasing my UI/UX and frontend engineering skills.</p>
+                                <a href="https://github.com/Paradox-73" target="_blank" style="color:blue">View Code</a>
+                            </div>
+                        `
+                    },
+                    "E-Commerce_App.url": {
+                        type: "ie_render",
+                        html: `
+                            <div style="padding:15px;">
+                                <h2>E-Commerce App</h2>
+                                <p>A full stack MERN application with Stripe integration for secure payments.</p>
+                                <a href="https://github.com/Paradox-73" target="_blank" style="color:blue">View Code</a>
+                            </div>
+                        `
+                    },
+                    "AI_Chatbot.url": {
+                        type: "ie_render",
+                        html: `
+                            <div style="padding:15px;">
+                                <h2>AI Chatbot</h2>
+                                <p>A Python Flask application leveraging the OpenAI API for intelligent conversational responses.</p>
+                                <a href="https://github.com/Paradox-73" target="_blank" style="color:blue">View Code</a>
+                            </div>
+                        `
                     }
                 }
             },
-            "Resume.txt": "John Doe\nSoftware Engineer\nExperience: 5 Years\nSkills: JS, HTML, CSS",
-            "Internet Explorer": { type: "app", appId: "ie", icon: "fab fa-internet-explorer", color: "#3498DB" }
+            "My Resume.doc": {
+                type: "app",
+                appId: "pdfViewer",
+                path: "../Resume.pdf", // Corrected path to Resume.pdf
+                icon: "assets/projects/notepad.png", // Using notepad icon as a placeholder for doc
+                color: "#2B579A"
+            },
+            "Contact Me": {
+                type: "app",
+                appId: "emailClient", // Custom app ID for email
+                icon: "fas fa-envelope", // Outlook Express icon
+                color: "#0072C6"
+            },
+            "Internet Explorer": { type: "app", appId: "ie", icon: "assets/projects/Internet Explorer 6.png" },
+            // Command Prompt, Calculator, Minesweeper are removed from Desktop as per SRS and will be moved to Start Menu
         },
         "My Documents": {
             "Notes": { "todo.txt": "1. Buy milk\n2. Code XP clone" },
@@ -350,10 +513,56 @@
     let activeWindow = null;
     let clipboard = "";
     
-    // Initial Render
-    renderDesktop();
-    setInterval(updateClock, 1000);
-    updateClock();
+    // Auto-open the portfolio summary so recruiters see it instantly
+    window.onload = function() {
+        renderDesktop();
+        updateClock();
+        setInterval(updateClock, 1000); // Keep the clock updating
+        
+        const isMobile = window.innerWidth <= 768;
+        
+        // Mobile-friendly content
+        const welcomeContent = `
+            <div style="padding: 20px; font-family: 'Tahoma', sans-serif; height: 100%; display: flex; flex-direction: column;">
+                <div style="flex: 1;">
+                    <h1 style="margin-top: 0; font-size: ${isMobile ? '24px' : '32px'}">Hi, I'm Kanav.</h1>
+                    <p style="font-size: 16px; line-height: 1.5;">
+                        I'm a CSE student building scalable systems and intelligent models.
+                        ${isMobile ? '<br><br><i>(Tap "Projects" to see my work!)</i>' : ''}
+                    </p>
+                </div>
+                
+                <div style="display: flex; flex-direction: column; gap: 15px; margin-top: auto; margin-bottom: 20px;">
+                    <button class="calc-btn" style="padding: 15px; font-weight: bold; background: #27AE60; color: white;" onclick="openPath('Desktop/My Projects')">
+                        📂 View Projects
+                    </button>
+                    <button class="calc-btn" style="padding: 15px; font-weight: bold;" onclick="window.open('../Resume.pdf')">
+                        📄 Download Resume
+                    </button>
+                </div>
+                <hr style="border: 0; border-top: 1px solid #ccc; margin: 15px 0;">
+                <b>Featured Work:</b>
+                <ul>
+                     <li><a href="#" onclick="openProject('Personal_Media_Hub')">Personal Media Intelligence Hub (ML)</a></li>
+                     <li><a href="#" onclick="openProject('MusicBucket')">MusicBucket (Full Stack)</a></li>
+                </ul>
+            </div>
+        `;
+
+        // Responsive dimensions
+        const width = isMobile ? window.innerWidth : 500;
+        const height = isMobile ? window.innerHeight - 30 : 400; // Subtract taskbar height
+
+        const win = createWindow("Welcome - Kanav's Portfolio", width, height, "fas fa-user-circle");
+        win.innerHTML = welcomeContent;
+
+        // Center it on Desktop, Full screen on Mobile (CSS handles full screen, this is for initial placement logic)
+        if (!isMobile) {
+            const winEl = win.parentElement.parentElement;
+            winEl.style.top = "15%";
+            winEl.style.left = "calc(50% - " + (width / 2) + "px)"; // Center horizontally
+        }
+    };
 
     /** --- CORE FUNCTIONS --- */
     
@@ -365,6 +574,38 @@
     function toggleStartMenu() {
         const menu = document.getElementById('start-menu');
         menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
+        // Also hide All Programs menu if Start Menu is closing
+        if (menu.style.display === 'none') {
+            const allProgramsMenu = document.getElementById('all-programs-menu');
+            if (allProgramsMenu) allProgramsMenu.style.display = 'none';
+        }
+    }
+
+    function toggleAllProgramsMenu() {
+        const allProgramsMenu = document.getElementById('all-programs-menu');
+        // Toggle display
+        if (allProgramsMenu.style.display === 'flex') {
+            allProgramsMenu.style.display = 'none';
+        } else {
+            allProgramsMenu.style.display = 'flex';
+            // Position it next to the "All Programs" link within the start-left
+            const startLeft = document.querySelector('#start-menu .start-left');
+            // Select the "All Programs" div itself, which is the last direct child before all-programs-menu
+            const allProgramsLink = startLeft.querySelector('div:last-child:not(#all-programs-menu)'); 
+            
+            if (allProgramsLink) {
+                const linkRect = allProgramsLink.getBoundingClientRect();
+                const startMenuRect = document.getElementById('start-menu').getBoundingClientRect();
+
+                // Calculate relative position to the start-menu
+                const newLeft = (linkRect.left - startMenuRect.left) + linkRect.width - 5; // A little overlap
+                // Position bottom of allProgramsMenu to align with the top of the All Programs link
+                // Needs to consider the height of the allProgramsMenu
+                allProgramsMenu.style.left = newLeft + 'px';
+                allProgramsMenu.style.bottom = (startMenuRect.height - (linkRect.top - startMenuRect.top)) - allProgramsMenu.offsetHeight + 'px';
+            }
+        }
+        event.stopPropagation(); // Prevent global click listener from closing it
     }
 
     // Global click listener to close things
@@ -408,62 +649,69 @@
         const desktop = document.getElementById('desktop');
         desktop.innerHTML = "";
         
+        // Detect mobile
+        const isMobile = window.innerWidth <= 768;
+
         const root = fileSystem["Desktop"];
         Object.keys(root).forEach(key => {
             const item = root[key];
             const el = document.createElement('div');
             el.className = 'desktop-icon';
             
-            // Icon selection logic
-            let iconHtml = `<i class="fas fa-file" style="color: white;"></i>`; // Default Font Awesome file icon
-            let onClick = () => openFile('Desktop', key); // Default open file logic
+            // Icon Selection Logic (merged from previous version)
+            let iconHtml = '';
+            let onClick = () => openFile('Desktop', key); // Default open file logic, overridden below
 
-            if (key === 'Projects') {
-                iconHtml = `<img src="assets/projects/folder.png" alt="Projects" width="32" height="32">`;
-                onClick = () => openExplorer('Desktop/' + key);
-            } else if (key === 'My Computer') {
-                iconHtml = `<img src="assets/projects/My Computer.ico" alt="My Computer" width="32" height="32">`;
-                onClick = () => openExplorer('My Computer');
-            } else if (key === 'Internet Explorer') {
-                iconHtml = `<img src="assets/projects/Internet Explorer 6.png" alt="Internet Explorer" width="32" height="32">`;
-                onClick = () => openApp('ie');
-            } else if (key === 'Command Prompt') {
-                iconHtml = `<img src="assets/projects/Command Prompt.png" alt="Command Prompt" width="32" height="32">`;
-                onClick = () => openApp('cmd');
-            } else if (key === 'Calculator') {
-                iconHtml = `<img src="assets/projects/Calculator.png" alt="Calculator" width="32" height="32">`;
-                onClick = () => openApp('calc');
-            } else if (key === 'Minesweeper') {
-                iconHtml = `<img src="assets/projects/Minesweeper.png" alt="Minesweeper" width="32" height="32">`;
-                onClick = () => openApp('minesweeper');
-            } else if (key.endsWith('.txt')) {
+            if (item.icon) {
+                if (item.icon.startsWith('assets/')) { // Assume it's an image path
+                    iconHtml = `<img src="${item.icon}" alt="${key}" width="32" height="32">`;
+                } else { // Assume it's a Font Awesome class
+                    iconHtml = `<i class="${item.icon}" style="color: ${item.color || 'white'};"></i>`;
+                }
+            } else if (typeof item === 'string' && key.endsWith('.txt')) { // For plain text files not yet converted
                 iconHtml = `<img src="assets/projects/notepad.png" alt="Text File" width="32" height="32">`;
-            } else if (typeof item === 'object' && item.type === 'folder') {
+            } else if (item.type === 'folder') { // Default folder icon if not specified
                 iconHtml = `<img src="assets/projects/folder.png" alt="Folder" width="32" height="32">`;
-                onClick = () => openExplorer('Desktop/' + key);
-            } else if (key === "Recycle Bin") {
-                iconHtml = `<i class="fas fa-trash-alt" style="color: #95A5A6;"></i>`; // Keep Font Awesome for now
+            } else if (item.type === 'app') { // Default app icon if not specified
+                iconHtml = `<i class="fas fa-cog" style="color: ${item.color || 'white'};"></i>`; // Generic cog icon
+            } else { // Fallback for anything else
+                iconHtml = `<i class="fas fa-file" style="color: white;"></i>`; // Default Font Awesome file icon
             }
-            // Fallback for other app types not explicitly covered by images
-            else if (item.type === 'app') {
-                iconHtml = `<i class="${item.icon}" style="color: ${item.color || '#3498DB'};"></i>`;
-                onClick = () => openApp(item.appId);
+
+            // Assign onClick based on item type and appId (merged from previous version)
+            if (item.type === 'system' && key === 'My Computer') {
+                onClick = () => openExplorer('My Computer');
+            } else if (key === 'Recycle Bin') {
+                onClick = () => alert('Recycle Bin is empty!'); // Placeholder
+            } else if (item.type === 'folder') {
+                onClick = () => openExplorer('Desktop/' + key);
+            } else if (item.type === 'app') {
+                if (item.appId === 'pdfViewer') onClick = () => window.open(item.path, '_blank');
+                else if (item.appId === 'emailClient') onClick = () => window.open('mailto:kanavbhardwaj5150@gmail.com', '_blank');
+                else onClick = () => openApp(item.appId);
             }
 
 
             el.innerHTML = `${iconHtml}<div class="icon-text">${key}</div>`;
-            el.ondblclick = onClick;
-            // Mobile support
-            let tapCount = 0;
-            el.addEventListener('touchstart', () => {
-                tapCount++;
-                if (tapCount === 2) { onClick(); tapCount = 0; }
-                setTimeout(() => tapCount = 0, 500);
-            });
-            desktop.appendChild(el);
-        });
-    }
+            
+            // RESPONSIVE CLICK HANDLER
+            if (isMobile) {
+                // On mobile: Single tap opens immediately
+                el.onclick = onClick;
+            } else {
+                // On desktop: Select on click, Open on double click
+                el.onclick = () => {
+                    document.querySelectorAll('.desktop-icon').forEach(i => i.style.background = 'transparent');
+                    el.style.background = 'rgba(255,255,255,0.2)'; // Highlight selection
+                };
+                el.ondblclick = onClick;
+            }
 
+                    desktop.appendChild(el);
+                });
+            }
+            
+            window.addEventListener('resize', renderDesktop); // Add this line
     /** --- WINDOW MANAGER LOGIC --- */
 
     function createWindow(title, width, height, iconClass = "fas fa-window-maximize") {
@@ -591,6 +839,8 @@
         else if (appId === 'ie') launchIE();
         else if (appId === 'wmp') launchWMP();
         else if (appId === 'minesweeper') launchMinesweeper();
+        else if (appId === 'pdfViewer') window.open(fileSystem.Desktop["My Resume.doc"].path, '_blank');
+        else if (appId === 'emailClient') window.open('mailto:kanavbhardwaj5150@gmail.com', '_blank');
         else alert('Application not installed.');
     }
 
@@ -621,7 +871,46 @@
         } else if (filename.endsWith('.mp4') || filename === 'demo.mp4') {
             launchWMP(filename);
         } else if (filename.endsWith('.url')) {
-            launchIE(content);
+            // If it's a .url file that is an ie_render type, then launch with its HTML
+            const fileObj = findFileObject(path, filename); // A helper function to get the actual file object
+            if (fileObj && fileObj.type === 'ie_render' && fileObj.html) {
+                launchIE(fileObj.html, filename.replace(/\.url$/i, ''));
+            } else {
+                launchIE(typeof content === 'string' ? content : "about:blank", filename);
+            }
+        }
+    }
+
+    // Helper to find file object by path and filename
+    function findFileObject(path, filename) {
+        const parts = path.split('/');
+        let current = fileSystem;
+        for(let p of parts) {
+            if(current[p]) current = current[p];
+            else if (current.content && current.content[p]) current = current.content[p];
+        }
+        if (current[filename]) return current[filename];
+        if (current.content && current.content[filename]) return current.content[filename];
+        return null;
+    }
+
+    function openProject(projectName) {
+        let projectEntry = null;
+        const projectsFolder = fileSystem.Desktop.Projects.content;
+        
+        // Find the project by name (case-insensitive and handle .url extension)
+        for (const key in projectsFolder) {
+            const cleanKey = key.replace(/\.url$/i, ''); // Remove .url extension for comparison
+            if (cleanKey.toLowerCase() === projectName.toLowerCase()) {
+                projectEntry = projectsFolder[key];
+                break;
+            }
+        }
+
+        if (projectEntry && projectEntry.type === 'ie_render' && projectEntry.html) {
+            launchIE(projectEntry.html, projectEntry.title || projectName); // Pass HTML and a title
+        } else {
+            alert(`Project '${projectName}' not found or not configured for IE rendering.`);
         }
     }
 
@@ -715,8 +1004,9 @@
                 const response = document.createElement('div');
                 response.style.marginBottom = "10px";
                 
-                if (cmd === 'help') response.innerText = "Supported commands: dir, cls, help, ver, echo, exit";
-                else if (cmd === 'dir') response.innerHTML = " Volume in drive C has no label.<br> Directory of C:\\Desktop<br><br>Projects &lt;DIR&gt;<br>My Computer &lt;LNK&gt;<br>Recycle Bin &lt;LNK&gt;";
+                if (cmd === 'help') response.innerText = "Supported commands: dir, cls, help, ver, echo, exit, type skills.txt";
+                else if (cmd === 'type skills.txt') response.innerText = "Skills: Python, JavaScript, HTML, CSS, React, Node.js, Express, MongoDB, SQL, Git, Docker, Machine Learning (Scikit-Learn, TensorFlow), RESTful APIs, UI/UX Design, Problem Solving";
+                else if (cmd === 'dir') response.innerHTML = " Volume in drive C has no label.<br> Directory of C:\\Desktop<br><br>My Projects &lt;DIR&gt;<br>My Computer &lt;LNK&gt;<br>Recycle Bin &lt;LNK&gt;<br>My Resume.doc &lt;DOC&gt;<br>Contact Me &lt;APP&gt;";
                 else if (cmd === 'ver') response.innerText = "Microsoft Windows XP [Version 5.1.2600]";
                 else if (cmd === 'cls') { history.innerHTML = ""; response.innerText = ""; }
                 else if (cmd.startsWith('echo ')) response.innerText = cmd.substring(5);
@@ -1148,19 +1438,41 @@
     }
 
     // 6. INTERNET EXPLORER
-    function launchIE(url = "https://www.google.com/webhp?igu=1") {
-        const container = createWindow("Internet Explorer", 700, 500, "fab fa-internet-explorer");
-        container.innerHTML = `
-             <div class="explorer-toolbar">
-                <div class="control-btn" style="color:black; border:1px solid #ccc;">Back</div>
-                <div class="explorer-address">
-                    <span>Address</span>
-                    <input type="text" class="address-bar" value="${url}" id="ie-url">
-                    <button onclick="document.getElementById('ie-frame').src = document.getElementById('ie-url').value">Go</button>
+    function launchIE(contentOrUrl = "https://www.google.com/webhp?igu=1", windowTitle = "Internet Explorer") {
+        const winId = windowIdCounter -1; // Get the ID of the newly created window
+        const container = createWindow(windowTitle, 700, 500, "fab fa-internet-explorer");
+        
+        // Check if contentOrUrl is likely HTML (starts with <div, <p, etc. or contains line breaks)
+        // A more robust check might be needed if URLs can legitimately start with < or contain newlines in specific ways.
+        const isHtmlContent = contentOrUrl.trim().startsWith('<') || contentOrUrl.includes('\n');
+
+        if (isHtmlContent) {
+            container.innerHTML = `
+                <div class="explorer-toolbar">
+                    <div class="control-btn" style="color:black; border:1px solid #ccc;">Back</div>
+                    <div class="explorer-address">
+                        <span>Address</span>
+                        <input type="text" class="address-bar" value="about:blank" readonly>
+                    </div>
                 </div>
-            </div>
-            <iframe id="ie-frame" src="${url}" style="width:100%; height: calc(100% - 35px); border:none;"></iframe>
-        `;
+                <div style="width:100%; height: calc(100% - 35px); overflow: auto;">
+                    ${contentOrUrl}
+                </div>
+            `;
+        } else {
+            // Original URL loading behavior
+            container.innerHTML = `
+                <div class="explorer-toolbar">
+                    <div class="control-btn" style="color:black; border:1px solid #ccc;">Back</div>
+                    <div class="explorer-address">
+                        <span>Address</span>
+                        <input type="text" class="address-bar" value="${contentOrUrl}" id="ie-url-${winId}">
+                        <button onclick="document.getElementById('ie-frame-${winId}').src = document.getElementById('ie-url-${winId}').value">Go</button>
+                    </div>
+                </div>
+                <iframe id="ie-frame-${winId}" src="${contentOrUrl}" style="width:100%; height: calc(100% - 35px); border:none;"></iframe>
+            `;
+        }
     }
 
     // 7. WINDOWS MEDIA PLAYER
