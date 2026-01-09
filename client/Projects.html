@@ -83,6 +83,16 @@
         .window-body { flex: 1; padding: 0; position: relative; overflow: hidden; background: white; display: flex; flex-direction: column; }
         .window-content { height: 100%; width: 100%; display: flex; flex-direction: column; }
 
+        .resize-handle {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            right: 0;
+            bottom: 0;
+            cursor: nwse-resize; /* Diagonal resize cursor */
+            z-index: 10001; /* Ensure it's above other content */
+        }
+
         /* --- MENUS --- */
         .menubar { background: #ECE9D8; padding: 2px 0; font-size: 11px; display: flex; border-bottom: 1px solid #D4D0C8; user-select: none; flex-shrink: 0; }
         .menu-wrap { position: relative; }
@@ -334,9 +344,9 @@
         </div>
         <div class="start-body">
             <div class="start-left">
-                <div class="start-item" onclick="openExplorer('Desktop/My Projects')">
-                    <i class="fas fa-briefcase" style="color: #FFC107;"></i>
-                    <div class="bold-item">My Projects</div>
+                <div class="start-item" onclick="openExplorer('My Documents')">
+                    <i class="fas fa-folder-open" style="color: #F1C40F;"></i>
+                    <div class="bold-item">My Documents</div>
                 </div>
                 <div class="start-item" onclick="window.open('../Resume.pdf', '_blank')">
                     <i class="fas fa-file-pdf" style="color: #D32F2F;"></i>
@@ -346,7 +356,7 @@
                     <i class="fas fa-user-circle" style="color: #00796B;"></i>
                     <div class="bold-item">About Me</div>
                 </div>
-                <div class="start-item" onclick="window.open('mailto:kanavbhardwaj5150@gmail.com', '_blank')">
+                <div class="start-item" onclick="openExternalURLSafely('mailto:kanavbhardwaj5150@gmail.com')">
                     <i class="fas fa-envelope" style="color: #0072C6;"></i>
                     <div class="bold-item">Contact Me</div>
                 </div>
@@ -422,64 +432,6 @@
         "Desktop": {
             "My Computer": { type: "system", icon: "assets/projects/My Computer.ico" }, // Use image path for system icons
             "Recycle Bin": { type: "system", icon: "fas fa-trash-alt", color: "#95A5A6" },
-            "My Projects": {
-                type: "folder",
-                icon: "assets/projects/folder.png", // Use image path for folder icon
-                content: {
-                    "Personal_Media_Hub.url": {
-                        type: "ie_render",
-                        html: `
-                            <div style="padding:15px;">
-                                <h2>Personal Media Intelligence Hub (ML)</h2>
-                                <p>This project uses machine learning to provide personalized media recommendations.</p>
-                                <p><b>Tech Stack:</b> Python, Scikit-Learn, Flask</p>
-                                <a href="https://github.com/Paradox-73" target="_blank" style="color:blue">View Code</a>
-                            </div>
-                        `
-                    },
-                    "MusicBucket.url": {
-                        type: "ie_render",
-                        html: `
-                            <div style="padding:15px;">
-                                <h2>MusicBucket (Full Stack)</h2>
-                                <p>A full-stack application for managing and streaming music.</p>
-                                <p><b>Tech Stack:</b> Node.js, Express, React, MongoDB</p>
-                                <a href="https://github.com/Paradox-73" target="_blank" style="color:blue">View Code</a>
-                            </div>
-                        `
-                    },
-                    "Portfolio_Website.url": {
-                        type: "ie_render",
-                        html: `
-                            <div style="padding:15px;">
-                                <h2>Portfolio Website</h2>
-                                <p>This is a React-based portfolio showcasing my UI/UX and frontend engineering skills.</p>
-                                <a href="https://github.com/Paradox-73" target="_blank" style="color:blue">View Code</a>
-                            </div>
-                        `
-                    },
-                    "E-Commerce_App.url": {
-                        type: "ie_render",
-                        html: `
-                            <div style="padding:15px;">
-                                <h2>E-Commerce App</h2>
-                                <p>A full stack MERN application with Stripe integration for secure payments.</p>
-                                <a href="https://github.com/Paradox-73" target="_blank" style="color:blue">View Code</a>
-                            </div>
-                        `
-                    },
-                    "AI_Chatbot.url": {
-                        type: "ie_render",
-                        html: `
-                            <div style="padding:15px;">
-                                <h2>AI Chatbot</h2>
-                                <p>A Python Flask application leveraging the OpenAI API for intelligent conversational responses.</p>
-                                <a href="https://github.com/Paradox-73" target="_blank" style="color:blue">View Code</a>
-                            </div>
-                        `
-                    }
-                }
-            },
             "My Resume.doc": {
                 type: "app",
                 appId: "pdfViewer",
@@ -489,12 +441,348 @@
             },
             "Contact Me": {
                 type: "app",
-                appId: "emailClient", // Custom app ID for email
+                appId: "contactForm", // Custom app ID for contact form
                 icon: "fas fa-envelope", // Outlook Express icon
                 color: "#0072C6"
             },
             "Internet Explorer": { type: "app", appId: "ie", icon: "assets/projects/Internet Explorer 6.png" },
-            // Command Prompt, Calculator, Minesweeper are removed from Desktop as per SRS and will be moved to Start Menu
+            "Chimera": {
+                type: "folder",
+                icon: "assets/projects/folder.png",
+                content: {
+                    "Blog Post.html": {
+                        type: "notepad_render",
+                        html: `
+                            <div style="padding:15px; font-family:'Tahoma', sans-serif; font-size:14px; line-height:1.4;">
+                                <h2>Chimera: Elevating Large-Scale Neural Network Training with Bidirectional Pipelines</h2>
+                                <p>As a researcher and developer passionate about the frontiers of artificial intelligence, I contributed to <strong>Chimera</strong>, a groundbreaking framework designed for the efficient training of large-scale neural networks using bidirectional pipelines. This project demonstrates my advanced capabilities in high-performance computing, distributed systems, and optimizing deep learning architectures, directly addressing the computational challenges of modern AI.</p>
+                                <h3>The Challenge: Scaling Deep Learning Training</h3>
+                                <p>Training massive neural networks, especially those with billions of parameters, is a computationally intensive and time-consuming endeavor. Traditional training methods often face bottlenecks in communication, memory utilization, and parallelization, hindering research and development progress. Chimera was developed to overcome these limitations by introducing a novel approach to pipeline parallelism.</p>
+                                <h3>Key Innovations & Contributions:</h3>
+                                <ul>
+                                    <li><strong>Implementation of Bidirectional Pipelines:</strong> My work on Chimera involved the practical implementation of bidirectional pipelines, a technique that significantly enhances the efficiency of data flow during distributed neural network training. This complex architecture allows for more effective utilization of computational resources across multiple devices or nodes.</li>
+                                    <li><strong>Optimized Resource Utilization:</strong> Contributed to a framework that maximizes the efficiency of GPU and CPU resources by orchestrating parallel computations and minimizing idle times. This is crucial for reducing the training duration and cost associated with large models.</li>
+                                    <li><strong>Modular and Extensible Framework Design:</strong> Participated in developing Chimera with a clear, modular structure (\`chimera/\` core package), making it adaptable to various neural network architectures and future research directions. This reflects a strong understanding of software engineering principles for research-oriented projects.</li>
+                                    <li><strong>Comprehensive Documentation & Examples:</strong> Contributed to the project's documentation and example scripts, ensuring that other researchers and developers could easily understand, implement, and extend the framework. This highlights my commitment to clear communication and fostering collaborative environments.</li>
+                                </ul>
+                                <h3>Technical Prowess & Impact:</h3>
+                                <p>The Chimera project showcases my expertise in the intricate domain of deep learning infrastructure and high-performance computing:</p>
+                                <ul>
+                                    <li><strong>Core Language:</strong> Primarily developed in <strong>Python</strong>, utilizing its extensive ecosystem for scientific computing and machine learning.</li>
+                                    <li><strong>High-Performance Computing:</strong> Gained practical experience with concepts like pipeline parallelism, distributed training, and optimizing computational graphs for efficiency.</li>
+                                    <li><strong>Deep Learning Frameworks:</strong> While the README doesn't explicitly name them, involvement in such a project implies familiarity and likely hands-on experience with popular deep learning frameworks (e.g., PyTorch, TensorFlow) and their underlying mechanisms for distributed computation.</li>
+                                    <li><strong>Software Engineering for Research:</strong> Applied robust software engineering practices (project structure, testing, dependency management with \`requirements.txt\` and \`pyproject.toml\`) within a research context, ensuring code quality and reproducibility.</li>
+                                    <li><strong>Problem-Solving at Scale:</strong> Demonstrated the ability to tackle fundamental challenges in scaling deep learning, a skill highly valuable in both academic and industrial AI settings.</li>
+                                </ul>
+                                <p>This project underscores my capability to engage with complex theoretical concepts in AI and translate them into practical, high-performance software solutions. My contribution to Chimera reflects a strong foundation in deep learning engineering, distributed systems, and a commitment to advancing the efficiency of AI model development.</p>
+                            </div>
+                        `
+                    },
+                    "Github Link.url": {
+                        type: "url_redirect", // Custom type to indicate direct URL opening
+                        url: "https://github.com/Paradox-73/Chimera",
+                        icon: "assets/projects/exe-icon.png"
+                    },
+                    "Video Demo.mp4": {
+                        type: "app",
+                        appId: "wmp",
+                        path: "Chimera_Demo.mp4", // Placeholder for demo file name
+                        icon: "assets/projects/Command Prompt.png" // Placeholder video icon
+                    }
+                }
+            },
+            "MusicBucket": {
+                type: "folder",
+                icon: "assets/projects/folder.png",
+                content: {
+                    "Blog Post.html": {
+                        type: "notepad_render",
+                        html: `
+                            <div style="padding:15px; font-family:'Tahoma', sans-serif; font-size:14px; line-height:1.4;">
+                                <h2>MusicBucket: Revolutionizing Music Discovery & Engagement</h2>
+                                <p>As a passionate developer, I embarked on the MusicBucket project to transform how music enthusiasts discover new artists, track their listening habits, and deepen their appreciation for various genres. This platform is a testament to my ability to build comprehensive, data-driven applications that enhance user experience through innovative features and robust technology.</p>
+                                <h3>The Challenge: Beyond Generic Playlists</h3>
+                                <p>The current music landscape often leads to "discovery paralysis" and superficial listening. MusicBucket was conceived to tackle these challenges by offering personalized, interactive, and analytical tools that go far beyond standard streaming service offerings.</p>
+                                <h3>Key Innovations & Features:</h3>
+                                <ul>
+                                    <li><strong>Comprehensive Dashboard Analytics:</strong> Developed a dynamic dashboard providing visual insights into listening patterns, including metrics like danceability, tempo, and energy. This feature allows users to quantify and understand their unique musical taste over time.</li>
+                                    <li><strong>Personalized MusicBucket Lists:</strong> Engineered a system for creating and managing custom music lists, with advanced filtering by artists, albums, and genres. Crucially, this includes auto-generation of Spotify playlists, streamlining the user experience from discovery to listening.</li>
+                                    <li><strong>Interactive Recommendation Engine (Recommendation Roulette & RabbitHole):</strong> Designed and implemented engaging tools like a roulette-based recommender and a "RabbitHole" feature for continuous discovery. These leverage listening history and integrate with global charts to provide fresh, tailored suggestions.</li>
+                                    <li><strong>Artist Depth Analysis:</strong> Created a unique feature to track and visualize a user's "exploration score" for artists, encouraging deeper dives into their discographies and generating playlists of lesser-known tracks.</li>
+                                    <li><strong>Geo-Location Based Mixtapes (RoadTrip):</strong> Integrated the MapBox API to enable the creation of location-based mixtapes, allowing users to discover local artists along planned routes and export playlists for offline listening.</li>
+                                </ul>
+                                <h3>Technical Prowess & Impact:</h3>
+                                <p>MusicBucket showcases my expertise across a modern, full-stack development environment:</p>
+                                <ul>
+                                    <li><strong>Frontend:</strong> Built with <strong>React.js, TypeScript, and Tailwind CSS</strong>, ensuring a responsive, high-performance, and maintainable user interface.</li>
+                                    <li><strong>Backend:</strong> Leveraged <strong>Supabase</strong> for a scalable and real-time backend solution, utilizing <strong>PostgreSQL</strong> for robust data storage, and its built-in authentication for secure user management.</li>
+                                    <li><strong>API Integration:</strong> Successfully integrated and managed complex interactions with the <strong>Spotify Web API</strong> and <strong>MapBox API</strong>, handling rate limiting, error management, and data synchronization.</li>
+                                    <li><strong>Complex State Management:</strong> Utilized <strong>Zustand</strong> for efficient and scalable state management, optimizing application performance and responsiveness.</li>
+                                    <li><strong>Data Processing & Analytics:</strong> Implemented efficient algorithms for real-time processing and analysis of extensive music listening data, transforming raw data into actionable insights.</li>
+                                    <li><strong>CI/CD:</strong> Employed <strong>GitHub Actions</strong> to establish a robust continuous integration and deployment pipeline, ensuring code quality and rapid iteration.</li>
+                                </ul>
+                                <p>This project not only demonstrates my ability to conceptualize and deliver a feature-rich application but also my commitment to clean code, scalable architecture, and an exceptional user experience. MusicBucket stands as a testament to my proficiency in modern web development and my passion for solving real-world problems with technology.</p>
+                            </div>
+                        `
+                    },
+                    "Github Link.url": {
+                        type: "url_redirect",
+                        url: "https://github.com/Paradox-73/MusicBucket",
+                        icon: "assets/projects/exe-icon.png"
+                    },
+                    "Video Demo.mp4": {
+                        type: "app",
+                        appId: "wmp",
+                        path: "MusicBucket_Demo.mp4",
+                        icon: "assets/projects/Command Prompt.png"
+                    }
+                }
+            },
+            "Personal Media Intelligence Hub": {
+                type: "folder",
+                icon: "assets/projects/folder.png",
+                content: {
+                    "Blog Post.html": {
+                        type: "notepad_render",
+                        html: `
+                            <div style="padding:15px; font-family:'Tahoma', sans-serif; font-size:14px; line-height:1.4;">
+                                <h2>Personal Media Intelligence Hub (PMIH): Crafting a Hyper-Personalized ML-Powered Recommendation Engine</h2>
+                                <p>As a developer driven by curiosity and a passion for data, I initiated the <strong>Personal Media Intelligence Hub (PMIH)</strong> project – a bespoke, machine learning-powered recommendation engine designed to unify and predict my personal ratings across a diverse array of entertainment domains: games, movies, TV shows, music, and books. This project not only showcases my expertise in ML engineering and data science but also my commitment to building intelligent systems that solve real-world, personal challenges.</p>
+                                <h3>The Problem: Beyond Generic Recommendations</h3>
+                                <p>Off-the-shelf recommendation systems often fall short in capturing individual nuances and long-term preferences. PMIH was conceived to move beyond these generic suggestions, creating a system that truly understands unique tastes by leveraging years of meticulously collected personal consumption data.</p>
+                                <h3>Key Innovations & Features:</h3>
+                                <ul>
+                                    <li><strong>ML-Powered Rating Prediction:</strong> Developed and fine-tuned <strong>XGBoost</strong> models for each media category to accurately predict my personal rating for new content. This demonstrates my proficiency in applying advanced machine learning algorithms to classification and regression tasks.</li>
+                                    <li><strong>Advanced Feature Engineering with Semantic Embeddings:</strong> Employed <strong>Sentence-Transformers</strong> to generate semantically rich vector embeddings from textual data (e.g., descriptions, genres, plots). This innovative approach allows the models to grasp nuanced contextual relationships, significantly enhancing recommendation accuracy.</li>
+                                    <li><strong>Real-Time Data Ingestion from External APIs:</strong> Engineered a robust system for fetching up-to-date information from multiple external APIs (RAWG for games, OMDB for movies, TVmaze for TV shows, Spotify for music, Google Books for books). This ensures the recommendation engine is continuously fed with fresh content, demonstrating strong API integration and data pipeline skills.</li>
+                                    <li><strong>Modular and Scalable Architecture:</strong> Designed the backend logic with a clear, modular structure, ensuring robustness and scalability. This foresight in architecture is crucial for expanding the project to cover more media types and integrate new features seamlessly.</li>
+                                    <li><strong>Interactive Terminal-Based Interface:</strong> Implemented a clean, menu-driven terminal interface, providing an accessible way to interact with the recommendation engine. A <strong>Streamlit web app</strong> is also under development, showcasing versatility in UI development.</li>
+                                </ul>
+                                <h3>Technical Prowess & Impact:</h3>
+                                <p>PMIH highlights my comprehensive skills in machine learning, data engineering, and full-stack development:</p>
+                                <ul>
+                                    <li><strong>Core Language:</strong> Developed entirely in <strong>Python 3.12+</strong>, demonstrating strong Python programming skills.</li>
+                                    <li><strong>Machine Learning Ecosystem:</strong> Proficiently utilized <strong>Pandas</strong> and <strong>NumPy</strong> for data manipulation, <strong>Scikit-learn</strong> for machine learning pipelines, and <strong>PyTorch</strong> as the backend for \`Sentence-Transformers\`.</li>
+                                    <li><strong>Advanced ML Models:</strong> Expertise in \`XGBoost\` for gradient boosting, a powerful and widely-used algorithm in industry.</li>
+                                    <li><strong>API Management:</strong> Managed complex API calls and environment variables (\`python-dotenv\`), ensuring secure and efficient data retrieval.</li>
+                                    <li><strong>CI/CD:</strong> Integrated <strong>GitHub Actions</strong> for continuous integration, ensuring code quality and automated testing.</li>
+                                </ul>
+                                <p>This project is a clear demonstration of my ability to build intelligent, data-driven applications from concept to deployment. It underscores my passion for machine learning, my strong foundation in Python and its ecosystem, and3 and a commitnt to creating tailored, impactful technological solutions. The PMIH is not just a personal tool; it's a living portfolio piece showcasing my capacity for innovation, technical depth, and strategic problem-solving.</p>
+                            </div>
+                        `
+                    },
+                    "Github Link.url": {
+                        type: "url_redirect",
+                        url: "https://github.com/Paradox-73/Personal_Media_Intelligence_Hub.git",
+                        icon: "assets/projects/exe-icon.png"
+                    },
+                    "Video Demo.mp4": {
+                        type: "app",
+                        appId: "wmp",
+                        path: "PMIH_Demo.mp4",
+                        icon: "assets/projects/Command Prompt.png"
+                    }
+                }
+            },
+            "WhatsApp Chat Insider": {
+                type: "folder",
+                icon: "assets/projects/folder.png",
+                content: {
+                    "Blog Post.html": {
+                        type: "notepad_render",
+                        html: `
+                            <div style="padding:15px; font-family:'Tahoma', sans-serif; font-size:14px; line-height:1.4;">
+                                <h2>WhatsApp Chat Insider: Unveiling Social Dynamics with Private-by-Design Analytics</h2>
+                                <p>In an increasingly data-driven world, understanding communication patterns is key. My project, <strong>WhatsApp Chat Insider</strong>, is a sophisticated, privacy-focused analytics tool designed to visualize and interpret the complex social dynamics within WhatsApp group chats. This tool highlights my commitment to ethical data handling, robust engineering, and delivering insightful user experiences.</p>
+                                <h3>The Problem: Unstructured Data, Hidden Insights</h3>
+                                <p>Group chats are a rich source of communication data, yet their dynamic nature makes it challenging to extract meaningful insights. Traditional analysis often compromises privacy or is limited in scope. I developed WhatsApp Chat Insider to address this, providing a powerful local-first solution for deep conversational analysis.</p>
+                                <h3>Key Innovations & Features:</h3>
+                                <ul>
+                                    <li><strong>Privacy-Centric Architecture:</strong> A core tenet of this project is user privacy. The tool offers a <strong>100% local-only analysis mode</strong>, ensuring chat data never leaves the user's machine. This commitment to data sovereignty is a critical design choice.</li>
+                                    <li><strong>Optional AI-Powered Deep Analysis:</strong> For users seeking advanced insights, the tool integrates with the Google Gemini AI model (with explicit user consent and adherence to Google's strict data privacy policies, ensuring data is *not* used for model training). This enables sophisticated features such as:
+                                        <ul>
+                                            <li><strong>Topic Classification:</strong> Categorizing conversations into themes like "Study," "Fun," or "Rant."</li>
+                                            <li><strong>Custom Sentiment Lexicon:</strong> Building a personalized sentiment analysis model based on the chat's unique language.</li>
+                                        </ul>
+                                    </li>
+                                    <li><strong>Comprehensive Activity Metrics:</strong> Provides a high-level overview of chat engagement, including total messages, messages per active day, peak activity times, and average message length.</li>
+                                    <li><strong>Psychometric Insights:</strong> Delves into behavioral dynamics with metrics like:
+                                        <ul>
+                                            <li><strong>Reply Time:</strong> Average response speed, indicating engagement levels.</li>
+                                            <li><strong>Ignored Count:</strong> Quantifies "double-texting" incidents.</li>
+                                            <li><strong>Average Streak:</strong> Measures conversational dominance.</li>
+                                            <li><strong>Influence Scores (Rant & Fun Contagion):</strong> A unique feature measuring an individual's ability to sway group mood, demonstrating advanced analytical capabilities.</li>
+                                        </ul>
+                                    </li>
+                                    <li><strong>Conversational Health & Network Visualization:</strong> Analyzes conversation structure, identifies frequently repeated phrases, and visualizes the social network of who talks to whom, revealing key influencers and subgroups.</li>
+                                </ul>
+                                <h3>Technical Prowess & Impact:</h3>
+                                <p>WhatsApp Chat Insider showcases my skills in data parsing, front-end development, and responsible AI integration:</p>
+                                <ul>
+                                    <li><strong>Core Language & Framework:</strong> Developed primarily in <strong>Python</strong>, utilizing <strong>Streamlit</strong> for an intuitive, interactive, and easy-to-deploy dashboard.</li>
+                                    <li><strong>Data Parsing & Regular Expressions:</strong> Implemented robust regex-based parsing to handle diverse WhatsApp chat export formats, demonstrating attention to detail and error handling.</li>
+                                    <li><strong>API Integration (Google Gemini API):</strong> Successfully integrated and managed calls to the Google Gemini AI for advanced text analysis, adhering to best practices for secure and ethical API usage.</li>
+                                    <li><strong>Statistical Analysis & Visualization:</strong> Employed various data visualization libraries to present complex metrics in an easily digestible format, including timelines, bar charts, pie charts, scatter plots, and network graphs.</li>
+                                    <li><strong>Scalable and Modular Design:</strong> Structured the application for easy extensibility, allowing for future enhancements and additional analytical modules.</li>
+                                </ul>
+                                <p>This project underscores my ability to develop powerful analytical tools that respect user privacy while extracting valuable insights from unstructured data. It highlights my proficiency in Python, Streamlit, AI integration, and my commitment to building secure and impactful software solutions.</p>
+                            </div>
+                        `
+                    },
+                    "Github Link.url": {
+                        type: "url_redirect",
+                        url: "https://github.com/Paradox-73/Whatsapp-Chat-Analyzer",
+                        icon: "assets/projects/exe-icon.png"
+                    },
+                    "Video Demo.mp4": {
+                        type: "app",
+                        appId: "wmp",
+                        path: "WhatsappChatInsider_Demo.mp4",
+                        icon: "assets/projects/Command Prompt.png"
+                    }
+                }
+            },
+            "Inji Verify": {
+                type: "folder",
+                icon: "assets/projects/folder.png",
+                content: {
+                    "Blog Post.html": {
+                        type: "notepad_render",
+                        html: `
+                            <div style="padding:15px; font-family:'Tahoma', sans-serif; font-size:14px; line-height:1.4;">
+                                <h2>Inji Verify: Pioneering Secure Offline Identity Verification with Cutting-Edge Cryptography</h2>
+                                <p>As a forward-thinking developer, I spearheaded the <strong>Inji Verify: Offline Identity Verification</strong> project, a critical solution addressing the growing need for secure, efficient, and privacy-preserving identity verification. This initiative showcases my expertise in architecting complex systems, leveraging advanced cryptographic techniques, and ensuring compliance with stringent data privacy standards.</p>
+                                <h3>The Challenge: Balancing Security, Speed, and Privacy in Identity Verification</h3>
+                                <p>Traditional identity verification often relies on constant online connectivity, leading to delays, potential security vulnerabilities, and complex data handling. The core challenge was to build a system that could perform instant, robust verification offline while maintaining full data privacy and regulatory compliance.</p>
+                                <h3>Key Innovations & Contributions:</h3>
+                                <ul>
+                                    <li><strong>Engineered a Two-Stage Verification Mechanism:</strong> I designed and implemented a sophisticated two-stage process for identity verification. This involved:
+                                        <ul>
+                                            <li><strong>Instant Offline Cryptographic Checks:</strong> Achieved rapid verification (sub-200ms) by performing cryptographic checks directly on the device, ensuring immediate authenticity validation without network access. This demonstrates my proficiency in optimizing performance for critical security functions.</li>
+                                            <li><strong>Automated Online Sync for Revocation Status:</strong> Developed an automated online synchronization module with the Inji SDK database. This crucial component ensures that even offline-verified identities are cross-referenced for revocation status, maintaining the integrity and up-to-date validity of credentials.</li>
+                                        </ul>
+                                    </li>
+                                    <li><strong>Developed a Universal Data Export Module:</strong> Created a flexible export module enabling administrators to seamlessly retrieve verification logs. This module supports JSON format export across both online and offline operational modes, significantly enhancing auditing and reporting capabilities.</li>
+                                    <li><strong>Ensured 100% Data Privacy and Decentralized Identity (DID) Compliance:</strong> A cornerstone of this project was the unwavering commitment to privacy. I ensured that all Zero-Knowledge Proofs (ZKPs) were processed locally on the device. This design choice guarantees that sensitive personal information is never exposed or transmitted, aligning perfectly with Decentralized Identity principles and demonstrating a deep understanding of privacy-by-design methodologies.</li>
+                                </ul>
+                                <h3>Technical Prowess & Impact:</h3>
+                                <p>The Inji Verify project highlights my capabilities in high-impact, secure software development:</p>
+                                <ul>
+                                    <li><strong>Technologies:</strong> Leveraged <strong>TypeScript, React, Cryptography, and Mobile Development</strong> to build a robust and versatile solution. My proficiency in these areas enabled the creation of a cross-platform, high-performance application.</li>
+                                    <li><strong>Cryptographic Implementation:</strong> Deep involvement in the practical application of cryptographic primitives (Zero-Knowledge Proofs) for real-world security challenges, showcasing advanced technical skills in data protection.</li>
+                                    <li><strong>System Architecture:</strong> Designed a resilient system capable of operating in diverse network conditions (online and offline), which is critical for real-world deployment in varying environments.</li>
+                                    <li><strong>Compliance & Security:</strong> Demonstrated a strong understanding of data privacy regulations (e.g., DID principles) and implemented features to proactively meet these standards, building trust and ensuring legal compliance.</li>
+                                </ul>
+                                <p>This project underscores my ability to lead and contribute to the development of highly secure, performance-critical applications that tackle complex problems in the identity verification space. It reflects my commitment to leveraging cutting-edge technology to build solutions that are not only innovative but also prioritize user privacy and data integrity.</p>
+                            </div>
+                        `
+                    },
+                    "Github Link.url": {
+                        type: "url_redirect",
+                        url: "https://github.com/Paradox-73/Inji-Verify-Offline-Verification",
+                        icon: "assets/projects/exe-icon.png"
+                    },
+                    "Video Demo.mp4": {
+                        type: "app",
+                        appId: "wmp",
+                        path: "InjiVerify_Demo.mp4",
+                        icon: "assets/projects/Command Prompt.png"
+                    }
+                }
+            },
+            "Predictive Auto-Scaling": {
+                type: "folder",
+                icon: "assets/projects/folder.png",
+                content: {
+                    "Blog Post.html": {
+                        type: "notepad_render",
+                        html: `
+                            <div style="padding:15px; font-family:'Tahoma', sans-serif; font-size:14px; line-height:1.4;">
+                                <h2>Predictive Auto-Scaling of Dockerized ML Applications: Optimizing Performance and Cost in MLOps</h2>
+                                <p>In today's fast-evolving landscape of machine learning operations (MLOps), efficiently managing the computational resources for deployed ML models is paramount. My project, <strong>"Predictive Auto-Scaling of Dockerized ML Applications,"</strong> directly addresses this critical need by developing intelligent systems that not only respond to current demand but anticipate future load, showcasing my expertise in cloud-native architectures, machine learning engineering, and performance optimization.</p>
+                                <h3>The Challenge: Dynamic Resource Allocation for ML Workloads</h3>
+                                <p>Machine learning applications often experience fluctuating workloads, leading to either under-provisioning (performance bottlenecks, poor user experience) or over-provisioning (unnecessary infrastructure costs). Traditional reactive auto-scaling struggles to keep pace with rapid demand changes inherent in many ML use cases. This project aims to overcome these limitations through predictive intelligence.</p>
+                                <h3>Key Innovations & Contributions:</h3>
+                                <ul>
+                                    <li><strong>Developed Predictive Scaling Algorithms:</strong> Implemented and evaluated algorithms that forecast future resource requirements for Dockerized ML applications. This involved leveraging historical usage data, time-series analysis, and potentially lightweight ML models to predict demand spikes and troughs, allowing for proactive resource adjustment.</li>
+                                    <li><strong>Integrated with Container Orchestration Systems:</strong> Designed and built integration points with container orchestration platforms (e.g., Kubernetes) to dynamically provision or de-provision Docker containers based on predictive insights. This demonstrates proficiency in cloud-native deployment strategies and MLOps infrastructure.</li>
+                                    <li><strong>Optimized Resource Utilization and Cost Efficiency:</strong> The core impact of this project is a significant improvement in resource utilization, reducing operational costs by preventing over-provisioning while simultaneously enhancing application performance and responsiveness during peak loads.</li>
+                                    <li><strong>Monitoring and Feedback Loop Implementation:</strong> Established robust monitoring mechanisms to collect real-time performance metrics and a feedback loop to continuously refine the predictive models and scaling policies, ensuring the system adapts and improves over time.</li>
+                                </ul>
+                                <h3>Technical Prowess & Impact:</h3>
+                                <p>This project highlights a powerful combination of machine learning engineering, DevOps, and cloud infrastructure skills:</p>
+                                <ul>
+                                    <li><strong>Machine Learning Engineering:</strong> Applied machine learning techniques (e.g., time-series forecasting, regression models) to solve a critical infrastructure problem, demonstrating a holistic understanding of ML beyond just model training.</li>
+                                    <li><strong>Containerization & Orchestration:</strong> Deep expertise in <strong>Docker</strong> for packaging applications and <strong>Kubernetes</strong> (or similar) for managing and scaling containerized workloads, a fundamental skill in modern software development.</li>
+                                    <li><strong>Cloud-Native Architectures:</strong> Designed and implemented solutions compatible with modern cloud environments, focusing on scalability, resilience, and automation.</li>
+                                    <li><strong>Performance Optimization:</strong> Focused on tangible improvements in application responsiveness and resource efficiency, directly impacting operational expenditure and user experience.</li>
+                                    <li><strong>System Design & Integration:</strong> Demonstrated the ability to design complex systems that integrate multiple components (monitoring, prediction engine, scaling agents) into a cohesive, automated solution.</li>
+                                </ul>
+                                <p>This project underscores my capability to architect and implement intelligent infrastructure solutions that drive efficiency, reduce costs, and enhance the reliability of deployed machine learning systems. It reflects a strong command over critical MLOps practices, containerization technologies, and predictive analytics.</p>
+                            </div>
+                        `
+                    },
+                    "Github Link.url": {
+                        type: "url_redirect",
+                        url: "https://github.com/Ivan825/Predictive-Auto-Scaling-of-Dockerized-ML-Applications",
+                        icon: "assets/projects/exe-icon.png"
+                    },
+                    "Video Demo.mp4": {
+                        type: "app",
+                        appId: "wmp",
+                        path: "PredictiveAutoScaling_Demo.mp4",
+                        icon: "assets/projects/Command Prompt.png"
+                    }
+                }
+            },
+            "8BIT": {
+                type: "folder",
+                icon: "assets/projects/folder.png",
+                content: {
+                    "Blog Post.html": {
+                        type: "notepad_render",
+                        html: `
+                            <div style="padding:15px; font-family:'Tahoma', sans-serif; font-size:14px; line-height:1.4;">
+                                <h2>8BIT: Collaborative Web Development and Community Engagement for a University Club</h2>
+                                <p>Contributing to and managing a club website is an invaluable experience that goes beyond individual coding, focusing on teamwork, user experience, and project sustainment. My involvement with the <strong>8BIT club website</strong> highlights my practical web development skills, ability to collaborate effectively within a team, and commitment to supporting a vibrant community.</p>
+                                <h3>The Challenge: Creating a Digital Hub for a Dynamic Student Community</h3>
+                                <p>University clubs thrive on strong community engagement and effective communication. The 8BIT website served as the primary digital touchpoint for members, prospective students, and the wider university community. The challenge involved creating and maintaining an intuitive, informative, and visually appealing platform that accurately reflected the club's identity and activities.</p>
+                                <h3>Key Contributions & Responsibilities:</h3>
+                                <ul>
+                                    <li><strong>Collaborative Website Development:</strong> Worked as part of a team to design, develop, and implement features for the 8BIT club website. This involved translating design mockups into functional web pages and ensuring cross-browser compatibility and responsiveness.</li>
+                                    <li><strong>Content Management and Updates:</strong> Regularly updated website content, including event schedules, news, photo galleries, and club resources. This required attention to detail and an understanding of content management best practices to keep the site current and engaging.</li>
+                                    <li><strong>User Experience (UX) Enhancement:</strong> Contributed to improving the overall user experience by optimizing navigation, ensuring accessibility, and implementing design feedback to create a more intuitive and pleasant browsing experience for club members.</li>
+                                    <li><strong>Front-End Development:</strong> Utilized core web technologies (HTML, CSS, JavaScript) to build and maintain various sections of the website, demonstrating proficiency in crafting interactive and visually appealing user interfaces.</li>
+                                    <li><strong>Teamwork and Version Control:</strong> Collaborated effectively with fellow club members and developers, participating in code reviews and utilizing version control systems (e.g., Git) to manage changes and ensure project integrity.</li>
+                                    <li><strong>Community Engagement:</strong> Directly contributed to fostering a stronger club community by providing a reliable and accessible online platform for information sharing and member interaction.</li>
+                                </ul>
+                                <h3>Technical Prowess & Impact:</h3>
+                                <p>My involvement with the 8BIT website demonstrates foundational and collaborative web development skills:</p>
+                                <ul>
+                                    <li><strong>Front-End Technologies:</strong> Solid understanding and practical application of <strong>HTML5, CSS3, and JavaScript</strong> for building interactive web experiences.</li>
+                                    <li><strong>Responsive Design:</strong> Implemented designs that ensure optimal viewing and interaction across a wide range of devices, from desktops to mobile phones.</li>
+                                    <li><strong>Version Control:</strong> Experience with <strong>Git</strong> for collaborative development, including branching, merging, and resolving conflicts.</li>
+                                    <li><strong>Problem Solving:</strong> Addressed front-end bugs, implemented new features, and optimized existing components to improve site performance and user satisfaction.</li>
+                                    <li><strong>Communication & Collaboration:</strong> Effectively communicated with team members and stakeholders to gather requirements, provide updates, and ensure project alignment.</li>
+                                    <li><strong>Project Management (informal):</strong> Managed personal tasks and contributed to the overall project timeline in a dynamic, club-based environment.</li>
+                                </ul>
+                                <p>This project showcases my ability to apply practical web development skills in a collaborative, community-focused setting. It highlights my proficiency in creating user-friendly digital platforms and my commitment to contributing to team projects that serve a broader audience.</p>
+                            </div>
+                        `
+                    },
+                    "Github Link.url": {
+                        type: "url_redirect",
+                        url: "https://github.com/PVSSukeerthi/8BIT",
+                        icon: "assets/projects/exe-icon.png"
+                    },
+                    "Video Demo.mp4": {
+                        type: "app",
+                        appId: "wmp",
+                        path: "8BIT_Demo.mp4",
+                        icon: "assets/projects/Command Prompt.png"
+                    }
+                }
+            }
         },
         "My Documents": {
             "Notes": { "todo.txt": "1. Buy milk\n2. Code XP clone" },
@@ -563,6 +851,7 @@
             winEl.style.left = "calc(50% - " + (width / 2) + "px)"; // Center horizontally
         }
     };
+
 
     /** --- CORE FUNCTIONS --- */
     
@@ -686,8 +975,8 @@
             } else if (item.type === 'folder') {
                 onClick = () => openExplorer('Desktop/' + key);
             } else if (item.type === 'app') {
-                if (item.appId === 'pdfViewer') onClick = () => window.open(item.path, '_blank');
-                else if (item.appId === 'emailClient') onClick = () => window.open('mailto:kanavbhardwaj5150@gmail.com', '_blank');
+                if (item.appId === 'pdfViewer') onClick = () => openExternalURLSafely(item.path);
+                else if (item.appId === 'emailClient') onClick = () => openExternalURLSafely('mailto:kanavbhardwaj5150@gmail.com');
                 else onClick = () => openApp(item.appId);
             }
 
@@ -737,6 +1026,7 @@
             <div class="window-body">
                 <div class="window-content" id="win-content-${id}"></div>
             </div>
+            <div class="resize-handle" onmousedown="startResize(event, '${id}')"></div>
         `;
 
         win.onmousedown = () => focusWindow(id);
@@ -828,6 +1118,43 @@
         document.removeEventListener('mouseup', stopDrag);
     }
 
+    // Resizing Logic
+    let resizeObj = null;
+    let startWidth, startHeight, startMouseX, startMouseY;
+
+    function startResize(e, id) {
+        // Prevent drag from interfering with resize
+        e.stopPropagation();
+        
+        resizeObj = document.getElementById(`win-${id}`);
+        startWidth = parseInt(document.defaultView.getComputedStyle(resizeObj).width, 10);
+        startHeight = parseInt(document.defaultView.getComputedStyle(resizeObj).height, 10);
+        startMouseX = e.clientX;
+        startMouseY = e.clientY;
+
+        document.addEventListener('mousemove', doResize);
+        document.addEventListener('mouseup', stopResize);
+    }
+
+    function doResize(e) {
+        if (!resizeObj) return;
+
+        const minWidth = 200; // Minimum width for a window
+        const minHeight = 150; // Minimum height for a window
+
+        let newWidth = startWidth + (e.clientX - startMouseX);
+        let newHeight = startHeight + (e.clientY - startMouseY);
+
+        resizeObj.style.width = Math.max(minWidth, newWidth) + 'px';
+        resizeObj.style.height = Math.max(minHeight, newHeight) + 'px';
+    }
+
+    function stopResize() {
+        resizeObj = null;
+        document.removeEventListener('mousemove', doResize);
+        document.removeEventListener('mouseup', stopResize);
+    }
+
     /** --- APP LAUNCHERS --- */
 
     function openApp(appId) {
@@ -840,7 +1167,7 @@
         else if (appId === 'wmp') launchWMP();
         else if (appId === 'minesweeper') launchMinesweeper();
         else if (appId === 'pdfViewer') window.open(fileSystem.Desktop["My Resume.doc"].path, '_blank');
-        else if (appId === 'emailClient') window.open('mailto:kanavbhardwaj5150@gmail.com', '_blank');
+        else if (appId === 'contactForm') launchContactForm();
         else alert('Application not installed.');
     }
 
@@ -849,68 +1176,91 @@
         openExplorer(path);
     }
 
-    function openFile(path, filename) {
-        // Find file content
-        // Simple traversal for demo
-        let content = "File not found.";
-        if (path === 'Desktop' && fileSystem.Desktop[filename]) content = fileSystem.Desktop[filename];
-        else {
-             // traverse path string "Desktop/Projects/Project A"
-             const parts = path.split('/');
-             let current = fileSystem;
-             for(let p of parts) {
-                 if(current[p]) current = current[p];
-                 else if (current.content && current.content[p]) current = current.content[p];
-             }
-             if (current[filename]) content = current[filename];
-             else if (current.content && current.content[filename]) content = current.content[filename];
+    // Helper to find file object by path string (e.g., "Desktop/My Documents/Notes/todo.txt")
+    function getPathObject(pathString) {
+        const parts = pathString.split('/');
+        let current = fileSystem;
+        for (const part of parts) {
+            if (!current || typeof current !== 'object') {
+                return undefined; // Current segment is not an object or null/undefined
+            }
+            if (current[part]) { // Direct property
+                current = current[part];
+            } else if (current.content && current.content[part]) { // Property inside a 'content' object (for folders)
+                current = current.content[part];
+            } else {
+                return undefined; // Path segment not found
+            }
+        }
+        return current;
+    }
+
+    function openFile(parentPath, filename) {
+        const parentDir = getPathObject(parentPath);
+        if (!parentDir) {
+            console.error(`Parent directory not found for path: ${parentPath}`);
+            alert('Error: Parent directory not found.');
+            return;
         }
 
-        if (filename.endsWith('.txt') || filename.endsWith('.js') || filename.endsWith('.py')) {
-            launchNotepad(filename, typeof content === 'string' ? content : "Error reading file.");
+        const fileObj = (parentDir.content && parentDir.content[filename]) ? parentDir.content[filename] : parentDir[filename];
+
+        if (!fileObj) {
+            alert(`File "${filename}" not found in "${parentPath}".`);
+            return;
+        }
+        
+        // Find file content
+        // Simple traversal for demo
+        let content = "Error: Could not read file content.";
+        if (typeof fileObj === 'string') {
+            content = fileObj; // Direct string content
+        } else if (fileObj.html) { // For ie_render type
+            content = fileObj.html;
+        } else if (fileObj.path) { // For app types like PDF viewer
+            content = fileObj.path;
+        }
+        
+        if (fileObj.type === 'notepad_render' && fileObj.html) {
+            launchNotepad(filename, fileObj.html); // Pass HTML content to Notepad
+        } else if (filename.endsWith('.txt') || filename.endsWith('.js') || filename.endsWith('.py')) {
+            launchNotepad(filename, content);
         } else if (filename.endsWith('.mp4') || filename === 'demo.mp4') {
             launchWMP(filename);
         } else if (filename.endsWith('.url')) {
             // If it's a .url file that is an ie_render type, then launch with its HTML
-            const fileObj = findFileObject(path, filename); // A helper function to get the actual file object
-            if (fileObj && fileObj.type === 'ie_render' && fileObj.html) {
+            if (fileObj.type === 'ie_render' && fileObj.html) {
                 launchIE(fileObj.html, filename.replace(/\.url$/i, ''));
             } else {
-                launchIE(typeof content === 'string' ? content : "about:blank", filename);
+                launchIE("about:blank", filename); // Fallback
             }
+        } else if (fileObj.type === 'url_redirect') {
+            window.open(fileObj.url, '_blank');
+        } else if (fileObj.type === 'app' && fileObj.appId === 'wmp') {
+            launchWMP(fileObj.path || "Video Demo"); // Pass the path for the WMP
+        } else if (fileObj.type === 'app' && fileObj.appId === 'pdfViewer') {
+            window.open(fileObj.path, '_blank');
+        } else {
+            alert(`No default application for ${filename}.`);
         }
-    }
-
-    // Helper to find file object by path and filename
-    function findFileObject(path, filename) {
-        const parts = path.split('/');
-        let current = fileSystem;
-        for(let p of parts) {
-            if(current[p]) current = current[p];
-            else if (current.content && current.content[p]) current = current.content[p];
-        }
-        if (current[filename]) return current[filename];
-        if (current.content && current.content[filename]) return current.content[filename];
-        return null;
     }
 
     function openProject(projectName) {
         let projectEntry = null;
-        const projectsFolder = fileSystem.Desktop.Projects.content;
+        const desktopItems = fileSystem.Desktop;
         
-        // Find the project by name (case-insensitive and handle .url extension)
-        for (const key in projectsFolder) {
-            const cleanKey = key.replace(/\.url$/i, ''); // Remove .url extension for comparison
-            if (cleanKey.toLowerCase() === projectName.toLowerCase()) {
-                projectEntry = projectsFolder[key];
+        // Find the project by name (case-insensitive)
+        for (const key in desktopItems) {
+            if (key.toLowerCase() === projectName.toLowerCase()) {
+                projectEntry = desktopItems[key];
                 break;
             }
         }
 
-        if (projectEntry && projectEntry.type === 'ie_render' && projectEntry.html) {
-            launchIE(projectEntry.html, projectEntry.title || projectName); // Pass HTML and a title
+        if (projectEntry && projectEntry.type === 'folder') {
+            openExplorer(`Desktop/${projectName}`); // Open the project folder in explorer
         } else {
-            alert(`Project '${projectName}' not found or not configured for IE rendering.`);
+            alert(`Project '${projectName}' not found or cannot be opened as a folder.`);
         }
     }
 
@@ -920,45 +1270,63 @@
     function openExplorer(path) {
         const container = createWindow(path, 600, 400, "fas fa-folder-open");
         
-        // Resolve path to object
-        let currentDir = fileSystem;
-        const parts = path.split('/');
-        // Mock traversal logic for the specific VFS structure
-        if (path === 'Desktop') currentDir = fileSystem['Desktop'];
-        else if (path === 'My Computer') currentDir = fileSystem['My Computer'];
-        else {
-            // Traverse
-             let curr = fileSystem['Desktop']; // Assumption for demo
-             if(path.includes('Projects')) {
-                 curr = curr['Projects'].content;
-                 const sub = path.split('/').pop();
-                 if(sub !== 'Projects' && curr[sub]) curr = curr[sub];
-             }
-             currentDir = curr;
+        const currentDirObject = getPathObject(path);
+
+        if (!currentDirObject || (currentDirObject.type === 'system' && path !== 'My Computer')) {
+            container.innerHTML = `<div style="padding:15px;">Error: Path "${path}" not found or cannot be opened.</div>`;
+            return;
         }
 
-        let itemsHtml = '';
-        const items = currentDir.content || currentDir; // Handle folder wrapper
+        const items = currentDirObject.content || currentDirObject; // Use content if it's a folder, otherwise the object itself
 
+        let itemsHtml = '';
         Object.keys(items).forEach(key => {
-            if(key === 'type' || key === 'icon' || key === 'color') return;
+            if(key === 'type' || key === 'icon' || key === 'color' || key === 'path' || key === 'appId' || key === 'html') return; // Exclude metadata
+            
             const item = items[key];
             let icon = "fas fa-file";
             let color = "#333";
             let typeClass = "text";
             let dblClick = `openFile('${path}', '${key}')`;
 
-            if (typeof item === 'object' && item.type !== 'app') {
+            if (item.type === 'system' && key === 'My Computer') {
+                icon = "assets/projects/My Computer.ico"; // Example system icon
+                typeClass = "system";
+                dblClick = `openExplorer('${path}/${key}')`;
+            } else if (item.type === 'folder' || (typeof item === 'object' && item.content)) { // Explicit folder or object with content
                 icon = "fas fa-folder";
                 color = "#EBC657";
                 typeClass = "folder";
                 dblClick = `openExplorer('${path}/${key}')`;
             } else if (key.endsWith('.js')) { icon = "fab fa-js"; color = "#F1C40F"; typeClass="code"; }
             else if (key.endsWith('.mp4')) { icon = "fas fa-film"; color = "#9B59B6"; }
+            else if (key.endsWith('.url')) { icon = "assets/projects/exe-icon.png"; typeClass="app"; } // For .url files
+            else if (item.icon && item.icon.startsWith('assets/')) { icon = item.icon; typeClass="app"; } // For custom image icons
+            else if (item.icon && item.icon.startsWith('fas')) { icon = item.icon; color = item.color; typeClass="app"; } // For Font Awesome icons
+            else if (item.type === 'ie_render') { icon = "assets/projects/notepad.png"; typeClass="text"; } // For Blog Post.html
+            else if (item.type === 'url_redirect') { icon = item.icon || "assets/projects/Internet Explorer 6.png"; typeClass="link";
+                dblClick = "";
+            }
+            else if (item.type === 'app' && item.appId === 'wmp') { icon = item.icon || "fas fa-film"; typeClass="video"; } // For Video Demo.mp4
+            else if (item.type === 'app' && item.appId === 'pdfViewer') { icon = "assets/projects/notepad.png"; typeClass="pdf"; } // For My Resume.doc
+            else if (item.type === 'app') { icon = item.icon || "fas fa-cog"; color = "#777"; typeClass="app"; } // Generic app icon
             
-            itemsHtml += `
+            // Render icon based on whether it's an image path or a Font Awesome class
+            let iconRender = '';
+            if (item.icon && item.icon.startsWith('assets/')) { // Assume it's an image path
+                iconRender = `<img src="${item.icon}" alt="${key}" width="32" height="32">`;
+            } else { // Assume it's a Font Awesome class
+                iconRender = `<i class="${icon}" style="color: ${color};"></i>`;
+            }
+
+            itemsHtml += item.type === 'url_redirect' ? `
+                <a href="${item.url}" target="_blank" class="file-item" style="text-decoration: none; color: inherit;" onclick="this.style.background='#CCE8FF'; this.style.border='1px solid #99D1FF'">
+                    ${iconRender}
+                    <div style="font-size:11px; word-break: break-all;">${key}</div>
+                </a>
+            ` : `
                 <div class="file-item" onclick="this.style.background='#CCE8FF'; this.style.border='1px solid #99D1FF'" ondblclick="${dblClick}">
-                    <i class="${icon} file-icon ${typeClass}" style="color: ${color}"></i>
+                    ${iconRender}
                     <div style="font-size:11px; word-break: break-all;">${key}</div>
                 </div>
             `;
@@ -1056,7 +1424,7 @@
                     </div>
                 </div>
             </div>
-            <textarea class="notepad-area" spellcheck="false">${content}</textarea>
+            <div class="notepad-area" style="white-space: pre-wrap; word-wrap: break-word;" spellcheck="false" contenteditable="false">${content}</div>
         `;
     }
 
@@ -1576,6 +1944,78 @@
         };
 
         window.resetMinesweeper(winId);
+    }
+
+    // 9. CONTACT FORM
+    function launchContactForm() {
+        const container = createWindow("Contact Me", 450, 400, "fas fa-envelope");
+        const winId = container.parentElement.parentElement.id.split('-')[1];
+
+        container.innerHTML = `
+            <div style="padding:15px; font-family:'Tahoma', sans-serif; font-size:13px; display:flex; flex-direction:column; height:100%;">
+                <p>Send me a message directly!</p>
+                <div style="margin-bottom: 10px;">
+                    <label for="contact-name-${winId}">Name:</label><br>
+                    <input type="text" id="contact-name-${winId}" style="width:100%; padding:5px; border:1px solid #7F9DB9;">
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <label for="contact-email-${winId}">Email:</label><br>
+                    <input type="email" id="contact-email-${winId}" style="width:100%; padding:5px; border:1px solid #7F9DB9;">
+                </div>
+                <div style="margin-bottom: 10px; flex:1; display:flex; flex-direction:column;">
+                    <label for="contact-message-${winId}">Message:</label><br>
+                    <textarea id="contact-message-${winId}" style="width:100%; flex:1; padding:5px; border:1px solid #7F9DB9; resize: vertical; min-height: 80px;"></textarea>
+                </div>
+                <button id="send-contact-btn-${winId}" class="calc-btn" style="padding: 8px 15px; margin-top: 10px; background:#245EDB; color:white; border:none; border-radius:3px;">Send Message</button>
+                <div id="contact-status-${winId}" style="margin-top: 10px; font-weight: bold; text-align: center;"></div>
+            </div>
+        `;
+
+        const nameInput = document.getElementById(`contact-name-${winId}`);
+        const emailInput = document.getElementById(`contact-email-${winId}`);
+        const messageInput = document.getElementById(`contact-message-${winId}`);
+        const sendBtn = document.getElementById(`send-contact-btn-${winId}`);
+        const statusDiv = document.getElementById(`contact-status-${winId}`);
+
+        sendBtn.onclick = async () => {
+            statusDiv.style.color = 'black';
+            statusDiv.innerText = 'Sending...';
+            sendBtn.disabled = true;
+
+            const name = nameInput.value;
+            const email = emailInput.value;
+            const message = messageInput.value;
+
+            try {
+                const response = await fetch('http://localhost:3000/api/contact', { // Use your backend URL
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ name, email, message }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    statusDiv.style.color = 'green';
+                    statusDiv.innerText = data.message;
+                    // Clear form on success
+                    nameInput.value = '';
+                    emailInput.value = '';
+                    messageInput.value = '';
+                } else {
+                    statusDiv.style.color = 'red';
+                    statusDiv.innerText = data.message || 'Failed to send message.';
+                }
+            } catch (error) {
+                console.error('Frontend contact form error:', error);
+                statusDiv.style.color = 'red';
+                statusDiv.innerText = 'An unexpected error occurred.';
+            } finally {
+                sendBtn.disabled = false;
+            }
+        };
     }
 
 </script>

@@ -12,6 +12,24 @@ const port = process.env.PORT || 3000;
 app.use(cors()); // Allow requests from your frontend
 app.use(express.json()); // Allow server to accept JSON data
 
+// Add nodemailer
+const nodemailer = require('nodemailer');
+
+// Nodemailer Transporter Configuration
+// You need to set EMAIL_USER, EMAIL_PASS, and EMAIL_TO in your .env file
+// Example for Gmail:
+// EMAIL_USER="your_email@gmail.com"
+// EMAIL_PASS="your_app_password" // Use an app password if 2FA is enabled
+// EMAIL_TO="recipient_email@example.com"
+const transporter = nodemailer.createTransport({
+    service: 'gmail', // Or 'smtp' and provide host, port, secure options
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+    },
+});
+
+
 // Database Connection
 const client = new MongoClient(process.env.MONGO_URI, {
   serverApi: {
@@ -514,6 +532,41 @@ async function run() {
             }
         });
         
+// Contact Form Submission Endpoint
+app.post('/api/contact', async (req, res) => {
+    const { name, email, message } = req.body;
+
+    if (!name || !email || !message) {
+        return res.status(400).json({ message: 'All fields are required.' });
+    }
+
+    // Basic email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({ message: 'Invalid email format.' });
+    }
+
+    try {
+        const mailOptions = {
+            from: process.env.EMAIL_USER, // Sender address
+            to: process.env.EMAIL_TO,     // Recipient address (your email)
+            subject: `New Contact Form Submission from ${name}`,
+            html: `
+                <p><strong>Name:</strong> ${name}</p>
+                <p><strong>Email:</strong> ${email}</p>
+                <p><strong>Message:</strong></p>
+                <p>${message}</p>
+            `,
+        };
+
+        await transporter.sendMail(mailOptions);
+        res.status(200).json({ message: 'Message sent successfully!' });
+    } catch (error) {
+        console.error('Error sending contact form email:', error);
+        res.status(500).json({ message: 'Failed to send message.', details: error.message });
+    }
+});
+
         // --- Start the Server ---
         app.listen(port, () => {
             console.log(`Server running at http://localhost:${port}`);
