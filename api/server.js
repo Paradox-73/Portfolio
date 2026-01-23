@@ -5,7 +5,7 @@ const express = require('express');
 const cors = require('cors');
 const { MongoClient, ObjectId } = require('mongodb');
 const axios = require('axios'); // We will use this later
-const { startCronJob } = require('./letterboxd-sync'); // Import the cron job starter
+const { startCronJob, syncLetterboxd } = require('./letterboxd-sync'); // Import the cron job starter and the sync function
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -47,12 +47,31 @@ async function run() {
         console.log("Successfully connected to MongoDB Atlas!");
         const db = client.db("portfolioData");
 
-        // Start the Letterboxd sync cron job
-        startCronJob();
+        // The node-cron job is disabled because it's not reliable in a serverless environment.
+        // We will use Vercel's cron job feature instead.
+        // startCronJob();
 
         // --- API Endpoints ---
         // Each endpoint fetches data from its corresponding MongoDB collection.
 
+        // Endpoint for Vercel Cron Job to trigger Letterboxd sync
+        app.post('/api/sync-letterboxd', async (req, res) => {
+            const { authorization } = req.headers;
+            const cronSecret = process.env.CRON_SECRET;
+
+            if (!cronSecret || authorization !== `Bearer ${cronSecret}`) {
+                return res.status(401).json({ message: 'Unauthorized' });
+            }
+
+            try {
+                await syncLetterboxd();
+                res.status(200).json({ message: 'Letterboxd sync completed successfully.' });
+            } catch (error) {
+                console.error('Vercel cron job for Letterboxd sync failed:', error);
+                res.status(500).json({ message: 'Letterboxd sync failed.', details: error.message });
+            }
+        });
+        
         app.get('/api/movies', async (req, res) => {
             const data = await db.collection('movies').find({}).toArray();
             res.json(data);
