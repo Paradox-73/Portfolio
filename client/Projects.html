@@ -339,7 +339,7 @@
     <!-- Start Menu -->
     <div id="start-menu">
         <div class="start-header">
-            <div class="user-avatar"><img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="User"></div>
+            <div class="user-avatar"><img src="assets/profile.jpg" alt="User"></div>
             <span>Administrator</span>
         </div>
         <div class="start-body">
@@ -446,6 +446,52 @@
                 color: "#0072C6"
             },
             "Internet Explorer": { type: "app", appId: "ie", icon: "assets/projects/Internet Explorer 6.png" },
+            "Menu": {
+                type: "folder",
+                icon: "assets/projects/folder.png",
+                content: {
+                    "Music.html": {
+                        type: "external_link",
+                        url: "Music.html",
+                        icon: "https://www.clipartmax.com/png/middle/347-3475267_music-icons-windows-xp-my-music-icon.png"
+                    },
+                    "MoviesTV.html": {
+                        type: "external_link",
+                        url: "MoviesTV.html",
+                        icon: "https://icons.iconarchive.com/icons/manda-pie/video-file/256/Movie-icon.png"
+                    },
+                    "Games.html": {
+                        type: "external_link",
+                        url: "Games.html",
+                        icon: "https://icons.iconarchive.com/icons/microsoft/windows-xp-media-center/256/Games-icon.png"
+                    },
+                    "Art.html": {
+                        type: "external_link",
+                        url: "art.html",
+                        icon: "https://icons.iconarchive.com/icons/carlosjj/microsoft-office-2003/256/word-icon.png"
+                    },
+                    "Food.html": {
+                        type: "external_link",
+                        url: "Food.html",
+                        icon: "https://icons.iconarchive.com/icons/pixelresort/food/256/Apple-icon.png"
+                    },
+                    "Travel.html": {
+                        type: "external_link",
+                        url: "Travel.html",
+                        icon: "https://icons.iconarchive.com/icons/google/noto-emoji-travel-places/256/42555-airplane-icon.png"
+                    },
+                    "Literature.html": {
+                        type: "external_link",
+                        url: "Literature.html",
+                        icon: "https://icons.iconarchive.com/icons/carlosjj/microsoft-office-2003/256/word-icon.png"
+                    },
+                    "Sport.html": {
+                        type: "external_link",
+                        url: "Sport.html",
+                        icon: "https://icons.iconarchive.com/icons/microsoft/windows-xp-media-center/256/Sport-icon.png"
+                    }
+                }
+            },
             "Chimera": {
                 type: "folder",
                 icon: "assets/projects/folder.png",
@@ -480,7 +526,7 @@
                     },
                     "Github Link.url": {
                         type: "url_redirect", // Custom type to indicate direct URL opening
-                        url: "https://github.com/Paradox-73/Chimera",
+                        url: "https://github.com/nikunj169/Chimera-Efficiently-Training-Large-Scale-Neural-Networks-with-Bidirectional-Pipelines",
                         icon: "assets/projects/exe-icon.png"
                     },
                     "Video Demo.mp4": {
@@ -952,7 +998,7 @@
             let onClick = () => openFile('Desktop', key); // Default open file logic, overridden below
 
             if (item.icon) {
-                if (item.icon.startsWith('assets/')) { // Assume it's an image path
+                if (item.icon.startsWith('assets/') || item.icon.startsWith('http')) { // Assume it's an image path
                     iconHtml = `<img src="${item.icon}" alt="${key}" width="32" height="32">`;
                 } else { // Assume it's a Font Awesome class
                     iconHtml = `<i class="${item.icon}" style="color: ${item.color || 'white'};"></i>`;
@@ -972,6 +1018,8 @@
                 onClick = () => openExplorer('My Computer');
             } else if (key === 'Recycle Bin') {
                 onClick = () => alert('Recycle Bin is empty!'); // Placeholder
+            } else if (item.type === 'external_link') {
+                onClick = () => window.open(item.url, '_blank');
             } else if (item.type === 'folder') {
                 onClick = () => openExplorer('Desktop/' + key);
             } else if (item.type === 'app') {
@@ -1234,6 +1282,8 @@
             } else {
                 launchIE("about:blank", filename); // Fallback
             }
+        } else if (fileObj.type === 'external_link') {
+            window.open(fileObj.url, '_blank');
         } else if (fileObj.type === 'url_redirect') {
             window.open(fileObj.url, '_blank');
         } else if (fileObj.type === 'app' && fileObj.appId === 'wmp') {
@@ -1289,34 +1339,64 @@
             let typeClass = "text";
             let dblClick = `openFile('${path}', '${key}')`;
 
-            if (item.type === 'system' && key === 'My Computer') {
+            let iconRender = '';
+            if (item.icon) {
+                if (item.icon.startsWith('assets/') || item.icon.startsWith('http')) { // Assume it's an image path
+                    iconRender = `<img src="${item.icon}" alt="${key}" width="32" height="32">`;
+                } else { // Assume it's a Font Awesome class
+                    iconRender = `<i class="${item.icon}" style="color: ${item.color || 'white'};"></i>`;
+                }
+            } else if (item.type === 'system' && key === 'My Computer') {
                 icon = "assets/projects/My Computer.ico"; // Example system icon
-                typeClass = "system";
-                dblClick = `openExplorer('${path}/${key}')`;
+                iconRender = `<img src="${icon}" alt="${key}" width="32" height="32">`;
             } else if (item.type === 'folder' || (typeof item === 'object' && item.content)) { // Explicit folder or object with content
                 icon = "fas fa-folder";
                 color = "#EBC657";
-                typeClass = "folder";
-                dblClick = `openExplorer('${path}/${key}')`;
-            } else if (key.endsWith('.js')) { icon = "fab fa-js"; color = "#F1C40F"; typeClass="code"; }
-            else if (key.endsWith('.mp4')) { icon = "fas fa-film"; color = "#9B59B6"; }
-            else if (key.endsWith('.url')) { icon = "assets/projects/exe-icon.png"; typeClass="app"; } // For .url files
-            else if (item.icon && item.icon.startsWith('assets/')) { icon = item.icon; typeClass="app"; } // For custom image icons
-            else if (item.icon && item.icon.startsWith('fas')) { icon = item.icon; color = item.color; typeClass="app"; } // For Font Awesome icons
-            else if (item.type === 'ie_render') { icon = "assets/projects/notepad.png"; typeClass="text"; } // For Blog Post.html
-            else if (item.type === 'url_redirect') { icon = item.icon || "assets/projects/Internet Explorer 6.png"; typeClass="link";
-                dblClick = "";
-            }
-            else if (item.type === 'app' && item.appId === 'wmp') { icon = item.icon || "fas fa-film"; typeClass="video"; } // For Video Demo.mp4
-            else if (item.type === 'app' && item.appId === 'pdfViewer') { icon = "assets/projects/notepad.png"; typeClass="pdf"; } // For My Resume.doc
-            else if (item.type === 'app') { icon = item.icon || "fas fa-cog"; color = "#777"; typeClass="app"; } // Generic app icon
-            
-            // Render icon based on whether it's an image path or a Font Awesome class
-            let iconRender = '';
-            if (item.icon && item.icon.startsWith('assets/')) { // Assume it's an image path
-                iconRender = `<img src="${item.icon}" alt="${key}" width="32" height="32">`;
-            } else { // Assume it's a Font Awesome class
                 iconRender = `<i class="${icon}" style="color: ${color};"></i>`;
+            } else if (key.endsWith('.js')) { 
+                icon = "fab fa-js"; 
+                color = "#F1C40F"; 
+                typeClass="code";
+                iconRender = `<i class="${icon}" style="color: ${color};"></i>`;
+            } else if (key.endsWith('.mp4')) { 
+                icon = "fas fa-film"; 
+                color = "#9B59B6";
+                iconRender = `<i class="${icon}" style="color: ${color};"></i>`;
+            } else if (key.endsWith('.url')) { 
+                icon = "assets/projects/exe-icon.png"; 
+                typeClass="app";
+                iconRender = `<img src="${icon}" alt="${key}" width="32" height="32">`;
+            } else if (item.type === 'ie_render') { 
+                icon = "assets/projects/notepad.png"; 
+                typeClass="text";
+                iconRender = `<img src="${icon}" alt="${key}" width="32" height="32">`;
+            } else if (item.type === 'url_redirect') { 
+                icon = item.icon || "assets/projects/Internet Explorer 6.png"; 
+                typeClass="link";
+                iconRender = `<img src="${icon}" alt="${key}" width="32" height="32">`;
+            } else if (item.type === 'app' && item.appId === 'wmp') { 
+                icon = item.icon || "fas fa-film"; 
+                typeClass="video";
+                iconRender = `<i class="${icon}" style="color: ${item.color || '#333'};"></i>`;
+            } else if (item.type === 'app' && item.appId === 'pdfViewer') { 
+                icon = "assets/projects/notepad.png"; 
+                typeClass="pdf";
+                iconRender = `<img src="${icon}" alt="${key}" width="32" height="32">`;
+            } else if (item.type === 'app') { 
+                icon = item.icon || "fas fa-cog"; 
+                color = "#777"; 
+                typeClass="app";
+                iconRender = `<i class="${icon}" style="color: ${color};"></i>`;
+            } else {
+                iconRender = `<i class="${icon}" style="color: ${color};"></i>`;
+            }
+
+            if (item.type === 'system' && key === 'My Computer') {
+                dblClick = `openExplorer('${path}/${key}')`;
+            } else if (item.type === 'external_link') {
+                dblClick = `window.open('${item.url}', '_blank')`;
+            } else if (item.type === 'folder' || (typeof item === 'object' && item.content)) {
+                dblClick = `openExplorer('${path}/${key}')`;
             }
 
             itemsHtml += item.type === 'url_redirect' ? `

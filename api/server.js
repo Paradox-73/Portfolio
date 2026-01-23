@@ -1,9 +1,11 @@
 // server/server.js
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 const express = require('express');
 const cors = require('cors');
 const { MongoClient, ObjectId } = require('mongodb');
 const axios = require('axios'); // We will use this later
+const { startCronJob } = require('./letterboxd-sync'); // Import the cron job starter
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -44,6 +46,9 @@ async function run() {
         await client.connect();
         console.log("Successfully connected to MongoDB Atlas!");
         const db = client.db("portfolioData");
+
+        // Start the Letterboxd sync cron job
+        startCronJob();
 
         // --- API Endpoints ---
         // Each endpoint fetches data from its corresponding MongoDB collection.

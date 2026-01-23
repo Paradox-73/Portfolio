@@ -21,6 +21,7 @@ Welcome to my interactive portfolio! This project is a creative showcase of my w
     *   **Projects**: Experience an XP-themed desktop environment featuring my key development projects.
 *   **Holographic Contact Display**: Hover over the phone in my digital room to reveal a holographic display, providing quick access to my GitHub, LinkedIn, Email, and Resume.
 *   **Backend Services**: I've built a Node.js/Express.js API to manage data in MongoDB and to proxy external APIs securely.
+*   **Automated Movie Diary Sync**: A custom-built ETL pipeline automatically fetches my latest movie entries from my public Letterboxd RSS feed, enriches them with data from The Movie Database (TMDB), and saves them to MongoDB. This sync runs on a daily schedule, ensuring my movie list is always up-to-date without manual intervention.
 *   **Data Management**: I use a script to initially populate my MongoDB collections from CSV files, making data setup efficient.
 *   **Admin Wishlist**: For certain sections (like games), I've included protected endpoints to manage personal wishlists.
 *   **Responsive Design**: I've ensured that my portfolio is accessible and looks great across various screen sizes.
@@ -41,9 +42,11 @@ Welcome to my interactive portfolio! This project is a creative showcase of my w
 *   **Node.js** & **Express.js**: I use Node.js as my JavaScript runtime, and **Express.js** is the web application framework built on top of Node.js that I chose for building my robust and scalable API. It allows me to handle requests, manage data in MongoDB, and act as a secure gateway to external APIs. This backend is crucial for dynamic content, and it's also where I can make recommendations for various items across my portfolio.
 *   [MongoDB Atlas](https://www.mongodb.com/atlas): Where all my dynamic data lives, hosted securely in the cloud.
 *   `dotenv`, `cors`, `axios`: Essential npm packages for environment variable management, cross-origin resource sharing, and making HTTP requests to external APIs.
+*   `node-cron` & `rss-parser`: For creating the automated, scheduled job that fetches and parses the Letterboxd RSS feed to keep my movie diary synced.
 
 ### External APIs I Integrated
 
+*   **Letterboxd RSS Feed**: The source for my automated movie diary sync.
 *   [The Movie Database (TMDB)](https://www.themoviedb.org/documentation/api): For rich movie and TV show data.
 *   [Open Movie Database (OMDB)](http://www.omdbapi.com/): My reliable fallback for movie/TV data if TMDB isn't available.
 *   [RAWG Video Games Database API](https://rawg.io/apidocs): To showcase my gaming interests with detailed game information.

@@ -1,15 +1,11 @@
-https://github.com/Paradox-73/MusicBucket 
-https://github.com/Paradox-73/Whatsapp-Chat-Analyzer
-(https://github.com/Paradox-73/Inji-Verify-Offline-Verification
-Inji Verify: Offline Identity Verification  | TypeScript, React, Cryptography, Mobile Dev Apr. 2025
-• Engineered a two-stage verification mechanism: enabling instant offline cryptographic checks (¡200ms) followed by
-an automated online sync with the Inji SDK database for revocation status.
-• Developed a universal data export module allowing administrators to retrieve verification logs in JSON format
-seamlessly across both online and offline modes.
-• Ensured 100% data privacy and Decentralized Identity (DID) compliance by processing Zero-Knowledge Proofs (ZKPs)
-locally on the device.
-)
-https://github.com/Paradox-73/Personal_Media_Intelligence_Hub
-https://github.com/Ivan825/Predictive-Auto-Scaling-of-Dockerized-ML-Applications
-https://github.com/nikunj169/Chimera-Efficiently-Training-Large-Scale-Neural-Networks-with-Bidirectional-Pipelines 
-https://github.com/PVSSukeerthi/8BIT (Club website managed and contributed to)
+lit short story/poem rating sys
+travel singapore(7/24),goa(3/25),vaishno(12/25),
+project resume not opening, profile white, 
+games rating sys not being able to add wishlist games
+art add more paintings
+movies wrong, not able to add to library, anime csv fix 
+music rework
+home
+sport
+food
+
