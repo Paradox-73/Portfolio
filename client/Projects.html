@@ -2067,7 +2067,7 @@
             const message = messageInput.value;
 
             try {
-                const response = await fetch('http://localhost:3000/api/contact', { // Use your backend URL
+                const response = await fetch('/api/contact', { // Use your backend URL
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

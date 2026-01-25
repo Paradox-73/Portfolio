@@ -57,12 +57,15 @@ async function run() {
         // Endpoint for Vercel Cron Job to trigger Letterboxd sync
         app.post('/api/sync-letterboxd', async (req, res) => {
             const { authorization } = req.headers;
+            const { cron_secret: querySecret } = req.query;
             const cronSecret = process.env.CRON_SECRET;
-
-            if (!cronSecret || authorization !== `Bearer ${cronSecret}`) {
+        
+            const requestSecret = querySecret || (authorization ? authorization.split(' ')[1] : null);
+        
+            if (!cronSecret || requestSecret !== cronSecret) {
                 return res.status(401).json({ message: 'Unauthorized' });
             }
-
+        
             try {
                 await syncLetterboxd();
                 res.status(200).json({ message: 'Letterboxd sync completed successfully.' });
@@ -70,8 +73,7 @@ async function run() {
                 console.error('Vercel cron job for Letterboxd sync failed:', error);
                 res.status(500).json({ message: 'Letterboxd sync failed.', details: error.message });
             }
-        });
-        
+        });        
         app.get('/api/movies', async (req, res) => {
             const data = await db.collection('movies').find({}).toArray();
             res.json(data);
