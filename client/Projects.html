@@ -348,7 +348,7 @@
                     <i class="fas fa-folder-open" style="color: #F1C40F;"></i>
                     <div class="bold-item">My Documents</div>
                 </div>
-                <div class="start-item" onclick="window.open('../Resume.pdf', '_blank')">
+                <div class="start-item" onclick="window.open('assets/Resume.pdf', '_blank')">
                     <i class="fas fa-file-pdf" style="color: #D32F2F;"></i>
                     <div class="bold-item">My Resume</div>
                 </div>
@@ -435,7 +435,7 @@
             "My Resume.doc": {
                 type: "app",
                 appId: "pdfViewer",
-                path: "../Resume.pdf", // Corrected path to Resume.pdf
+                path: "assets/Resume.pdf", // Corrected path to Resume.pdf
                 icon: "assets/projects/notepad.png", // Using notepad icon as a placeholder for doc
                 color: "#2B579A"
             },
@@ -450,6 +450,11 @@
                 type: "folder",
                 icon: "assets/projects/folder.png",
                 content: {
+                    "Home.html": {
+                        type: "external_link",
+                        url: "index.html",
+                        icon: "https://www.clipartmax.com/png/middle/347-3475267_music-icons-windows-xp-my-music-icon.png"
+                    },
                     "Music.html": {
                         type: "external_link",
                         url: "Music.html",
@@ -489,6 +494,11 @@
                         type: "external_link",
                         url: "Sport.html",
                         icon: "https://icons.iconarchive.com/icons/microsoft/windows-xp-media-center/256/Sport-icon.png"
+                    },
+                    "Projects.html": {
+                        type: "external_link",
+                        url: "Projects.html",
+                        icon: "https://icons.iconarchive.com/icons/carlosjj/microsoft-office-2003/256/word-icon.png"
                     }
                 }
             },
@@ -870,7 +880,7 @@
                     <button class="calc-btn" style="padding: 15px; font-weight: bold; background: #27AE60; color: white;" onclick="openPath('Desktop/My Projects')">
                         📂 View Projects
                     </button>
-                    <button class="calc-btn" style="padding: 15px; font-weight: bold;" onclick="window.open('../Resume.pdf')">
+                    <button class="calc-btn" style="padding: 15px; font-weight: bold;" onclick="window.open('assets/Resume.pdf')">
                         📄 Download Resume
                     </button>
                 </div>
