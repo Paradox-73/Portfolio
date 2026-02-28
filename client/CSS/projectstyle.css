@@ -1,0 +1,346 @@
+        /* --- CSS RESET & FONTS --- */
+        * { box-sizing: border-box; user-select: none; }
+        
+        /* XP Cursors */
+        body { 
+            margin: 0; padding: 0; overflow: hidden; 
+            font-family: 'Tahoma', sans-serif; 
+            height: 100vh; width: 100vw; 
+            background-color: #004E98;
+            cursor: url('https://archive.org/download/WindowsXPCursors/Arrow.cur'), default;
+        }
+        
+        a, button, .pointer, .start-item, .task-item, .desktop-icon, .menu-item, .control-btn { 
+            cursor: url('https://archive.org/download/WindowsXPCursors/Hand.cur'), pointer !important; 
+        }
+        
+        input, textarea, .notepad-area, .cmd-input { 
+            cursor: url('https://archive.org/download/WindowsXPCursors/Beam.cur'), text !important; 
+        }
+
+        /* --- WALLPAPER --- */
+        #desktop {
+            width: 100%; height: calc(100% - 30px);
+            background: url('../assets/projects/bg.jpg') no-repeat center center fixed; 
+            background-size: cover;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            padding: 10px;
+        }
+
+        /* --- ICONS --- */
+        .desktop-icon {
+            width: 75px; height: 80px;
+            display: flex; flex-direction: column; align-items: center;
+            margin: 10px; text-align: center;
+            color: white; text-shadow: 1px 1px 2px black;
+        }
+        .desktop-icon:hover { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); border-radius: 3px; }
+        .desktop-icon i { font-size: 32px; margin-bottom: 5px; filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.5)); }
+        .desktop-icon img { width: 32px; height: 32px; margin-bottom: 5px; }
+        .icon-text { font-size: 11px; line-height: 1.2; padding: 0 2px; }
+
+        /* --- WINDOW MANAGER --- */
+        .window {
+            position: absolute; background: #ECE9D8;
+            border: 1px solid #0055EA;
+            border-top-left-radius: 8px; border-top-right-radius: 8px;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.4);
+            display: flex; flex-direction: column;
+            min-width: 200px; min-height: 150px;
+            overflow: hidden; 
+        }
+        .title-bar {
+            height: 30px;
+            background: linear-gradient(to bottom, #0058EE 0%, #3593FF 4%, #288EFB 18%, #2488FA 50%, #2083F8 51%, #0058EE 100%);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 5px; color: white; font-weight: bold; font-size: 13px;
+            text-shadow: 1px 1px #000;
+            cursor: default;
+            border-top-left-radius: 5px; border-top-right-radius: 5px;
+        }
+        .title-text { display: flex; align-items: center; gap: 5px; pointer-events: none; }
+        .window-controls { display: flex; gap: 2px; }
+        .control-btn {
+            width: 21px; height: 21px; border: 1px solid #fff; border-radius: 3px;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 12px; cursor: pointer; color: white; background: transparent;
+        }
+        .btn-close { background: #D7432E; border-color: #fff; font-weight: bold; }
+        .btn-close:hover { background: #ff5f4a; }
+        .window-body { flex: 1; padding: 0; position: relative; overflow: hidden; background: white; display: flex; flex-direction: column; }
+        .window-content { height: 100%; width: 100%; display: flex; flex-direction: column; }
+
+        .resize-handle {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            right: 0;
+            bottom: 0;
+            cursor: nwse-resize; /* Diagonal resize cursor */
+            z-index: 10001; /* Ensure it's above other content */
+        }
+
+        /* --- MENUS --- */
+        .menubar { background: #ECE9D8; padding: 2px 0; font-size: 11px; display: flex; border-bottom: 1px solid #D4D0C8; user-select: none; flex-shrink: 0; }
+        .menu-wrap { position: relative; }
+        .menu-btn { padding: 2px 6px; cursor: pointer; color: #000; }
+        .menu-btn:hover, .menu-btn.active { background: #1660E8; color: white; }
+        .menu-dropdown { 
+            display: none; position: absolute; top: 100%; left: 0; 
+            background: white; border: 1px solid #808080; 
+            box-shadow: 2px 2px 2px rgba(0,0,0,0.3); z-index: 99999; min-width: 150px;
+            padding: 2px;
+        }
+        .menu-item { padding: 3px 20px 3px 10px; color: black; cursor: pointer; white-space: nowrap; display: block; font-size: 11px; text-decoration: none; }
+        .menu-item:hover { background: #1660E8; color: white; }
+        .menu-separator { height: 1px; background: #D4D0C8; margin: 3px 2px; }
+        .menu-disabled { color: #888; }
+        .menu-disabled:hover { background: none; color: #888; cursor: default; }
+
+        /* --- APP SPECIFIC STYLES --- */
+        /* CMD */
+        .cmd-body { background: black; color: white; font-family: 'Consolas', monospace; padding: 5px; flex: 1; overflow-y: auto; font-size: 14px; }
+        .cmd-input { background: transparent; border: none; color: white; outline: none; font-family: inherit; width: 80%; }
+        
+        /* Explorer */
+        .explorer-toolbar { background: #ECE9D8; padding: 5px; border-bottom: 1px solid #999; display: flex; gap: 5px; align-items: center; flex-shrink: 0; }
+        .explorer-address { flex: 1; display: flex; align-items: center; gap: 5px; }
+        .address-bar { 
+            width: 100%; border: 1px solid #7F9DB9; padding: 2px; 
+            background: white; color: black; outline: none;
+        }
+        .address-bar:focus { border-color: #1660E8; }
+        .explorer-view { display: flex; flex-wrap: wrap; padding: 10px; gap: 10px; align-content: flex-start; overflow-y: auto; flex: 1; background: white; }
+        
+        /* All Programs Menu Styling */
+        .all-programs-container {
+            display: none;
+            position: absolute;
+            bottom: 30px;
+            left: 100%;
+            background: white;
+            border: 1px solid #808080;
+            box-shadow: 2px 2px 2px rgba(0,0,0,0.3);
+            z-index: 10001;
+            width: 250px;
+            padding: 5px;
+            flex-direction: column;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+        }
+        .all-programs-container .start-item {
+            height: 32px;
+            font-size: 12px;
+        }
+        .file-item { width: 80px; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; }
+        .file-item:hover { background: #E8F0FA; border: 1px solid #B0C4DE; }
+        .file-icon { font-size: 32px; color: #333; margin-bottom: 5px; }
+        .file-icon.folder { color: #EBC657; }
+        .file-icon.text { color: #87CEEB; }
+        .file-icon.code { color: #4CAF50; }
+        
+        /* Notepad */
+        .notepad-area { width: 100%; flex: 1; resize: none; border: none; outline: none; padding: 5px; font-family: 'Lucida Console', monospace; font-size: 14px; overflow: auto; }
+
+        /* Calculator */
+        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; padding: 10px; background: #ECE9D8; height: 100%; }
+        .calc-display { grid-column: 1 / -1; background: white; border: 1px solid #7F9DB9; text-align: right; padding: 5px; margin-bottom: 5px; font-family: monospace; font-size: 20px; }
+        .calc-btn { padding: 5px; cursor: pointer; border: 1px solid #7F9DB9; background: linear-gradient(#fff, #ddd); text-align: center; border-radius: 3px; }
+        .calc-btn:active { background: #ccc; }
+
+        /* Paint Overhaul */
+        .paint-container { display: flex; flex-direction: column; flex: 1; background: #C0C0C0; overflow: hidden; }
+        .paint-main { flex: 1; display: flex; overflow: hidden; }
+        .paint-sidebar { width: 50px; background: #ECE9D8; border-right: 1px solid #808080; padding: 2px; display: grid; grid-template-columns: 1fr 1fr; gap: 2px; align-content: start; flex-shrink: 0; }
+        .paint-tool { width: 22px; height: 22px; border: 1px solid #fff; border-right-color: #808080; border-bottom-color: #808080; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .paint-tool:active, .paint-tool.active { border: 1px solid #808080; border-right-color: #fff; border-bottom-color: #fff; background: #e0e0e0; }
+        .paint-workspace { flex: 1; background: #808080; overflow: auto; padding: 10px; display: flex; }
+        #paint-canvas { background: white; cursor: crosshair; display: block; box-shadow: 2px 2px 5px rgba(0,0,0,0.5); }
+        .paint-footer { height: 45px; background: #ECE9D8; border-top: 1px solid #808080; display: flex; align-items: center; padding: 2px; flex-shrink: 0; }
+        .paint-palette { display: flex; flex-wrap: wrap; gap: 1px; width: 260px; height: 32px; border: 1px inset #fff; }
+        .color-swatch { width: 15px; height: 15px; border: 1px solid #808080; cursor: pointer; }
+        .current-colors { width: 30px; height: 30px; border: 1px inset #fff; margin-right: 10px; position: relative; background: #ECE9D8; cursor: pointer; }
+        .color-front { width: 15px; height: 15px; border: 1px solid #808080; position: absolute; top: 4px; left: 4px; z-index: 2; background: black; }
+        .color-back { width: 15px; height: 15px; border: 1px solid #808080; position: absolute; top: 10px; left: 10px; z-index: 1; background: white; }
+
+        /* Minesweeper */
+        .mine-header { background: #C0C0C0; border: 2px solid #808080; border-right-color: #fff; border-bottom-color: #fff; padding: 4px; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
+        .mine-counter { background: black; color: red; font-family: 'Courier New', monospace; font-size: 20px; font-weight: bold; padding: 0 2px; border: 1px inset #fff; }
+        .mine-face { width: 26px; height: 26px; border: 1px outset #fff; background: #C0C0C0; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; }
+        .mine-face:active { border: 1px inset #fff; }
+
+        /* --- TASKBAR --- */
+        #taskbar {
+            position: absolute; bottom: 0; width: 100%; height: 30px;
+            background: linear-gradient(to bottom, #4f86fd 0%, #3F8CF3 9%, #245EDB 18%, #245EDB 92%, #1941A5 100%);
+            display: flex; align-items: center; z-index: 9999; border-top: 1px solid #3F8CF3;
+        }
+        #start-btn {
+            height: 30px; width: 100px;
+            background: transparent;
+            border-top-right-radius: 10px; border-bottom-right-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-style: italic; font-weight: bold; font-size: 16px; color: white; text-shadow: 1px 1px 1px #000;
+            cursor: pointer; box-shadow: inset 2px 2px 2px rgba(255,255,255,0.4);
+        }
+        #start-btn:hover { filter: brightness(1.1); }
+
+        
+        #taskbar-divider { width: 2px; height: 20px; background: rgba(0,0,0,0.2); margin: 0 5px; border-right: 1px solid rgba(255,255,255,0.2); }
+        
+        #task-list { flex: 1; display: flex; gap: 2px; padding-left: 5px; overflow: hidden; }
+        .task-item {
+            width: 150px; height: 24px; background: #3C81F3;
+            border-radius: 3px; border: 1px solid #16367F;
+            display: flex; align-items: center; padding: 0 5px;
+            color: white; font-size: 11px; cursor: pointer;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.3);
+        }
+        .task-item:hover { background: #5394F8; }
+        .task-item.active { background: #1E52B7; box-shadow: inset 1px 1px 2px rgba(0,0,0,0.5); font-weight: bold; }
+        .task-item img { width: 16px; height: 16px; margin-right: 5px; }
+
+        #system-tray {
+            background: #0B74C9; height: 30px; padding: 0 10px;
+            display: flex; align-items: center; gap: 10px;
+            color: white; font-size: 11px; border-left: 1px solid #143F8C;
+        }
+
+        /* --- START MENU --- */
+        #start-menu {
+            position: absolute; bottom: 30px; left: 0; width: 380px; height: 480px;
+            background: white; border-top-right-radius: 10px; border-top-left-radius: 10px;
+            box-shadow: 2px -2px 5px rgba(0,0,0,0.5);
+            display: none; flex-direction: column; z-index: 10000;
+            border: 2px solid #245EDB; border-bottom: none;
+        }
+        .start-header {
+            height: 60px; background: linear-gradient(#245EDB, #3F8CF3);
+            border-top-right-radius: 8px; border-top-left-radius: 8px;
+            display: flex; align-items: center; padding: 0 10px;
+            color: white; font-weight: bold; font-size: 16px; text-shadow: 1px 1px 1px #000;
+        }
+        .user-avatar { width: 40px; height: 40px; border: 2px solid white; border-radius: 3px; margin-right: 10px; background: #FFD27D; overflow: hidden; }
+        .start-body { flex: 1; display: flex; border-top: 2px solid #E57D23; }
+        .start-left { width: 50%; background: white; padding: 5px; display: flex; flex-direction: column; gap: 5px; }
+        .start-right { width: 50%; background: #D3E5FA; padding: 5px; border-left: 1px solid #99BBEE; display: flex; flex-direction: column; gap: 5px; }
+        .start-footer {
+            height: 35px; background: linear-gradient(#3F8CF3, #245EDB);
+            display: flex; align-items: center; justify-content: flex-end; padding: 0 10px;
+            color: white; font-size: 11px;
+        }
+        .start-item {
+            display: flex; align-items: center; padding: 5px; cursor: pointer; color: #333; font-size: 11px;
+            height: 36px;
+        }
+        .start-item:hover { background: #2F71CD; color: white; }
+        .start-item i, .start-item img { font-size: 20px; width: 24px; text-align: center; margin-right: 8px; }
+        .start-right .start-item { height: 28px; }
+        .bold-item { font-weight: bold; color: #333; }
+        .start-item:hover .bold-item { color: white; }
+
+        /* Helper for separator */
+        .separator { height: 1px; background: linear-gradient(to right, transparent, #D4D0C8, transparent); margin: 2px 0; }
+
+        /* --- MOBILE RESPONSIVE OVERRIDES --- */
+        @media screen and (max-width: 768px) {
+            /* 1. Reset Cursor styling (mobiles don't have cursors) */
+            body, a, button, input { cursor: auto !important; }
+
+            /* 2. Desktop Icons: Grid Layout */
+            #desktop {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+                grid-template-rows: repeat(auto-fill, 100px);
+                gap: 10px;
+                align-content: start;
+                justify-content: center;
+                padding-top: 20px;
+            }
+            .desktop-icon {
+                margin: 0;
+                width: 100%;
+                height: auto;
+            }
+            .desktop-icon i, .desktop-icon img {
+                width: 48px; height: 48px; /* Bigger icons */
+                font-size: 40px;
+            }
+            .icon-text { font-size: 13px; text-shadow: 2px 2px 4px black; }
+
+            /* 3. Windows: Force Full Screen Mode */
+            .window {
+                width: 100% !important;
+                height: calc(100% - 30px) !important; /* Subtract taskbar height */
+                top: 0 !important;
+                left: 0 !important;
+                border-radius: 0;
+                border: none;
+                display: flex;
+                flex-direction: column;
+            }
+
+            /* Hide Minimize/Maximize on mobile (confusing UX) */
+            .window-controls button:nth-child(1),
+            .window-controls button:nth-child(2) {
+                display: none;
+            }
+            
+            /* Make Close button huge for thumbs */
+            .btn-close {
+                width: 40px !important;
+                font-size: 16px !important;
+            }
+
+            .title-bar {
+                height: 40px; /* Taller for touch */
+                font-size: 16px;
+            }
+
+            /* 4. Start Menu: Full Screen Drawer */
+            #start-menu {
+                width: 100% !important;
+                height: calc(100% - 30px) !important;
+                bottom: 30px !important;
+                left: 0 !important;
+                border-radius: 0;
+                border: none;
+            }
+            .start-body { flex-direction: column; }
+            .start-left, .start-right { width: 100%; height: 50%; overflow-y: auto; }
+            .start-item { padding: 12px 10px; font-size: 14px; } /* Fat finger friendly */
+
+            /* 5. App Specific Fixes */
+            /* Explorer: List View instead of grid for readability */
+            .explorer-view {
+                flex-direction: column;
+                flex-wrap: nowrap;
+            }
+            .file-item {
+                width: 100%;
+                flex-direction: row;
+                text-align: left;
+                padding: 15px;
+                border-bottom: 1px solid #eee;
+                height: auto;
+            }
+            .file-item i, .file-item img { margin-bottom: 0; margin-right: 15px; }
+            
+            /* Paint: Hide sidebar tools or make scrollable */
+            .paint-main { flex-direction: column-reverse; } /* Tools at bottom */
+            .paint-sidebar { 
+                width: 100%; 
+                height: 50px; 
+                grid-template-columns: repeat(auto-fill, 30px);
+                overflow-x: auto;
+                border-right: none; border-top: 1px solid #808080;
+            }
+            
+            /* Calculator: Bigger grid */
+            .calc-grid { gap: 10px; }
+            .calc-btn { font-size: 18px; padding: 15px; }
+        }

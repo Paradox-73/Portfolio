@@ -16,9 +16,11 @@ npm-debug.log*
 
 SECURITY_GUIDE.md 
 SETUP_GUIDE.md
-SRS.txt
+
 Untitled-1.html
 user_instruction.md
 blog_posts/
 client/assets/projects/README/
 data/
+SRS.txt
+err.txt

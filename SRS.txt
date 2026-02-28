@@ -1,11 +1,10 @@
-lit short story/poem rating sys
-travel singapore(7/24),goa(3/25),vaishno(12/25),
-project resume not opening, profile white, 
-games rating sys not being able to add wishlist games
-art add more paintings
-movies wrong, not able to add to library, anime csv fix 
-music rework
-home
 sport
-food
-
+project my resume.doc not opening, profile white, opening mssg, my comp directory, post and videos, menu icons, time calender, about me, start menu contact me, 
+music rework
+lit short story/poem rating sys, sort
+games rating sys not being able to add wishlist games
+movies wrong, not able to add to library, anime csv fix 
+travel singapore(7/24),goa(3/25),vaishno(12/25), varkala (3/26)
+art add more paintings
+food noodle steam, more recipies
+home
