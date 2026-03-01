@@ -11,91 +11,187 @@
                 }
             },
             "Recycle Bin": { type: "system", icon: "fas fa-trash-alt", color: "#95A5A6" },
-            "My Projects": {
+            "Chimera": {
                 type: "folder",
                 icon: "assets/projects/folder.png",
                 content: {
-                    "Chimera": {
-                        type: "folder",
-                        icon: "assets/projects/folder.png",
-                        content: {
-                            "Blog Post.html": {
-                                type: "notepad_render",
-                                html: `
-                                    <div style="padding:15px; font-family:'Tahoma', sans-serif; font-size:14px; line-height:1.4;">
-                                        <h2>Chimera</h2>
-                                        <p>Distributed training framework.</p>
-                                    </div>
-                                `
-                            },
-                            "Github Link.url": {
-                                type: "url_redirect",
-                                url: "https://github.com/nikunj169/Chimera",
-                                icon: "assets/projects/exe-icon.png"
-                            },
-                            "Video Demo.mp4": {
-                                type: "app",
-                                appId: "wmp",
-                                path: "Chimera_Demo.mp4",
-                                icon: "fas fa-film",
-                                color: "#9B59B6"
-                            }
-                        }
+                    "Blog Post.html": {
+                        type: "notepad_render",
+                        html: `
+                            <div style="padding:15px; font-family:'Tahoma', sans-serif; font-size:14px; line-height:1.4;">
+                                <h2>Chimera: Elevating Large-Scale Neural Network Training</h2>
+                                <p>Chimera is a groundbreaking framework designed for the efficient training of large-scale neural networks using bidirectional pipelines. This project addresses computational challenges in distributed AI systems by optimizing data flow and resource utilization.</p>
+                                <h3>Key Innovations:</h3>
+                                <ul>
+                                    <li><strong>Bidirectional Pipelines:</strong> Implemented a novel approach to pipeline parallelism that significantly enhances data flow efficiency.</li>
+                                    <li><strong>Resource Optimization:</strong> Maximizes GPU/CPU utilization across multiple distributed nodes.</li>
+                                </ul>
+                            </div>
+                        `
                     },
-                    "MusicBucket": {
-                        type: "folder",
-                        icon: "assets/projects/folder.png",
-                        content: {
-                            "Blog Post.html": {
-                                type: "notepad_render",
-                                html: `
-                                    <div style="padding:15px; font-family:'Tahoma', sans-serif; font-size:14px; line-height:1.4;">
-                                        <h2>MusicBucket</h2>
-                                        <p>Music discovery platform.</p>
-                                    </div>
-                                `
-                            },
-                            "Github Link.url": {
-                                type: "url_redirect",
-                                url: "https://github.com/Paradox-73/MusicBucket",
-                                icon: "assets/projects/exe-icon.png"
-                            },
-                            "Video Demo.mp4": {
-                                type: "app",
-                                appId: "wmp",
-                                path: "MusicBucket_Demo.mp4",
-                                icon: "fas fa-film",
-                                color: "#9B59B6"
-                            }
-                        }
+                    "Github Link.url": {
+                        type: "url_redirect",
+                        url: "https://github.com/nikunj169/Chimera-Efficiently-Training-Large-Scale-Neural-Networks-with-Bidirectional-Pipelines",
+                        icon: "assets/projects/exe-icon.png"
                     },
-                    "Personal Media Intelligence Hub": {
-                        type: "folder",
-                        icon: "assets/projects/folder.png",
-                        content: {
-                            "Blog Post.html": {
-                                type: "notepad_render",
-                                html: `
-                                    <div style="padding:15px; font-family:'Tahoma', sans-serif; font-size:14px; line-height:1.4;">
-                                        <h2>PMIH</h2>
-                                        <p>ML recommendation engine.</p>
-                                    </div>
-                                `
-                            },
-                            "Github Link.url": {
-                                type: "url_redirect",
-                                url: "https://github.com/Paradox-73/PMIH",
-                                icon: "assets/projects/exe-icon.png"
-                            },
-                            "Video Demo.mp4": {
-                                type: "app",
-                                appId: "wmp",
-                                path: "PMIH_Demo.mp4",
-                                icon: "fas fa-film",
-                                color: "#9B59B6"
-                            }
-                        }
-                    }
+                    "Video Demo.mp4": { type: "app", appId: "wmp", path: "Chimera_Demo.mp4", icon: "fas fa-film", color: "#9B59B6" }
+                }
+            },
+            "8BIT": {
+                type: "folder",
+                icon: "assets/projects/folder.png",
+                content: {
+                    "Blog Post.html": {
+                        type: "notepad_render",
+                        html: `
+                            <div style="padding:15px; font-family:'Tahoma', sans-serif; font-size:14px; line-height:1.4;">
+                                <h2>8BIT: Collaborative Club Website</h2>
+                                <p>Developed as a team project, the 8BIT website serves as a digital hub for a student club, focusing on community engagement and responsive design.</p>
+                                <h3>Contributions:</h3>
+                                <ul>
+                                    <li><strong>Front-End Development:</strong> Built interactive UI components using HTML5, CSS3, and JavaScript.</li>
+                                    <li><strong>Content Management:</strong> Implemented a flexible system for updating club events and resources.</li>
+                                </ul>
+                            </div>
+                        `
+                    },
+                    "Github Link.url": {
+                        type: "url_redirect",
+                        url: "https://github.com/PVSSukeerthi/8BIT",
+                        icon: "assets/projects/exe-icon.png"
+                    },
+                    "Video Demo.mp4": { type: "app", appId: "wmp", path: "8BIT_Demo.mp4", icon: "fas fa-film", color: "#9B59B6" }
+                }
+            },
+            "MusicBucket": {
+                type: "folder",
+                icon: "assets/projects/folder.png",
+                content: {
+                    "Blog Post.html": {
+                        type: "notepad_render",
+                        html: `
+                            <div style="padding:15px; font-family:'Tahoma', sans-serif; font-size:14px; line-height:1.4;">
+                                <h2>MusicBucket: Personalized Music Discovery</h2>
+                                <p>MusicBucket transforms how enthusiasts interact with music by providing detailed habit tracking and discovery tools through the Spotify API.</p>
+                                <h3>Technical Stack:</h3>
+                                <ul>
+                                    <li><strong>Frontend:</strong> React.js and TypeScript for a robust, type-safe user experience.</li>
+                                    <li><strong>Backend:</strong> Supabase and PostgreSQL for real-time data storage and analytics.</li>
+                                    <li><strong>API Integration:</strong> Seamlessly manages data synchronization with the Spotify Web API.</li>
+                                </ul>
+                            </div>
+                        `
+                    },
+                    "Github Link.url": {
+                        type: "url_redirect",
+                        url: "https://github.com/Paradox-73/MusicBucket",
+                        icon: "assets/projects/exe-icon.png"
+                    },
+                    "Video Demo.mp4": { type: "app", appId: "wmp", path: "MusicBucket_Demo.mp4", icon: "fas fa-film", color: "#9B59B6" }
+                }
+            },
+            "Personal Media Intelligence Hub": {
+                type: "folder",
+                icon: "assets/projects/folder.png",
+                content: {
+                    "Blog Post.html": {
+                        type: "notepad_render",
+                        html: `
+                            <div style="padding:15px; font-family:'Tahoma', sans-serif; font-size:14px; line-height:1.4;">
+                                <h2>Personal Media Intelligence Hub (PMIH)</h2>
+                                <p>PMIH is a hyper-personalized ML-powered recommendation engine that predicts personal ratings across diverse media domains including games, movies, and music.</p>
+                                <h3>ML Innovations:</h3>
+                                <ul>
+                                    <li><strong>XGBoost Models:</strong> Fine-tuned models for accurate rating prediction based on personal consumption data.</li>
+                                    <li><strong>Semantic Embeddings:</strong> Utilized Sentence-Transformers to grasp nuanced relationships between media titles and descriptions.</li>
+                                </ul>
+                            </div>
+                        `
+                    },
+                    "Github Link.url": {
+                        type: "url_redirect",
+                        url: "https://github.com/Paradox-73/Personal_Media_Intelligence_Hub.git",
+                        icon: "assets/projects/exe-icon.png"
+                    },
+                    "Video Demo.mp4": { type: "app", appId: "wmp", path: "PMIH_Demo.mp4", icon: "fas fa-film", color: "#9B59B6" }
+                }
+            },
+            "WhatsApp Chat Analyzer": {
+                type: "folder",
+                icon: "assets/projects/folder.png",
+                content: {
+                    "Blog Post.html": {
+                        type: "notepad_render",
+                        html: `
+                            <div style="padding:15px; font-family:'Tahoma', sans-serif; font-size:14px; line-height:1.4;">
+                                <h2>WhatsApp Chat Analyzer: Private Data Insights</h2>
+                                <p>A privacy-first analytics tool designed to visualize social dynamics and communication patterns in WhatsApp group chats.</p>
+                                <h3>Key Features:</h3>
+                                <ul>
+                                    <li><strong>Local Analysis:</strong> Ensures user privacy by processing all data 100% locally.</li>
+                                    <li><strong>Psychometric Metrics:</strong> Extracts insights like response speeds and conversational dominance patterns.</li>
+                                </ul>
+                            </div>
+                        `
+                    },
+                    "Github Link.url": {
+                        type: "url_redirect",
+                        url: "https://github.com/Paradox-73/Whatsapp-Chat-Analyzer",
+                        icon: "assets/projects/exe-icon.png"
+                    },
+                    "Video Demo.mp4": { type: "app", appId: "wmp", path: "WhatsappChatInsider_Demo.mp4", icon: "fas fa-film", color: "#9B59B6" }
+                }
+            },
+            "Inji Verify": {
+                type: "folder",
+                icon: "assets/projects/folder.png",
+                content: {
+                    "Blog Post.html": {
+                        type: "notepad_render",
+                        html: `
+                            <div style="padding:15px; font-family:'Tahoma', sans-serif; font-size:14px; line-height:1.4;">
+                                <h2>Inji Verify: Secure Offline Identity</h2>
+                                <p>An advanced cryptographic solution addressing the need for secure, offline identity verification with full privacy preservation.</p>
+                                <h3>Cryptography:</h3>
+                                <ul>
+                                    <li><strong>Zero-Knowledge Proofs:</strong> Processes sensitive data locally to ensure Decentralized Identity (DID) compliance.</li>
+                                    <li><strong>High Speed:</strong> Achieved rapid verification speeds of less than 200ms directly on-device.</li>
+                                </ul>
+                            </div>
+                        `
+                    },
+                    "Github Link.url": {
+                        type: "url_redirect",
+                        url: "https://github.com/Paradox-73/Inji-Verify-Offline-Verification",
+                        icon: "assets/projects/exe-icon.png"
+                    },
+                    "Video Demo.mp4": { type: "app", appId: "wmp", path: "InjiVerify_Demo.mp4", icon: "fas fa-film", color: "#9B59B6" }
+                }
+            },
+            "Predictive Auto-Scaling": {
+                type: "folder",
+                icon: "assets/projects/folder.png",
+                content: {
+                    "Blog Post.html": {
+                        type: "notepad_render",
+                        html: `
+                            <div style="padding:15px; font-family:'Tahoma', sans-serif; font-size:14px; line-height:1.4;">
+                                <h2>Predictive Auto-Scaling for ML Applications</h2>
+                                <p>Optimizes resource management in MLOps by predicting resource load for Dockerized machine learning applications.</p>
+                                <h3>MLOps Advancements:</h3>
+                                <ul>
+                                    <li><strong>Time-Series Forecasting:</strong> Employs historical data to proactively scale containers before demand spikes occur.</li>
+                                    <li><strong>Cost Efficiency:</strong> Significantly reduces operational infrastructure costs by preventing over-provisioning.</li>
+                                </ul>
+                            </div>
+                        `
+                    },
+                    "Github Link.url": {
+                        type: "url_redirect",
+                        url: "https://github.com/Ivan825/Predictive-Auto-Scaling-of-Dockerized-ML-Applications",
+                        icon: "assets/projects/exe-icon.png"
+                    },
+                    "Video Demo.mp4": { type: "app", appId: "wmp", path: "PredictiveAutoScaling_Demo.mp4", icon: "fas fa-film", color: "#9B59B6" }
                 }
             },
             "My Resume.doc": {
@@ -168,7 +264,7 @@
                 </div>
                 
                 <div style="display: flex; flex-direction: column; gap: 15px; margin-top: auto; margin-bottom: 20px;">
-                    <button class="calc-btn" style="padding: 15px; font-weight: bold; background: #27AE60; color: white;" onclick="openPath('Desktop/My Projects')">
+                    <button class="calc-btn" style="padding: 15px; font-weight: bold; background: #27AE60; color: white;" onclick="openPath('Desktop')">
                         📂 View Projects
                     </button>
                     <button class="calc-btn" style="padding: 15px; font-weight: bold;" onclick="openExternalURLSafely('assets/Resume.pdf')">

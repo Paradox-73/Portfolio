@@ -394,16 +394,33 @@
 
         /* Rating Stars Styling */
         .rating-stars {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            color: gold; /* Color of the stars */
+            color: #00e054; /* Letterboxd Green */
             font-size: 1.2rem; /* Size of the stars */
             z-index: 5;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
         }
         .rating-stars i {
             margin: 0 1px;
+        }
+
+        /* Ensure star rating is displayed as a flex item and spaced correctly */
+        .modal-meta .rating-stars {
+            display: flex;
+            align-items: center;
+            gap: 2px; /* Small gap between stars */
+            color: #00e054; /* Letterboxd Green */
+            font-size: 1.2rem; /* Size of the stars */
+        }
+
+        /* Style for individual star icons */
+        .modal-meta .rating-stars i {
+            color: #00e054; /* Letterboxd Green */
+            /* Empty stars will use the default text color or a slightly darker gold */
+        }
+
+        /* Specific style for empty stars if needed (Font Awesome 'far fa-star') */
+        .modal-meta .rating-stars .far.fa-star {
+            color: rgba(0, 224, 84, 0.4); /* Lighter Letterboxd Green for empty stars */
         }
 
         /* --- Overlays --- */

@@ -89,7 +89,7 @@
         }
 
         function isItemSeen(item) {
-            return seenList.has(String(item.tmdb_id || item.id));
+            return seenList.has(String(item.tmdb_id || item.id)) || !!(item.user_rating || item.my_rating);
         }
 
         function markItemSeen(item) {
@@ -503,20 +503,24 @@
             }
 
             const d = apiData || item;
+            // Transfer ratings from original item to the details object
+            if (apiData) {
+                d.user_rating = item.user_rating;
+                d.my_rating = item.my_rating;
+            }
             currentOpenItem.details = d;
 
             // Update UI
             document.getElementById('mTitle').innerText = d.title || d.name;
             const modalMeta = document.querySelector('#detailModal .modal-meta');
-            let ratingStarsHtml = '';
-            if (d.user_rating || d.my_rating) {
-                ratingStarsHtml = `<div class="rating-stars">${renderStars(d.user_rating || d.my_rating)}</div>`;
-            }
+            const rating = d.user_rating || d.my_rating;
+            const ratingStarsHtml = rating ? renderStars(rating) : '';
+            
             modalMeta.innerHTML = `
-                ${ratingStarsHtml}
                 <span id="mMatch" class="match-text">98% Match</span>
                 <span id="mYear">${(d.release_date||d.first_air_date||item.release_date||'').substring(0,4)}</span>
                 <span style="border:1px solid #777; padding:0 5px;">HD</span>
+                ${ratingStarsHtml}
                 <span id="mEpisodesCount" style="color: #aaa; margin-left: 10px;"></span>
             `;
 
@@ -550,7 +554,7 @@
                 poster.src = p || ''; 
             }
 
-            renderUserActionSection(d);
+            renderUserActionSection(d, d.user_rating || d.my_rating);
             
             // Similar Items
             const mlt = document.getElementById('mltGrid'); mlt.innerHTML='';
@@ -577,7 +581,7 @@
             document.getElementById('detailModal').style.display='flex';
         };
 
-        function renderUserActionSection(item) {
+        function renderUserActionSection(item, rating) {
             const section = document.getElementById('userActionSection');
             section.innerHTML = ''; 
 
@@ -586,7 +590,11 @@
 
             if (itemIsSeen) {
                 const seenDiv = document.createElement('div');
-                seenDiv.innerHTML = `<svg width="24" height="24" fill="none" stroke="#46d369" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> <span style="color:#46d369; font-weight:bold; margin-left:10px;">You've Seen This</span>`;
+                let ratingStarsHtml = '';
+                if (rating) {
+                    ratingStarsHtml = renderStars(rating);
+                }
+                seenDiv.innerHTML = `<svg width="24" height="24" fill="none" stroke="#00e054" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> <span style="color:#00e054; font-weight:bold; margin-left:10px;">Kanav has seen this</span> ${ratingStarsHtml}`;
                 section.appendChild(seenDiv);
                 
             } else if (itemIsRec) {
@@ -608,7 +616,7 @@
                         saveRecommendedList();
                         renderRecommendedRow();
                         renderHomeRows(); // Re-render all rows to move the item to the seen category
-                        renderUserActionSection(item); // Update the modal view
+                        renderUserActionSection(item, rating); // Update the modal view
                     };
                     openAdminPasswordDialog();
                 };
@@ -640,7 +648,7 @@
                     starsHtml += '<i class="far fa-star"></i>'; // Empty star
                 }
             }
-            return `<span class="star-rating">${starsHtml}</span>`;
+            return `<span class="rating-stars">${starsHtml}</span>`;
         }
 
         window.toggleMute = () => {
@@ -804,7 +812,7 @@
                         actionAfterPassword();
                         actionAfterPassword = null;
                     } else if (currentOpenItem) {
-                        renderUserActionSection(currentOpenItem);
+                        renderUserActionSection(currentOpenItem, currentOpenItem.details.user_rating || currentOpenItem.details.my_rating);
                     }
                 } else { 
                     alert('Access Denied');

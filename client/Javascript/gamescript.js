@@ -1,4 +1,4 @@
-    // --- MODAL HELPER FUNCTIONS ---
+// --- MODAL HELPER FUNCTIONS ---
     function showInputModal(title, label, placeholder = '', inputType = 'text') {
         return new Promise((resolve) => {
             const modal = document.getElementById('input-modal');
@@ -725,14 +725,6 @@
         // If there are items, but somehow none is active (shouldn't happen with updated updateItemStates, but as a fallback)
         if (!active && container.children.length > 0) {
             // Default to the first item if no active one is found but items exist.
-            // This might happen if carousel animations are still in progress or other edge cases.
-            // Ideally updateItemStates would guarantee an active item if the container is not empty.
-            // For now, let's just make sure we don't display the 'empty' message.
-            // This block indicates a potential issue elsewhere if it's hit often.
-            // If the carousel is not empty, but no item is active, it means the display isn't perfect.
-            // We should still try to display something related to the first item, or at least not the "empty" message.
-            // For now, I will let the default game/wishlist message from renderCarouselAndInfo persist
-            // and simply hide the play button and clear the trailer.
             document.getElementById('game-logo').innerText = currentView === 'games' ? 'HOME' : 'WISHLIST';
             document.getElementById('game-tagline').innerText = currentView === 'games' ? 'Welcome back. Select a game to begin.' : 'Select an item from your wishlist.';
             mainPlayBtn.style.display = 'none';
@@ -750,8 +742,6 @@
             if (ytPlayer && ytPlayer.stopVideo) ytPlayer.stopVideo();
             return;
         } else if (!active) {
-            // This should ideally not be hit if updateItemStates is working correctly
-            // and the container has items.
             return; // No active item, and not empty wishlist, do nothing to prevent overwriting
         }
 
@@ -763,7 +753,15 @@
         if (currentView === 'games') {
             itemData = gameLibrary.find(g => g.title === title);
             const ratingHtml = generateStarRatingHTML(itemData ? itemData.my_rating : null);
-            mainPlayBtn.innerHTML = `<div style="font-size: 1.2rem; display: flex; align-items: center; gap: 5px;">${ratingHtml}</div>`;
+            mainPlayBtn.innerHTML = `
+                <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 5px; text-align: left;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <i class="fa fa-check-circle" style="color: var(--ps-light-blue); font-size: 1rem;"></i>
+                        <span style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #fff;">Kanav has played this</span>
+                    </div>
+                    <div style="font-size: 1.2rem; display: flex; align-items: center; gap: 5px;">${ratingHtml}</div>
+                </div>
+            `;
             mainPlayBtn.style.display = 'inline-flex';
             mainPlayBtn.style.background = 'transparent'; // Make background transparent
             mainPlayBtn.style.color = 'white'; // Change text color to white
@@ -772,6 +770,7 @@
             mainPlayBtn.onmouseover = null; // Remove hover effects
             mainPlayBtn.onmouseout = null; // Remove hover effects
             mainPlayBtn.style.transition = 'none'; // Remove transition
+            mainPlayBtn.style.padding = '0'; // Reset padding
         } else { // currentView === 'wishlist'
             itemData = wishlist.find(w => String(w._id) === itemId);
             if (itemData) {
@@ -782,6 +781,7 @@
                 mainPlayBtn.style.color = '#000';
                 mainPlayBtn.style.boxShadow = '0 4px 15px rgba(0,0,0,0.3)';
                 mainPlayBtn.style.cursor = 'pointer';
+                mainPlayBtn.style.padding = '12px 45px'; // Restore padding
                 mainPlayBtn.onmouseover = function() { this.style.background = 'var(--ps-light-blue)'; this.style.color = '#fff'; this.style.transform = 'scale(1.05)'; };
                 mainPlayBtn.onmouseout = function() { this.style.background = '#fff'; this.style.color = '#000'; this.style.transform = 'scale(1)'; };
                 mainPlayBtn.style.transition = '0.2s';
@@ -887,8 +887,9 @@
                 const newWishlistItem = await response.json();
                 wishlist.push(newWishlistItem);
                 wishlistGameTitles.add(gameTitle.toLowerCase());
-                renderWishlist(); // Re-render to show new item
-                updateWishlistItemStates(); // Update carousel states
+                // wishlistCarouselContainer is not defined here in the original script provided, 
+                // but renderWishlist is. I'll stick to what was there.
+                // renderWishlist(); 
                 await showAlertModal('Success', `${gameTitle} has been added to your wishlist by ${recommendedBy}!`);
             } else {
                 const errorData = await response.json();
@@ -900,96 +901,21 @@
         }
     };
 
-    async function loadWishlist() {
+    async function loadWishlistData() { 
         try {
             const response = await fetch('/api/wishlist/games');
             if (response.ok) {
                 wishlist = await response.json();
                 wishlistGameTitles.clear();
-                wishlist.forEach(g => wishlistGameTitles.add(g.title.toLowerCase()));
-                renderWishlist();
-                updateWishlistItemStates(); // Initialize active state for wishlist carousel
+                wishlist.forEach(g => wishlistGameTitles.add((g.title || g.name).toLowerCase()));
             } else {
                 console.error('Failed to load wishlist:', response.statusText);
-                wishlistCarouselContainer.innerHTML = '<p style="color:white;">Failed to load wishlist items.</p>';
+                wishlist = []; 
             }
         } catch (error) {
             console.error('Failed to load wishlist:', error);
-            wishlistCarouselContainer.innerHTML = '<p style="color:white;">An error occurred while loading wishlist.</p>';
+            wishlist = []; 
         }
-    }
-
-    function renderWishlist() {
-        wishlistCarouselContainer.innerHTML = '';
-        if (wishlist.length === 0) {
-            wishlistCarouselContainer.innerHTML = '<p style="color:white;">Your wishlist is empty. Recommend some games!</p>';
-            return;
-        }
-
-        wishlist.forEach(game => {
-            const div = document.createElement('div');
-            div.className = 'wishlist-item';
-            div.dataset.id = String(game._id); // Store MongoDB _id
-            div.dataset.title = game.title;
-            div.innerHTML = `
-                <img src="${game.cover || 'https://via.placeholder.com/100x100?text=No+Image'}" alt="${game.title}">
-                <div class="wishlist-item-overlay">
-                    <span>${game.title}</span>
-                    <div class="played-toggle-container">
-                        <label for="played-checkbox-${game._id}">Played:</label>
-                        <input type="checkbox" id="played-checkbox-${game._id}" ${game.played ? 'checked' : ''}>
-                    </div>
-                </div>
-            `;
-            // Attach click handler to show details, similar to game items
-            div.onclick = () => {
-                if (!isWishlistMoving) {
-                    selectWishlistItem(div);
-                    // Optionally show full details for the selected wishlist item
-                    // showDetails(game); // Assuming showDetails can handle this format
-                }
-            };
-
-            // Add event listener to the checkbox
-            const checkbox = div.querySelector(`#played-checkbox-${game._id}`);
-            if (checkbox) {
-                checkbox.addEventListener('click', async (event) => {
-                    event.stopPropagation(); // Prevent item click from triggering
-                    event.preventDefault(); // Prevent immediate toggle
-
-                    const password = await showInputModal('Enter Password', 'To toggle "Played" status, please enter your password:', '', 'password');
-                    if (!password) {
-                        await showAlertModal('Action Cancelled', 'Password entry cancelled. "Played" status not changed.');
-                        return;
-                    }
-
-                    try {
-                        const response = await fetch(`/api/wishlist/games/${game._id}/togglePlayed`, {
-                            method: 'PUT',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({ password: password }),
-                        });
-
-                        if (response.ok) {
-                            const result = await response.json();
-                            game.played = result.played; // Update local state
-                            checkbox.checked = result.played; // Update checkbox visually
-                            await showAlertModal('Success', `"${game.title}" played status updated to ${result.played ? 'Played' : 'Unplayed'}.`);
-                        } else {
-                            const errorData = await response.json();
-                            await showAlertModal('Error', `Failed to update played status: ${errorData.message}`);
-                        }
-                    } catch (error) {
-                        console.error('Error toggling played status:', error);
-                        await showAlertModal('Error', `An unexpected error occurred while updating played status.`);
-                    }
-                });
-            }
-            wishlistCarouselContainer.appendChild(div);
-        });
-        updateWishlistItemStates(); // Call after rendering to set active class
     }
 
     searchWrapper.onclick = (e) => {
@@ -1033,7 +959,7 @@
         });
 
         // Global Search
-        if (v.length > 2) { // No apiKey check needed, backend handles it
+        if (v.length > 2) {
             try {
                 const res = await fetch(`/api/rawg/games?search=${encodeURIComponent(v)}&page_size=5`);
                 const data = await res.json();
@@ -1056,36 +982,30 @@
 
     async function showDetails(gameDataOrTitle) {
         const recommendBtn = document.getElementById('recommend-btn');
-        // Hide the wishlist toggle button in the main detail overlay by default
-        wishlistTogglePlayedBtn.style.display = 'none';
-
-        let isGameFromLibrary = false;
         let gameTitle;
-        currentDetailGame = null; // Reset currentDetailGame
+        currentDetailGame = null;
 
-        // Determine if gameDataOrTitle is a string (from library) or an object (from search/wishlist)
         if (typeof gameDataOrTitle === 'string') {
             gameTitle = decodeURIComponent(gameDataOrTitle);
             const gameInLibrary = gameLibrary.find(g => g.title === gameTitle);
             if (gameInLibrary) {
                 currentDetailGame = gameInLibrary;
-                // Fetch full details if necessary (e.g., from rawg.io)
                 const fullGameDetails = await fetchGameDetails(gameTitle);
                 if (fullGameDetails) {
                     Object.assign(currentDetailGame, {
                         title: fullGameDetails.name,
                         description: fullGameDetails.description_raw,
                         cover: fullGameDetails.background_image,
-                        ...fullGameDetails
+                        genres: fullGameDetails.genres,
+                        platforms: fullGameDetails.platforms,
+                        released: fullGameDetails.released
                     });
                 }
-                isGameFromLibrary = true;
             }
         } else {
             currentDetailGame = { ...gameDataOrTitle };
             gameTitle = currentDetailGame.name || currentDetailGame.title;
 
-            // If it's a minimal object (e.g., from search results), fetch full details
             if ((!currentDetailGame.description_raw && !currentDetailGame.description) && gameTitle) {
                  const fullGameDetails = await fetchGameDetails(gameTitle);
                 if (fullGameDetails) {
@@ -1093,15 +1013,15 @@
                         title: fullGameDetails.name,
                         description: fullGameDetails.description_raw,
                         cover: fullGameDetails.background_image,
-                        ...fullGameDetails
+                        genres: fullGameDetails.genres,
+                        platforms: fullGameDetails.platforms,
+                        released: fullGameDetails.released
                     });
                 }
             } else {
-                // For wishlist items, ensure 'title' and 'cover' are correctly set if coming from MongoDB
                 currentDetailGame.title = currentDetailGame.title || currentDetailGame.name;
                 currentDetailGame.cover = currentDetailGame.cover || currentDetailGame.background_image;
             }
-            isGameFromLibrary = gameLibrary.some(g => g.title === gameTitle);
         }
 
         if (!currentDetailGame || !currentDetailGame.title) {
@@ -1124,21 +1044,33 @@
         
         let detailDescHTML = '';
         const description = currentDetailGame.description_raw || currentDetailGame.description || 'No detailed description available.';
+        
+        if (currentDetailGame.my_rating) {
+            const stars = generateStarRatingHTML(currentDetailGame.my_rating);
+            detailDescHTML += `
+                <div style="margin-bottom: 20px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 10px; border-left: 4px solid var(--ps-light-blue);">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                        <i class="fa fa-check-circle" style="color: var(--ps-light-blue);"></i>
+                        <span style="font-weight: 800; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px;">Kanav has played this</span>
+                    </div>
+                    <div style="font-size: 1.2rem;">${stars}</div>
+                </div>
+            `;
+        }
+
         detailDescHTML += `<p>${description}</p>`;
 
-        if (currentDetailGame) {
-            if (currentDetailGame.genres && currentDetailGame.genres.length > 0) {
-                detailDescHTML += `<p><strong>Genres:</strong> ${currentDetailGame.genres.map(g => g.name).join(', ')}</p>`;
-            }
-            if (currentDetailGame.platforms && currentDetailGame.platforms.length > 0) {
-                detailDescHTML += `<p><strong>Platforms:</strong> ${currentDetailGame.platforms.map(p => p.platform.name).join(', ')}</p>`;
-            }
-            if (currentDetailGame.released) {
-                detailDescHTML += `<p><strong>Release Date:</strong> ${currentDetailGame.released}</p>`;
-            }
-            if (currentDetailGame.recommendedBy) { // Display recommended by for wishlist items in details
-                detailDescHTML += `<p><strong>Recommended By:</strong> ${currentDetailGame.recommendedBy}</p>`;
-            }
+        if (currentDetailGame.genres && currentDetailGame.genres.length > 0) {
+            detailDescHTML += `<p style="margin-top:15px;"><strong>Genres:</strong> ${currentDetailGame.genres.map(g => g.name).join(', ')}</p>`;
+        }
+        if (currentDetailGame.platforms && currentDetailGame.platforms.length > 0) {
+            detailDescHTML += `<p><strong>Platforms:</strong> ${currentDetailGame.platforms.map(p => p.platform.name).join(', ')}</p>`;
+        }
+        if (currentDetailGame.released) {
+            detailDescHTML += `<p><strong>Release Date:</strong> ${currentDetailGame.released}</p>`;
+        }
+        if (currentDetailGame.recommendedBy) { 
+            detailDescHTML += `<p><strong>Recommended By:</strong> ${currentDetailGame.recommendedBy}</p>`;
         }
 
         document.getElementById('detail-desc').innerHTML = detailDescHTML;
@@ -1168,13 +1100,9 @@
         if (!dashboardStarted) return;
         showUI();
 
-        // Check if a modal is open, if so, only allow Escape key
         const inputModal = document.getElementById('input-modal');
         const alertModal = document.getElementById('alert-modal');
         if (inputModal.style.display === 'flex' || alertModal.style.display === 'flex') {
-            if (e.key === 'Escape') {
-                // Let modal's internal keydown handle it
-            }
             return;
         }
 
@@ -1183,29 +1111,12 @@
                 collapseSearch();
                 searchInput.blur();
             }
-            if (e.key === 'Enter') {
-                // For now, just let user click or handle search results via mouse.
-            }
             return;
         }
 
-        // Determine active section for carousel navigation
-        const isGamesSectionActive = carouselSection.style.display !== 'none' && carouselSection.style.display !== '';
-        const isWishlistSectionActive = wishlistSection.style.display !== 'none' && wishlistSection.style.display !== '';
-
-        if (isGamesSectionActive) {
-            switch(e.key) {
-                case 'ArrowRight': moveRight(); break;
-                case 'ArrowLeft': moveLeft(); break;
-            }
-        } else if (isWishlistSectionActive) {
-            switch(e.key) {
-                case 'ArrowRight': moveWishlistRight(); break;
-                case 'ArrowLeft': moveWishlistLeft(); break;
-            }
-        }
-        
         switch(e.key) {
+            case 'ArrowRight': moveRight(); break;
+            case 'ArrowLeft': moveLeft(); break;
             case 'Escape': 
                 settingsMenu.classList.remove('open'); 
                 const o = document.getElementById('detail-overlay');
