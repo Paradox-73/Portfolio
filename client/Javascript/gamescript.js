@@ -72,22 +72,21 @@
     }
 
     function generateStarRatingHTML(rating) {
-        if (typeof rating === 'undefined' || rating === null || isNaN(rating)) {
+        if (rating === undefined || rating === null || rating === '' || isNaN(parseFloat(rating))) {
             return '<span style="font-size: 0.9em; opacity: 0.7;">No Rating</span>';
         }
-        const maxRating = 5; // Assuming a max rating of 5
+        const normalizedRating = parseFloat(rating);
+        const maxRating = 5;
         let starsHtml = '';
-        const fullStars = Math.floor(rating);
-        const hasHalfStar = (rating % 1 !== 0);
-
-        for (let i = 0; i < fullStars; i++) {
-            starsHtml += '<i class="fa fa-star" style="color: gold;"></i>';
-        }
-        if (hasHalfStar) {
-            starsHtml += '<i class="fa fa-star-half-o" style="color: gold;"></i>';
-        }
-        for (let i = 0; i < (maxRating - fullStars - (hasHalfStar ? 1 : 0)); i++) {
-            starsHtml += '<i class="fa fa-star-o" style="color: gold;"></i>';
+        
+        for (let i = 1; i <= maxRating; i++) {
+            if (normalizedRating >= i) {
+                starsHtml += '<i class="fas fa-star" style="color: gold;"></i>';
+            } else if (normalizedRating >= i - 0.5) {
+                starsHtml += '<i class="fas fa-star-half-alt" style="color: gold;"></i>';
+            } else {
+                starsHtml += '<i class="far fa-star" style="color: gold;"></i>';
+            }
         }
         return starsHtml;
     }

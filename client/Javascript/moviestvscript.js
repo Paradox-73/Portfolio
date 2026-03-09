@@ -308,7 +308,12 @@
                     country: m.country,
                     genre_str: m.genre,
                     release_date: m.year,
-                    user_rating: m.user_rating, // Add user_rating for movies
+                    user_rating: parseFloat(m.user_rating) || 0, 
+                    runtime: parseInt(m.runtime) || 0,
+                    imdb_rating: parseFloat(m.imdb_rating) || 0,
+                    metascore: parseInt(m.metascore) || 0,
+                    rotten_tomatoes_rating: parseInt(m.rotten_tomatoes_rating) || 0,
+                    watched_date: m.watched_date ? new Date(m.watched_date) : null,
                     overview: m.overview || m.description || m.plot || "No description available."
                 })).filter(m => m.title);
 
@@ -322,8 +327,11 @@
                     lang: s.language,
                     country: s.country,
                     genre_str: s.genre,
-                    release_date: s.year, // Or first_air_date
-                    my_rating: s.my_rating, // Add my_rating for shows
+                    release_date: s.year, 
+                    my_rating: parseFloat(s.my_rating) || 0, 
+                    runtime: parseInt(s.runtime) || 0,
+                    imdb_rating: parseFloat(s.imdb_rating) || 0,
+                    watched_date: s.watched_date ? new Date(s.watched_date) : null,
                     overview: s.overview || s.description || s.plot || "No description available."
                 })).filter(s => s.title);
                 
@@ -699,7 +707,17 @@
             if (!document.getElementById('sortFilter')) {
                 const sortSelect = document.createElement('select');
                 sortSelect.id = 'sortFilter'; sortSelect.className = 'genre-select';
-                sortSelect.innerHTML = `<option value="default">Sort By</option><option value="az">Title (A-Z)</option><option value="za">Title (Z-A)</option><option value="year_desc">Year (Newest)</option><option value="year_asc">Year (Oldest)</option>`;
+                sortSelect.innerHTML = `
+                    <option value="default">Sort By</option>
+                    <option value="az">Name (A-Z)</option>
+                    <option value="za">Name (Z-A)</option>
+                    <option value="year_desc">Release Date (Newest)</option>
+                    <option value="year_asc">Release Date (Oldest)</option>
+                    <option value="watched_desc">Recently Watched</option>
+                    <option value="rating_desc">My Rating (Highest)</option>
+                    <option value="runtime_desc">Film Length (Longest)</option>
+                    <option value="critic_desc">Critic Rating (Highest)</option>
+                `;
                 sortSelect.onchange = applyGridFilter;
                 headerDiv.prepend(sortSelect);
             }
@@ -721,13 +739,17 @@
         window.applyGridFilter = () => {
             const sGenre = document.getElementById('genreFilter').value;
             const sSort = document.getElementById('sortFilter').value;
-            let res = currentGridItems;
+            let res = [...currentGridItems];
             if (sGenre !== 'all') res = res.filter(i => i.genre_str && i.genre_str.includes(sGenre));
             
             if(sSort === 'az') res.sort((a,b)=>(a.title||a.name).localeCompare(b.title||b.name));
             else if(sSort === 'za') res.sort((a,b)=>(b.title||b.name).localeCompare(a.title||a.name));
             else if(sSort === 'year_desc') res.sort((a,b)=> parseInt((b.release_date||'').substring(0,4)||0) - parseInt((a.release_date||'').substring(0,4)||0));
             else if(sSort === 'year_asc') res.sort((a,b)=> parseInt((a.release_date||'').substring(0,4)||0) - parseInt((b.release_date||'').substring(0,4)||0));
+            else if(sSort === 'watched_desc') res.sort((a,b) => new Date(b.watched_date || 0) - new Date(a.watched_date || 0));
+            else if(sSort === 'rating_desc') res.sort((a,b) => (b.user_rating || b.my_rating || 0) - (a.user_rating || a.my_rating || 0));
+            else if(sSort === 'runtime_desc') res.sort((a,b) => (parseInt(b.runtime) || 0) - (parseInt(a.runtime) || 0));
+            else if(sSort === 'critic_desc') res.sort((a,b) => (parseFloat(b.imdb_rating) || 0) - (parseFloat(a.imdb_rating) || 0));
             
             renderGrid(res);
         };
