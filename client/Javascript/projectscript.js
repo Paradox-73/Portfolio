@@ -168,6 +168,39 @@
                     "Video Demo.mp4": { type: "app", appId: "wmp", path: "InjiVerify_Demo.mp4", icon: "fas fa-film", color: "#9B59B6" }
                 }
             },
+            "Portfolio": {
+                type: "folder",
+                icon: "assets/projects/folder.png",
+                content: {
+                    "Blog Post.html": {
+                        type: "notepad_render",
+                        html: `
+                            <div style="padding:15px; font-family:'Tahoma', sans-serif; font-size:14px; line-height:1.4;">
+                                <h2>Interactive Portfolio: A Digital Room Experience</h2>
+                                <p>This project is a creative showcase of my work and interests, designed as a pixel-art themed digital room. It's built to be an engaging hub where each object invites exploration into different facets of my expertise.</p>
+                                <h3>Core Features:</h3>
+                                <ul>
+                                    <li><strong>Digital Room Hub:</strong> A pixelated navigation interface connecting all portfolio sections.</li>
+                                    <li><strong>Dynamic Content:</strong> Real-time data integration for movies, music, and games using external APIs (TMDB, Spotify, RAWG).</li>
+                                    <li><strong>Automated ETL Pipeline:</strong> Daily synchronization with Letterboxd to keep my movie diary up-to-date.</li>
+                                    <li><strong>Immersive Sections:</strong> From 3D art galleries (Three.js) to interactive scrapbooks (Turn.js).</li>
+                                </ul>
+                                <h3>Tech Stack:</h3>
+                                <ul>
+                                    <li><strong>Frontend:</strong> HTML5, CSS3, JS, Swiper.js, Turn.js, Three.js.</li>
+                                    <li><strong>Backend:</strong> Node.js, Express.js, MongoDB Atlas.</li>
+                                </ul>
+                            </div>
+                        `
+                    },
+                    "Github Link.url": {
+                        type: "url_redirect",
+                        url: "https://github.com/Paradox-73/Portfolio/tree/full-stack",
+                        icon: "assets/projects/exe-icon.png"
+                    },
+                    "Video Demo.mp4": { type: "app", appId: "wmp", path: "Portfolio_Demo.mp4", icon: "fas fa-film", color: "#9B59B6" }
+                }
+            },
             "Predictive Auto-Scaling": {
                 type: "folder",
                 icon: "assets/projects/folder.png",
@@ -253,41 +286,68 @@
 
     function showWelcomeWindow() {
         const isMobile = window.innerWidth <= 768;
-        const welcomeContent = `
-            <div style="padding: 20px; font-family: 'Tahoma', sans-serif; height: 100%; display: flex; flex-direction: column;">
-                <div style="flex: 1;">
-                    <h1 style="margin-top: 0; font-size: ${isMobile ? '24px' : '32px'}">Hi, I'm Kanav.</h1>
-                    <p style="font-size: 16px; line-height: 1.5;">
-                        I'm a CSE student building scalable systems and intelligent models.
-                        ${isMobile ? '<br><br><i>(Tap "Projects" to see my work!)</i>' : ''}
-                    </p>
+        const width = isMobile ? window.innerWidth : 550;
+        const height = isMobile ? window.innerHeight - 30 : 400;
+
+        const win = createWindow("C:\\WINDOWS\\system32\\welcome.exe", width, height, "fas fa-user-circle");
+        win.innerHTML = `
+            <div class="terminal-welcome" id="welcome-terminal">
+                <div class="terminal-line" id="line-1"></div>
+                <div class="terminal-line" id="line-2"></div>
+                <div class="terminal-line" id="line-3"></div>
+                <div class="terminal-actions" id="terminal-btns" style="display:none">
+                    <button class="terminal-btn" onclick="openPath('Desktop')">> View Projects</button>
+                    <button class="terminal-btn" onclick="openExternalURLSafely('assets/Resume.pdf')">> Download Resume</button>
+                    <button class="terminal-btn" onclick="openExternalURLSafely('https://github.com/Paradox-73')">> GitHub Profile</button>
+                    <button class="terminal-btn" onclick="openExternalURLSafely('https://www.linkedin.com/in/kanav-bhardwaj-a25940281/')">> LinkedIn Profile</button>
+                    <button class="terminal-btn" onclick="window.location.href='index.html'">> Back to Room</button>
                 </div>
-                
-                <div style="display: flex; flex-direction: column; gap: 15px; margin-top: auto; margin-bottom: 20px;">
-                    <button class="calc-btn" style="padding: 15px; font-weight: bold; background: #27AE60; color: white;" onclick="openPath('Desktop')">
-                        📂 View Projects
-                    </button>
-                    <button class="calc-btn" style="padding: 15px; font-weight: bold;" onclick="openExternalURLSafely('assets/Resume.pdf')">
-                        📄 Download Resume
-                    </button>
-                    <button class="calc-btn" style="padding: 15px; font-weight: bold;" onclick="window.location.href='index.html'">
-                        🏠 Go to Homepage
-                    </button>
-                </div>
+                <div id="terminal-cursor-line"><span class="terminal-cursor"></span></div>
             </div>
         `;
-
-        const width = isMobile ? window.innerWidth : 500;
-        const height = isMobile ? window.innerHeight - 30 : 450;
-
-        const win = createWindow("Welcome - Kanav's Portfolio", width, height, "fas fa-user-circle");
-        win.innerHTML = welcomeContent;
 
         if (!isMobile) {
             const winEl = win.parentElement.parentElement;
             winEl.style.top = "15%";
             winEl.style.left = "calc(50% - " + (width / 2) + "px)";
         }
+
+        const lines = [
+            { id: "line-1", text: "Microsoft Windows XP [Version 5.1.2600]", delay: 0 },
+            { id: "line-2", text: "(C) Copyright 1985-2001 Microsoft Corp.", delay: 500 },
+            { id: "line-3", text: "Establishing connection to Kanav's Portfolio... [OK]", delay: 1000 },
+            { id: "line-4", text: "Hi, I'm Kanav. I'm a CSE student building scalable systems and intelligent models.", delay: 1500 }
+        ];
+
+        async function typeWriter(text, elementId, speed = 30) {
+            const el = document.getElementById(elementId);
+            if (!el) return;
+            for (let i = 0; i < text.length; i++) {
+                el.innerHTML += text.charAt(i);
+                await new Promise(r => setTimeout(r, speed));
+            }
+        }
+
+        async function runSequence() {
+            await new Promise(r => setTimeout(r, 500));
+            await typeWriter(lines[0].text, "line-1");
+            await typeWriter(lines[1].text, "line-2");
+            await typeWriter(lines[2].text, "line-3");
+            
+            const line4 = document.createElement('div');
+            line4.className = 'terminal-line';
+            line4.id = 'line-4';
+            line4.style.color = '#fff';
+            line4.style.marginTop = '15px';
+            document.getElementById('line-3').after(line4);
+            
+            await typeWriter(lines[3].text, "line-4");
+            
+            document.getElementById('terminal-btns').style.display = 'flex';
+            document.getElementById('terminal-cursor-line').style.marginTop = '10px';
+        }
+
+        runSequence();
     }
 
     window.onload = function() {
@@ -435,7 +495,11 @@
             if (isMobile) {
                 el.onclick = onClick;
             } else {
-                el.onclick = () => {
+                el.onclick = (e) => {
+                    if (e.ctrlKey && (item.type === 'external_link' || item.type === 'url_redirect' || (item.type === 'app' && item.appId === 'pdfViewer'))) {
+                        window.open(item.url || item.path, '_blank');
+                        return;
+                    }
                     document.querySelectorAll('.desktop-icon').forEach(i => i.style.background = 'transparent');
                     el.style.background = 'rgba(255,255,255,0.2)';
                 };
@@ -803,8 +867,11 @@
                 dblClick = `openExplorer('${path}/${key}')`;
             }
 
-            itemsHtml += item.type === 'url_redirect' ? `
-                <a href="${item.url}" target="_blank" class="file-item" style="text-decoration: none; color: inherit;" onclick="this.style.background='#CCE8FF'; this.style.border='1px solid #99D1FF'">
+            const isLink = item.type === 'url_redirect' || item.type === 'external_link' || (item.type === 'app' && item.appId === 'pdfViewer');
+            const linkUrl = isLink ? (item.url || item.path) : '#';
+
+            itemsHtml += isLink ? `
+                <a href="${linkUrl}" target="_blank" class="file-item" style="text-decoration: none; color: inherit;" onclick="this.style.background='#CCE8FF'; this.style.border='1px solid #99D1FF'">
                     ${iconRender}
                     <div style="font-size:11px; word-break: break-all;">${key}</div>
                 </a>
@@ -1350,9 +1417,8 @@
 
     // 8. MINESWEEPER
     function launchMinesweeper() {
-        const container = createWindow("Minesweeper", 250, 300, "fas fa-bomb");
+        const container = createWindow("Minesweeper", 280, 360, "fas fa-bomb");
         const winId = container.parentElement.parentElement.id.split('-')[1];
-        let gameOver = false;
         
         container.innerHTML = `
             <div class="menubar">
@@ -1371,63 +1437,234 @@
                     </div>
                 </div>
             </div>
-            <div style="background:#C0C0C0; padding:10px; flex:1; display:flex; flex-direction:column; align-items:center; overflow: auto;">
-                <div class="mine-header" style="width: 100%;">
-                    <div class="mine-counter">010</div>
-                    <div class="mine-face" onclick="resetMinesweeper('${winId}')"><i class="fas fa-smile" style="color:#FFFF00; text-shadow:1px 1px 0 #000; -webkit-text-stroke: 1px black;"></i></div>
-                    <div class="mine-counter">000</div>
+            <div style="background:#C0C0C0; padding:10px; flex:1; display:flex; flex-direction:column; align-items:center; user-select:none;">
+                <div class="mine-header" style="width: 100%; padding: 5px; border: 2px inset white;">
+                    <div class="mine-counter" id="mine-count-${winId}">010</div>
+                    <div class="mine-face" id="mine-face-${winId}" onclick="resetMinesweeper('${winId}')" style="cursor:pointer">
+                        <i class="fas fa-smile" style="color:#FFFF00; text-shadow:1px 1px 0 #000;"></i>
+                    </div>
+                    <div class="mine-counter" id="mine-timer-${winId}">000</div>
                 </div>
-                <div id="mine-grid-${winId}" style="display:grid; grid-template-columns:repeat(8, 20px); gap:1px; border:3px inset white; background:#7b7b7b;">
+                <div id="mine-grid-${winId}" style="display:grid; grid-template-columns:repeat(9, 20px); grid-template-rows:repeat(9, 20px); gap:0; border:3px inset white; background:#7b7b7b; margin-top:10px;">
                     <!-- Grid Generated via JS -->
                 </div>
             </div>
         `;
-        
+
+        const rows = 9;
+        const cols = 9;
+        const minesCount = 10;
+        let grid = [];
+        let revealedCount = 0;
+        let gameOver = false;
+        let timer = 0;
+        let timerInterval = null;
+        let minesLeft = minesCount;
+        let minesPlaced = false;
+
         window.resetMinesweeper = (wid) => {
+            if (timerInterval) clearInterval(timerInterval);
+            timer = 0;
+            revealedCount = 0;
             gameOver = false;
-            const cnt = document.getElementById(`win-content-${wid}`);
-            cnt.querySelector('.mine-face i').className = "fas fa-smile";
-            const grid = cnt.querySelector(`#mine-grid-${wid}`);
-            grid.innerHTML = "";
+            minesPlaced = false;
+            minesLeft = minesCount;
             
-            // Create 64 cells
-            for(let i=0; i<64; i++) {
-                const cell = document.createElement('div');
-                cell.className = 'cell';
-                cell.style.cssText = "width:20px; height:20px; background:#C0C0C0; border:2px outset white; cursor:pointer; font-size:12px; text-align:center; line-height:16px; font-weight:bold;";
-                
-                // Mine Logic
-                const isMine = Math.random() > 0.85; 
-                cell.dataset.mine = isMine;
-                
-                cell.onclick = function() {
-                    if(gameOver) return;
-                    this.style.border = '1px solid #7b7b7b';
-                    if(this.dataset.mine === 'true') {
-                        this.innerHTML = '<i class="fas fa-bomb"></i>';
-                        this.style.background = "red";
-                        gameOver = true;
-                        cnt.querySelector('.mine-face i').className = "fas fa-dizzy";
-                        // Reveal all mines
-                        cnt.querySelectorAll('.cell').forEach(c => {
-                            if(c.dataset.mine === 'true') {
-                                c.style.border = '1px solid #7b7b7b';
-                                c.innerHTML = '<i class="fas fa-bomb"></i>';
-                            }
-                        });
-                    } else {
-                        const num = Math.floor(Math.random() * 3);
-                        if(num > 0) {
-                            this.innerText = num;
-                            this.style.color = ['blue', 'green', 'red'][num-1];
-                        }
-                    }
-                };
-                grid.appendChild(cell);
-            }
+            const face = document.getElementById(`mine-face-${wid}`);
+            face.innerHTML = '<i class="fas fa-smile" style="color:#FFFF00; text-shadow:1px 1px 0 #000;"></i>';
+            document.getElementById(`mine-count-${wid}`).innerText = String(minesLeft).padStart(3, '0');
+            document.getElementById(`mine-timer-${wid}`).innerText = "000";
+
+            initGrid(wid);
         };
 
-        window.resetMinesweeper(winId);
+        function initGrid(wid) {
+            const gridEl = document.getElementById(`mine-grid-${wid}`);
+            gridEl.innerHTML = "";
+            grid = [];
+
+            // Create empty grid
+            for (let r = 0; r < rows; r++) {
+                grid[r] = [];
+                for (let c = 0; c < cols; c++) {
+                    grid[r][c] = {
+                        isMine: false,
+                        revealed: false,
+                        flagged: false,
+                        neighborMines: 0,
+                        r, c
+                    };
+                }
+            }
+
+            // Render elements (but don't place mines yet)
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    const cellEl = document.createElement('div');
+                    cellEl.className = 'mine-cell';
+                    cellEl.id = `cell-${wid}-${r}-${c}`;
+                    
+                    cellEl.onmousedown = (e) => {
+                        if (gameOver) return;
+                        if (e.button === 0) { // Left click
+                            if (!grid[r][c].flagged) handleReveal(wid, r, c);
+                        } else if (e.button === 2) { // Right click
+                            handleFlag(wid, r, c);
+                        }
+                    };
+                    cellEl.oncontextmenu = (e) => e.preventDefault();
+
+                    gridEl.appendChild(cellEl);
+                }
+            }
+        }
+
+        function placeMines(wid, safeR, safeC) {
+            let placedMines = 0;
+            while (placedMines < minesCount) {
+                let r = Math.floor(Math.random() * rows);
+                let c = Math.floor(Math.random() * cols);
+                
+                // Ensure mine is not on safe cell OR its neighbors
+                const isSafeZone = Math.abs(r - safeR) <= 1 && Math.abs(c - safeC) <= 1;
+                
+                if (!grid[r][c].isMine && !isSafeZone) {
+                    grid[r][c].isMine = true;
+                    placedMines++;
+                }
+            }
+
+            // Calculate neighbor counts
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    if (!grid[r][c].isMine) {
+                        grid[r][c].neighborMines = countMines(r, c);
+                    }
+                }
+            }
+            minesPlaced = true;
+        }
+
+        function countMines(r, c) {
+            let count = 0;
+            for (let i = -1; i <= 1; i++) {
+                for (let j = -1; j <= 1; j++) {
+                    let nr = r + i;
+                    let nc = c + j;
+                    if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && grid[nr][nc].isMine) {
+                        count++;
+                    }
+                }
+            }
+            return count;
+        }
+
+        function startTimer(wid) {
+            if (timerInterval) return;
+            timerInterval = setInterval(() => {
+                timer++;
+                if (timer > 999) timer = 999;
+                const timerEl = document.getElementById(`mine-timer-${wid}`);
+                if (timerEl) timerEl.innerText = String(timer).padStart(3, '0');
+            }, 1000);
+        }
+
+        function handleReveal(wid, r, c) {
+            if (gameOver || grid[r][c].revealed || grid[r][c].flagged) return;
+
+            if (!minesPlaced) {
+                placeMines(wid, r, c);
+            }
+
+            startTimer(wid);
+
+            if (grid[r][c].isMine) {
+                revealAllMines(wid, r, c);
+                endGame(wid, false);
+                return;
+            }
+
+            revealCell(wid, r, c);
+
+            if (revealedCount === (rows * cols - minesCount)) {
+                endGame(wid, true);
+            }
+        }
+
+        function revealCell(wid, r, c) {
+            const cell = grid[r][c];
+            if (cell.revealed) return;
+
+            cell.revealed = true;
+            revealedCount++;
+            
+            const cellEl = document.getElementById(`cell-${wid}-${r}-${c}`);
+            cellEl.classList.add('revealed');
+            
+            if (cell.neighborMines > 0) {
+                cellEl.innerText = cell.neighborMines;
+                cellEl.classList.add(`num-${cell.neighborMines}`);
+            } else {
+                // Flood fill for empty cells
+                for (let i = -1; i <= 1; i++) {
+                    for (let j = -1; j <= 1; j++) {
+                        let nr = r + i;
+                        let nc = c + j;
+                        if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
+                            revealCell(wid, nr, nc);
+                        }
+                    }
+                }
+            }
+        }
+
+        function handleFlag(wid, r, c) {
+            const cell = grid[r][c];
+            if (cell.revealed) return;
+
+            startTimer(wid);
+            cell.flagged = !cell.flagged;
+            const cellEl = document.getElementById(`cell-${wid}-${r}-${c}`);
+            
+            if (cell.flagged) {
+                cellEl.innerHTML = '<i class="fas fa-flag" style="color:red; font-size:10px;"></i>';
+                minesLeft--;
+            } else {
+                cellEl.innerHTML = '';
+                minesLeft++;
+            }
+            document.getElementById(`mine-count-${wid}`).innerText = String(Math.max(0, minesLeft)).padStart(3, '0');
+        }
+
+        function revealAllMines(wid, hitR, hitC) {
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    const cellEl = document.getElementById(`cell-${wid}-${r}-${c}`);
+                    if (grid[r][c].isMine) {
+                        cellEl.innerHTML = '<i class="fas fa-bomb" style="color:black; font-size:12px;"></i>';
+                        if (r === hitR && c === hitC) cellEl.style.background = 'red';
+                        else cellEl.classList.add('revealed');
+                    } else if (grid[r][c].flagged) {
+                        // X over wrongly flagged mines
+                        cellEl.innerHTML = '<i class="fas fa-bomb" style="color:black; font-size:12px;"></i><span style="position:absolute; color:red; font-weight:bold;">X</span>';
+                    }
+                }
+            }
+        }
+
+        function endGame(wid, won) {
+            gameOver = true;
+            clearInterval(timerInterval);
+            const face = document.getElementById(`mine-face-${wid}`);
+            if (won) {
+                face.innerHTML = '<i class="fas fa-glass-cool" style="color:#FFFF00; text-shadow:1px 1px 0 #000;"></i>';
+                alert('Congratulations! You won!');
+            } else {
+                face.innerHTML = '<i class="fas fa-dizzy" style="color:#FFFF00; text-shadow:1px 1px 0 #000;"></i>';
+            }
+        }
+
+        resetMinesweeper(winId);
     }
 
     // 9. CONTACT FORM
@@ -1500,4 +1737,147 @@
                 sendBtn.disabled = false;
             }
         };
+    }
+
+    /** --- DATE AND TIME PROPERTIES --- */
+    function launchDateTimeProperties() {
+        const container = createWindow("Date and Time Properties", 450, 350, "fas fa-clock");
+        const winId = container.parentElement.parentElement.id.split('-')[1];
+        
+        let currentDate = new Date();
+        let selectedDate = new Date();
+
+        function renderCalendar() {
+            const month = currentDate.getMonth();
+            const year = currentDate.getFullYear();
+            
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            
+            let yearsHtml = "";
+            for(let y = 1980; y <= 2030; y++) {
+                yearsHtml += `<option value="${y}" ${y === year ? 'selected' : ''}>${y}</option>`;
+            }
+
+            container.innerHTML = `
+                <div class="datetime-container">
+                    <div class="calendar-section">
+                        <div class="calendar-controls">
+                            <select id="cal-month-${winId}">
+                                ${monthNames.map((name, i) => `<option value="${i}" ${i === month ? 'selected' : ''}>${name}</option>`).join('')}
+                            </select>
+                            <select id="cal-year-${winId}">
+                                ${yearsHtml}
+                            </select>
+                        </div>
+                        <div class="calendar-grid" id="cal-grid-${winId}">
+                            <div class="calendar-day-head">S</div>
+                            <div class="calendar-day-head">M</div>
+                            <div class="calendar-day-head">T</div>
+                            <div class="calendar-day-head">W</div>
+                            <div class="calendar-day-head">T</div>
+                            <div class="calendar-day-head">F</div>
+                            <div class="calendar-day-head">S</div>
+                        </div>
+                    </div>
+                    <div class="time-section">
+                        <div class="analog-clock-container">
+                            <div class="clock-hand hour-hand" id="hour-hand-${winId}"></div>
+                            <div class="clock-hand minute-hand" id="min-hand-${winId}"></div>
+                            <div class="clock-hand second-hand" id="sec-hand-${winId}"></div>
+                            <div class="clock-center"></div>
+                        </div>
+                        <div class="digital-time-display" id="digital-time-${winId}"></div>
+                    </div>
+                </div>
+                <div class="datetime-footer">
+                    <button class="datetime-btn" onclick="closeWindow('${winId}')">OK</button>
+                    <button class="datetime-btn" onclick="closeWindow('${winId}')">Cancel</button>
+                </div>
+            `;
+
+            // Month/Year change listeners
+            container.querySelector(`#cal-month-${winId}`).onchange = (e) => {
+                currentDate.setMonth(parseInt(e.target.value));
+                updateCalendarGrid();
+            };
+            container.querySelector(`#cal-year-${winId}`).onchange = (e) => {
+                currentDate.setFullYear(parseInt(e.target.value));
+                updateCalendarGrid();
+            };
+
+            updateCalendarGrid();
+            startClockUpdate();
+        }
+
+        function updateCalendarGrid() {
+            const grid = document.getElementById(`cal-grid-${winId}`);
+            // Remove old days
+            grid.querySelectorAll('.calendar-day').forEach(el => el.remove());
+
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const prevMonthDays = new Date(year, month, 0).getDate();
+
+            // Prev month days
+            for(let i = firstDay - 1; i >= 0; i--) {
+                const day = document.createElement('div');
+                day.className = 'calendar-day other-month';
+                day.innerText = prevMonthDays - i;
+                grid.appendChild(day);
+            }
+
+            // Current month days
+            for(let i = 1; i <= daysInMonth; i++) {
+                const day = document.createElement('div');
+                day.className = 'calendar-day';
+                if(i === selectedDate.getDate() && month === selectedDate.getMonth() && year === selectedDate.getFullYear()) {
+                    day.classList.add('selected');
+                }
+                const today = new Date();
+                if(i === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+                    day.classList.add('today');
+                }
+                day.innerText = i;
+                day.onclick = () => {
+                    grid.querySelectorAll('.calendar-day').forEach(d => d.classList.remove('selected'));
+                    day.classList.add('selected');
+                    selectedDate = new Date(year, month, i);
+                };
+                grid.appendChild(day);
+            }
+        }
+
+        let clockInterval;
+        function startClockUpdate() {
+            function update() {
+                const now = new Date();
+                const h = now.getHours();
+                const m = now.getMinutes();
+                const s = now.getSeconds();
+
+                const hDeg = (h % 12) * 30 + m * 0.5;
+                const mDeg = m * 6;
+                const sDeg = s * 6;
+
+                const hHand = document.getElementById(`hour-hand-${winId}`);
+                const mHand = document.getElementById(`min-hand-${winId}`);
+                const sHand = document.getElementById(`sec-hand-${winId}`);
+                const digital = document.getElementById(`digital-time-${winId}`);
+
+                if(!hHand) { clearInterval(clockInterval); return; }
+
+                hHand.style.transform = `rotate(${hDeg}deg)`;
+                mHand.style.transform = `rotate(${mDeg}deg)`;
+                sHand.style.transform = `rotate(${sDeg}deg)`;
+                
+                digital.innerText = now.toLocaleTimeString();
+            }
+            update();
+            clockInterval = setInterval(update, 1000);
+        }
+
+        renderCalendar();
     }

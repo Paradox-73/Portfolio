@@ -26,10 +26,10 @@
                     <i class="fas fa-folder-open" style="color: #F1C40F;"></i>
                     <div class="bold-item">My Documents</div>
                 </div>
-                <div class="start-item" onclick="window.open('assets/Resume.pdf', '_blank')">
+                <a class="start-item" href="assets/Resume.pdf" target="_blank" style="text-decoration: none; color: inherit;">
                     <i class="fas fa-file-pdf" style="color: #D32F2F;"></i>
                     <div class="bold-item">My Resume</div>
-                </div>
+                </a>
                 <div class="start-item" onclick="showWelcomeWindow()">
                     <i class="fas fa-user-circle" style="color: #00796B;"></i>
                     <div class="bold-item">About Me</div>
@@ -100,7 +100,7 @@
         <div id="system-tray">
             <i class="fas fa-shield-alt" style="color: #E74C3C;"></i>
             <i class="fas fa-volume-up"></i>
-            <span id="clock">12:00 PM</span>
+            <span id="clock" onclick="launchDateTimeProperties()">12:00 PM</span>
         </div>
     </div>
 <script src="Javascript/projectscript.js"></script>

@@ -1,5 +1,5 @@
 sport
-project my resume.doc not opening, profile white, opening mssg, my comp directory, post and videos, menu icons, time calender, about me, start menu contact me, 
+project opening mssg, my comp directory, post and videos, menu icons, time calender, about me, start menu contact me, 
 music rework
 lit short story/poem rating sys, sort
 games rating sys not being able to add wishlist games
