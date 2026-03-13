@@ -510,6 +510,95 @@ async function run() {
             });
         });
         
+        // Spotify API Token Management
+        let spotifyAccessToken = null;
+        let spotifyTokenExpiry = 0;
+
+        async function getSpotifyToken() {
+            if (spotifyAccessToken && Date.now() < spotifyTokenExpiry) {
+                return spotifyAccessToken;
+            }
+
+            const clientId = process.env.SPOTIFY_CLIENT_ID;
+            const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
+
+            if (!clientId || !clientSecret) {
+                console.error("Spotify Client ID or Secret missing");
+                return null;
+            }
+
+            try {
+                const authString = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
+                const response = await axios.post('https://accounts.spotify.com/api/token', 
+                    'grant_type=client_credentials', 
+                    {
+                        headers: {
+                            'Authorization': `Basic ${authString}`,
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        }
+                    }
+                );
+
+                spotifyAccessToken = response.data.access_token;
+                spotifyTokenExpiry = Date.now() + (response.data.expires_in * 1000) - 60000; // 1 minute buffer
+                return spotifyAccessToken;
+            } catch (error) {
+                console.error("Failed to get Spotify token:", error.message);
+                return null;
+            }
+        }
+
+        // Proxy for Spotify Search
+        app.get('/api/spotify/search', async (req, res) => {
+            const { q, type = 'track', limit = 1 } = req.query;
+            if (!q) return res.status(400).json({ message: 'Query is required' });
+
+            const token = await getSpotifyToken();
+            if (!token) return res.status(500).json({ message: 'Spotify authentication failed' });
+
+            try {
+                const response = await axios.get(`https://api.spotify.com/v1/search?q=${encodeURIComponent(q)}&type=${type}&limit=${limit}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                res.json(response.data);
+            } catch (error) {
+                console.error("Spotify search failed:", error.message);
+                res.status(500).json({ message: 'Spotify search failed' });
+            }
+        });
+
+        // Proxy for Spotify Artist
+        app.get('/api/spotify/artist/:id', async (req, res) => {
+            const { id } = req.params;
+            const token = await getSpotifyToken();
+            if (!token) return res.status(500).json({ message: 'Spotify authentication failed' });
+
+            try {
+                const response = await axios.get(`https://api.spotify.com/v1/artists/${id}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                res.json(response.data);
+            } catch (error) {
+                res.status(500).json({ message: 'Spotify artist fetch failed' });
+            }
+        });
+
+        // Proxy for Spotify Album
+        app.get('/api/spotify/album/:id', async (req, res) => {
+            const { id } = req.params;
+            const token = await getSpotifyToken();
+            if (!token) return res.status(500).json({ message: 'Spotify authentication failed' });
+
+            try {
+                const response = await axios.get(`https://api.spotify.com/v1/albums/${id}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                res.json(response.data);
+            } catch (error) {
+                res.status(500).json({ message: 'Spotify album fetch failed' });
+            }
+        });
+
         // Admin Password Verification Endpoint
         app.post('/api/admin/verify-password', async (req, res) => {
             const { password } = req.body;

@@ -23,4 +23,7 @@ blog_posts/
 client/assets/projects/README/
 data/
 SRS.txt
-err.txt
+err1.txt
+image.png
+update_spotify_data.py
+venv/

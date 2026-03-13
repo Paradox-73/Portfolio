@@ -1,546 +1,129 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Music</title>
-  <link rel="icon" type="image/x-icon" href="assets/profile.jpg">
-  <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css'>
-<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css'><link rel="stylesheet" href="CSS/musicstyle.css">
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-</head>
-<body>
-    <main>
-      
-      <nav class="main-menu">
-        <div>
-          <div class="user-info">
-            <img
-              src="assets/profile.jpg"
-              alt="user" />
-            <p>Kanav Bhardwaj</p>
-          </div>
-          <ul>
-
-            <li class="nav-item">
-              <a href="index.html">
-                <i class="fa fa-home nav-icon"></i>
-                <span class="nav-text">Home</span>
-              </a>
-            </li>
-
-            <li class="nav-item active">
-              <a href="Music.html">
-                <i class="fa fa-compact-disc nav-icon"></i>
-                <span class="nav-text">Music</span>
-              </a>
-            </li>
-
-            <li class="nav-item">
-              <a href="MoviesTV.html">
-                <i class="fa fa-film nav-icon"></i>
-                <span class="nav-text">Movies&TV</span>
-              </a>
-            </li>
-
-            <li class="nav-item">
-              <a href="Games.html">
-                <i class="fa fa-gamepad nav-icon"></i>
-                <span class="nav-text">Games</span>
-              </a>
-            </li>
-
-            <li class="nav-item">
-              <a href="Travel.html">
-                <i class="fa fa-suitcase nav-icon"></i>
-                <span class="nav-text">Travel</span>
-              </a>
-            </li>
-
-            <li class="nav-item">
-              <a href="Food.html">
-                <i class="fa fa-cutlery nav-icon"></i>
-                <span class="nav-text">Food</span>
-              </a>
-            </li>
-
-            <li class="nav-item">
-              <a href="Literature.html">
-                <i class="fa fa-book nav-icon"></i>
-                <span class="nav-text">Literature</span>
-              </a>
-            </li>
-
-            <li class="nav-item">
-              <a href="art.html">
-                <i class="fa fa-paint-brush nav-icon"></i>
-                <span class="nav-text">Art</span>
-              </a>
-            </li>
-
-            <li class="nav-item">
-              <a href="sport.html">
-                <i class="fa fa-futbol nav-icon"></i>
-                <span class="nav-text">Sport</span>
-              </a>
-            </li>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Record Collection</title>
     
-            <li class="nav-item">
-              <a href="https://codepen.io/ecemgo/pen/MWxjXeq">
-                <i class="fa fa-copyright nav-icon"></i>
-                <span class="nav-text">Credit</span>
-              </a>
-            </li>
-          </ul>
-                  </div>
+    <!-- Dependencies -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://unpkg.com/papaparse@5.3.2/papaparse.min.js"></script>
+    
+    <!-- Icons & Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="CSS/musicstyle.css">
+</head>
+<body class="flex flex-col min-h-screen w-full antialiased overflow-x-hidden">
+    <div class="ambient-dust"></div>
 
+    <!-- Music Themed Navigation -->
+    <nav class="tracklist-nav">
+        <button id="nav-toggle" class="nav-toggle">
+            <i data-lucide="disc" class="w-4 h-4 animate-spin-slow"></i>
+            <span>TRACKLIST</span>
+        </button>
+        <div id="nav-menu" class="nav-menu">
+            <a href="index.html" class="nav-item"><span>01</span> HOME</a>
+            <a href="Music.html" class="nav-item active"><span>02</span> MUSIC</a>
+            <a href="MoviesTV.html" class="nav-item"><span>03</span> MOVIES & TV</a>
+            <a href="Games.html" class="nav-item"><span>04</span> GAMES</a>
+            <a href="Literature.html" class="nav-item"><span>05</span> LITERATURE</a>
+            <a href="Food.html" class="nav-item"><span>06</span> FOOD</a>
+            <a href="Travel.html" class="nav-item"><span>07</span> TRAVEL</a>
+            <a href="art.html" class="nav-item"><span>08</span> ART</a>
+            <a href="sport.html" class="nav-item"><span>09</span> SPORTS</a>
+            <a href="Projects.html" class="nav-item"><span>10</span> PROJECTS</a>
+        </div>
+    </nav>
+
+    <!-- MAIN ROOM -->
+    <div class="flex-1 flex flex-row w-full min-h-screen relative z-10 p-4 md:p-8 justify-between items-center pointer-events-none pb-24">
         
-      </nav>
+        <!-- LEFT: ARTIST POLAROIDS -->
+        <div class="hidden lg:flex w-32 xl:w-48 min-h-full polaroid-col items-center pl-4" id="artists-col">
+            <!-- Artist Polaroids Injected Here -->
+        </div>
 
-      <section class="content">
-        <div class="left-content">
-          <div class="slider-container">
-            <h1>Popular Playlist</h1>
-            <div class="swiper">
-              <div class="swiper-wrapper">
-                <div class="swiper-slide">
-                  <img
-                    src="assets/indie.gif" />
-                  <div class="slide-overlay">
-                    <h2>The Summer I Turned Indie</h2>
-                    <button>
-                      <a href="https://open.spotify.com/playlist/2BK2pEyh0wvc02SO8yxrXX?si=rpw9RbpSRZSRkeMCpbCzUA&pi=a-a480hixwQnms">Listen Now <i class="fa-solid fa-circle-play"></i></a>
-                    </button>
-                  </div>
+        <!-- CENTER: CRATE & TURNTABLE -->
+        <div class="flex-1 flex flex-col xl:flex-row justify-center items-center gap-16 pointer-events-auto min-h-full max-w-5xl mx-auto py-12">
+            
+            <!-- THE CRATE AREA -->
+            <div class="w-full xl:w-[400px] flex flex-col items-center">
+                <div class="text-center mb-10">
+                    <h1 class="text-3xl md:text-4xl font-bold mb-2 tracking-wide text-[#f4ebd8]">Heavy Rotation</h1>
+                    <p class="typewriter text-xs text-[#a89f91] opacity-80">Crate Digging. Pulled up to view.</p>
                 </div>
-                <div class="swiper-slide">
-                  <img
-                    src="assets/musicbganimeated.gif" />
-                  <div class="slide-overlay">
-                    <h2>Midnight Moods</h2>
-                    <button>
-                      Listen Now <i class="fa-solid fa-circle-play"></i>
-                    </button>
-                  </div>
-                </div>
-                <div class="swiper-slide">
-                  <img
-                    src="assets/bg9.gif" />
-                  <div class="slide-overlay">
-                    <h2>Midnight Moods</h2>
-                    <button>
-                      Listen Now <i class="fa-solid fa-circle-play"></i>
-                    </button>
-                  </div>
+
+                <!-- Scrollable Crate -->
+                <div class="crate-scene mb-4 mx-auto cursor-ns-resize" id="crate-scene">
+                    <div class="crate-container" id="crate">
+                        <div class="crate-back"></div>
+                        <!-- Records injected here via JS -->
+                        <div class="crate-front">
+                            <div class="crate-label">COLLECTION</div>
+                        </div>
+                    </div>
                 </div>
                 
-                <div class="swiper-slide">
-                  <img
-                    src="assets/car.gif" />
-                  <div class="slide-overlay">
-                    <h2>Driving</h2>
-                    <button>
-                      Listen Now <i class="fa-solid fa-circle-play"></i>
-                    </button>
-                  </div>
-                </div>
-                <div class="swiper-slide">
-                  <img
-                    src="assets/comp.gif" />
-                  <div class="slide-overlay">
-                    <h2>Coding</h2>
-                    <button>
-                      Listen Now <i class="fa-solid fa-circle-play"></i>
-                    </button>
-                  </div>
-                </div>
-                <div class="swiper-slide">
-                  <img
-                    src="assets/rain.gif" />
-                  <div class="slide-overlay">
-                    <h2>Rainy Days</h2>
-                    <button>
-                      Listen Now <i class="fa-solid fa-circle-play"></i>
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <div class="swiper-pagination"></div>
+                <p class="handwriting text-neutral-400 mt-12 flex items-center gap-2 text-xl">
+                    <i data-lucide="mouse-pointer-2" class="w-5 h-5"></i> Scroll down to pull albums up
+                </p>
             </div>
-          </div>
 
-          <div class="artists">
-            <h1>Featured Artists</h1>
-            <div class="artist-container containers">
-              <div class="artist">
-                <img
-                  src="assets/tyler.jpg"
-                  alt="" />
-                <p>Tyler, the Creator</p>
-              </div>
+            <!-- THE TURNTABLE PLAYER -->
+            <div class="relative w-[340px] md:w-[420px] aspect-square turntable-base flex items-center justify-center flex-shrink-0">
+                
+                <!-- Platter -->
+                <div class="w-[85%] h-[85%] platter rounded-full relative flex items-center justify-center shadow-2xl">
+                    
+                    <!-- THE PICTURE DISC VINYL -->
+                    <div id="active-vinyl" class="absolute inset-0 w-full h-full vinyl-texture flex items-center justify-center opacity-0 pointer-events-none origin-center">
+                        <div class="absolute inset-0 vinyl-reflection pointer-events-none"></div>
+                        
+                        <!-- Play Overlay -->
+                        <div class="play-overlay">
+                            <i data-lucide="play" class="w-12 h-12 text-white fill-current"></i>
+                        </div>
 
-              <div class="artist">
-                <img
-                  src="assets/kendrick.jpg"
-                  alt="" />
-                <p>Kendrick Lamar</p>
-              </div>
+                        <!-- Tiny center hole -->
+                        <div class="w-2.5 h-2.5 bg-[#111] rounded-full shadow-inner z-10"></div>
+                    </div>
 
-              <div class="artist">
-                <img
-                  src="assets/top.avif"
-                  alt="" />
-                <p>Twenty One Pilots</p>
-              </div>
+                    <!-- Spindle -->
+                    <div class="absolute w-3.5 h-3.5 bg-zinc-400 rounded-full shadow-lg flex items-center justify-center z-30">
+                        <div class="w-1.5 h-1.5 bg-zinc-800 rounded-full"></div>
+                    </div>
+                </div>
 
-              <div class="artist">
-                <img
-                  src="assets/nectar.png"
-                  alt="" />
-                <p>Joji</p>
-              </div>
-
-              <div class="artist">
-                <img
-                  src="assets/nirvana.jpg"
-                  alt="" />
-                <p>Nirvana</p>
-              </div>
-
-              <div class="artist">
-                <img
-                  src="assets/strokes.jpg"
-                  alt="" />
-                <p>The Strokes</p>
-              </div>
-
-              <div class="artist">
-                <img
-                  src="assets/halfalive.jpg"
-                  alt="" />
-                <p>Half Alive</p>
-              </div>
-
-              <div class="artist">
-                <img
-                  src="assets/blonde.jpg"
-                  alt="" />
-                <p>Frank Ocean</p>
-              </div>
+                <!-- Realistic Tonearm -->
+                <div id="tonearm" class="absolute right-[6%] top-[6%] w-16 h-[65%] origin-[32px_32px] rotate-[-25deg] z-40 drop-shadow-2xl pointer-events-none">
+                    <div class="absolute -top-8 left-[22px] w-5 h-10 bg-zinc-800 rounded shadow-md border border-zinc-600"></div>
+                    <div class="absolute top-0 left-0 w-16 h-16 rounded-full bg-zinc-300 border-[4px] border-zinc-400 flex items-center justify-center shadow-lg">
+                        <div class="w-8 h-8 rounded-full bg-zinc-800 shadow-inner border border-zinc-600"></div>
+                    </div>
+                    <div class="absolute top-12 left-[30px] w-1.5 h-[80%] bg-gradient-to-r from-zinc-200 via-white to-zinc-400 rounded-full shadow-sm border-x border-zinc-400"></div>
+                    <div class="absolute bottom-0 left-[18px] w-6 h-14 bg-zinc-800 rounded-sm rotate-[22deg] shadow-xl border border-zinc-700 origin-top flex justify-center">
+                        <div class="absolute bottom-1 w-1 h-2 bg-red-500 rounded-full shadow-[0_0_4px_rgba(239,68,68,0.8)]"></div>
+                    </div>
+                </div>
+                
             </div>
-          </div>
-
-          <div class="albums">
-            <h1>Recommended Albums</h1>
-            <div class="album-container containers">
-              <div class="album">
-                <div class="album-frame">
-                  <img
-                    src="assets/blonde.jpg"
-                    alt="" />
-                </div>
-                <div>
-                  <h2>Blond</h2>
-                  <p>Frank Ocean</p>
-                </div>
-              </div>
-
-              <div class="album">
-                <div class="album-frame">
-                  <img
-                    src="assets/igor.jpg"
-                    alt="" />
-                </div>
-                <div>
-                  <h2>IGOR</h2>
-                  <p>Tyler, the Creator</p>
-                </div>
-              </div>
-
-              <div class="album">
-                <div class="album-frame">
-                  <img
-                    src="assets/Clancy.jpg"
-                    alt="" />
-                </div>
-                <div>
-                  <h2>Self Titled</h2>
-                  <p>Twenty One Pilots</p>
-                </div>
-              </div>
-
-              <div class="album">
-                <div class="album-frame">
-                  <img
-                    src="assets/nectar.png"
-                    alt="" />
-                </div>
-                <div>
-                  <h2>Nectar</h2>
-                  <p>Joji</p>
-                </div>
-              </div>
-
-              <div class="album">
-                <div class="album-frame">
-                  <img
-                    src="assets/gkmc.jpeg"
-                    alt="" />
-                </div>
-                <div>
-                  <h2>good kid, m.A.A.d city</h2>
-                  <p>Kendrick Lamar</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="albums">
-            <h1>Episodes For You</h1>
-            <div class="album-container containers">
-              <div class="album">
-                <div class="album-frame">
-                  <img
-                    src="https://megaphone.imgix.net/podcasts/0bb9c412-bf1c-11eb-ada0-0fff7bbe4f47/image/054aad5fd09a249a9308b740fbc49cfe.jpg?ixlib=rails-4.3.1&max-w=3000&max-h=3000&fit=crop&auto=format%2Ccompress"
-                    alt="" />
-                </div>
-                <div>
-                  <h2>Distractable</h2>
-                  
-                </div>
-              </div>
-
-              <div class="album">
-                <div class="album-frame">
-                  <img
-                    src="https://i.scdn.co/image/ab6765630000ba8a16116dc84b5da8d9905a35ec"
-                    alt="" />
-                </div>
-                <div>
-                  <h2>Philosophize This!</h2>
-                  
-                </div>
-              </div>
-
-              <div class="album">
-                <div class="album-frame">
-                  <img
-                    src="https://i.scdn.co/image/ab6765630000ba8abeff12ab45ade409108aff32"
-                    alt="" />
-                </div>
-                <div>
-                  <h2>The World of Percy Jackson</h2>
-                  
-                </div>
-              </div>
-
-              <div class="album">
-                <div class="album-frame">
-                  <img
-                    src="https://i.scdn.co/image/ab67656300005f1f010e71710e23de2534a5347b"
-                    alt="" />
-                </div>
-                <div>
-                  <h2>The Joy Of Why</h2>
-                  
-                </div>
-              </div>
-
-              <div class="album">
-                <div class="album-frame">
-                  <img
-                    src="https://i.scdn.co/image/ab6765630000ba8af855bcce28d9efee05406b48"
-                    alt="" />
-                </div>
-                <div>
-                  <h2>Dissect</h2>
-                 
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
 
-        <div class="right-content">
-          <div class="recommended-songs">
-            <h1>Recommended Songs</h1>
-            <div class="song-container">
-              <div class="song">
-                <div class="song-img">
-                  <img
-                    src="https://assets.genius.com/86341c9161e1648e786dd5abc33d5287.640x640x1.jpg"
-                    alt="" />
-                  <div class="overlay">
-                    <i class="fa-solid fa-play"></i>
-                  </div>
-                </div>
-                <div class="song-title">
-                  <h2>Battle Cry</h2>
-                  <p>Nujabes</p>
-                </div>
-                <span>3:22</span>
-              </div>
-
-              <div class="song">
-                <div class="song-img">
-                  <img
-                    src="https://upload.wikimedia.org/wikipedia/en/6/61/Kendrick_Lamar_-_Not_Like_Us.png"
-                    alt="" />
-                  <div class="overlay">
-                    <i class="fa-solid fa-play"></i>
-                  </div>
-                </div>
-                <div class="song-title">
-                  <h2>Not Like Us</h2>
-                  <p>kendrick Lamar</p>
-                </div>
-                <span>4:34</span>
-              </div>
-
-              <div class="song">
-                <div class="song-img">
-                  <img
-                    src="https://i1.sndcdn.com/artworks-HGuVseU3x3LE-0-t500x500.jpg"
-                    alt="" />
-                  <div class="overlay">
-                    <i class="fa-solid fa-play"></i>
-                  </div>
-                </div>
-                <div class="song-title">
-                  <h2>Étouffée</h2>
-                  <p>Vince Staples</p>
-                </div>
-                <span>4:28</span>
-              </div>
-
-              <div class="song">
-                <div class="song-img">
-                  <img
-                    src="https://i1.wp.com/cornellsun.com/wp-content/uploads/2018/02/V-CA-_npJZ0bktrbw-U6aS8J1EafqdG2mn03CTHjwk1B_xPOKh6y_sePG8uj8icyzZkBfQOyflS6gOZIH2pdPvRorSVEGnwqLNc_IMimjm9TRvti4025BSP0M0v0z-wZWH86IIKM.jpeg?fit=628%2C629&ssl=1"
-                    alt="" />
-                  <div class="overlay">
-                    <i class="fa-solid fa-play"></i>
-                  </div>
-                </div>
-                <div class="song-title">
-                  <h2>Little Dark Age</h2>
-                  <p>MGMT</p>
-                </div>
-                <span>4:59</span>
-              </div>
-
-              <div class="song">
-                <div class="song-img">
-                  <img
-                    src="https://upload.wikimedia.org/wikipedia/en/9/90/TheMelodicBlueCover.jpeg"
-                    alt="" />
-                  <div class="overlay">
-                    <i class="fa-solid fa-play"></i>
-                  </div>
-                </div>
-                <div class="song-title">
-                  <h2>Family Ties</h2>
-                  <p>Baby Keem</p>
-                </div>
-                <span>4:12</span>
-              </div>
-
-              <div class="song">
-                <div class="song-img">
-                  <img
-                    src="assets/Clancy.jpg"
-                    alt="" />
-                  <div class="overlay">
-                    <i class="fa-solid fa-play"></i>
-                  </div>
-                </div>
-                <div class="song-title">
-                  <h2>Oh Ms Believer</h2>
-                  <p>Twenty One Pilots</p>
-                </div>
-                <span>3:37</span>
-              </div>
-
-              <div class="song">
-                <div class="song-img">
-                  <img
-                    src="assets/blonde.jpg"
-                    alt="" />
-                  <div class="overlay">
-                    <i class="fa-solid fa-play"></i>
-                  </div>
-                </div>
-                <div class="song-title">
-                  <h2>Nights</h2>
-                  <p>Frank Ocean</p>
-                </div>
-                <span>5:07</span>
-              </div>
-
-              <div class="song">
-                <div class="song-img">
-                  <img
-                    src="assets/nectar.png"
-                    alt="" />
-                  <div class="overlay">
-                    <i class="fa-solid fa-play"></i>
-                  </div>
-                </div>
-                <div class="song-title">
-                  <h2>Ew</h2>
-                  <p>Joji</p>
-                </div>
-                <span>3:27</span>
-              </div>
-
-              <div class="song">
-                <div class="song-img">
-                  <img
-                    src="assets/igor.jpg"
-                    alt="" />
-                  <div class="overlay">
-                    <i class="fa-solid fa-play"></i>
-                  </div>
-                </div>
-                <div class="song-title">
-                  <h2>GONE, GONE / THANK YOU</h2>
-                  <p>Tyler, the Creator</p>
-                </div>
-                <span>6:15</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="music-player">
-            <div class="album-cover">
-              <img src="assets/igor.jpg" id="rotatingImage" alt="" />
-              <span class="point"></span>
-            </div>
-
-            <h2>NEW MAGIC WAND</h2>
-            <p>Tyler, the Creator</p>
-
-            <audio id="song">
-              <source src="NEW MAGIC WAND.mp3" type="audio/mpeg" />
-            </audio>
-
-            <input type="range" value="0" id="progress" />
-
-            <div class="controls">
-              <button class="backward">
-                <i class="fa-solid fa-backward"></i>
-              </button>
-              <button class="play-pause-btn">
-                <i class="fa-solid fa-play" id="controlIcon"></i>
-              </button>
-              <button class="forward">
-                <i class="fa-solid fa-forward"></i>
-              </button>
-            </div>
-          </div>
+        <!-- RIGHT: LYRIC POLAROIDS -->
+        <div class="hidden lg:flex w-36 xl:w-56 min-h-full polaroid-col items-center pr-4" id="lyrics-col">
+            <!-- Lyric Polaroids Injected Here -->
         </div>
-      </section>
-    </main>
-  <script src='https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js'></script><script  src="JavaScript/musicscript.js"></script>
-  <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
-  
+
+    </div>
+
+    <!-- LOWER SECTION -->
+    <div class="h-16 wood-desk w-full mt-auto relative z-20"></div>
+
+    <script src="Javascript/musicscript.js"></script>
 </body>
 </html>
