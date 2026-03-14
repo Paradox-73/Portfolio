@@ -64,7 +64,8 @@
                         <div class="crate-back"></div>
                         <!-- Records injected here via JS -->
                         <div class="crate-front">
-                            <div class="crate-label">COLLECTION</div>
+                            <div id="collection-trigger" class="crate-label cursor-pointer hover:scale-110 transition-transform">COLLECTION</div>
+                            <div id="crate-active-title" class="absolute bottom-4 w-full text-center typewriter text-[10px] text-[#f4ebd8] opacity-60 px-2 truncate"></div>
                         </div>
                     </div>
                 </div>
@@ -123,6 +124,24 @@
 
     <!-- LOWER SECTION -->
     <div class="h-16 wood-desk w-full mt-auto relative z-20"></div>
+
+    <!-- COLLECTION OVERLAY -->
+    <div id="collection-overlay" class="fixed inset-0 z-[6000] hidden bg-black/95 flex flex-col p-0 overflow-y-auto pointer-events-auto">
+        <div class="w-full flex flex-col min-h-full">
+            <div class="flex justify-between items-center p-8 md:p-12 border-b border-white/10">
+                <div>
+                    <h2 class="text-3xl md:text-5xl font-bold tracking-tight text-[#f4ebd8] uppercase">The Archive</h2>
+                    <p class="typewriter text-[#a89f91] text-xs mt-2 opacity-60">Complete record collection / Click to play</p>
+                </div>
+                <button id="close-collection" class="p-4 hover:bg-white/10 rounded-full transition-colors text-[#f4ebd8]">
+                    <i data-lucide="x" class="w-8 h-8"></i>
+                </button>
+            </div>
+            <div id="album-grid" class="grid grid-cols-7 gap-0 border-l border-t border-white/5 content-start">
+                <!-- Tiles Injected via JS -->
+            </div>
+        </div>
+    </div>
 
     <script src="Javascript/musicscript.js"></script>
 </body>

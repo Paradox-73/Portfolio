@@ -18,6 +18,40 @@ const tonearm = document.getElementById('tonearm');
 const navToggle = document.getElementById('nav-toggle');
 const navMenu = document.getElementById('nav-menu');
 
+// --- Turntable Control ---
+vinyl.onclick = () => {
+    if (!currentRecord) return;
+    if (isPlaying) {
+        pausePlayback();
+    } else {
+        resumePlayback();
+    }
+};
+
+function pausePlayback() {
+    isPlaying = false;
+    audioPreview.pause();
+    gsap.to(tonearm, { rotation: -10, duration: 0.6, ease: "power2.inOut" });
+    if(spinTween) spinTween.pause();
+    updatePlayOverlay();
+}
+
+function resumePlayback() {
+    isPlaying = true;
+    if (currentRecord.preview_url) audioPreview.play();
+    gsap.to(tonearm, { rotation: 12, duration: 0.6, ease: "power2.inOut" });
+    if(spinTween) spinTween.play();
+    updatePlayOverlay();
+}
+
+function updatePlayOverlay() {
+    const overlay = vinyl.querySelector('.play-overlay i');
+    if (overlay) {
+        overlay.setAttribute('data-lucide', isPlaying ? 'pause' : 'play');
+        lucide.createIcons();
+    }
+}
+
 // --- Navigation Logic ---
 navToggle.onclick = (e) => {
     e.stopPropagation();
@@ -85,7 +119,7 @@ function loadMusicData() {
         download: true,
         header: true,
         complete: async function(results) {
-            const rows = results.data.filter(row => row['Album Name']).slice(0, 15);
+            const rows = results.data.filter(row => row['Album Name']).slice(0, 105);
             myCollection = await Promise.all(rows.map(async (row, i) => {
                 let imageUrl = row['Image_URL'];
                 let spotifyUrl = row['Album URL'];
@@ -151,8 +185,23 @@ function renderPolaroids() {
 // --- FLAWLESS PARALLEL CRATE DIGGING LOGIC ---
 function buildCrateDOM() {
     if (!crate) return;
-    crate.innerHTML = '<div class="crate-back"></div><div class="crate-front"><div class="crate-label">COLLECTION</div></div>';
+    crate.innerHTML = `
+        <div class="crate-back"></div>
+        <div class="crate-front">
+            <div id="collection-trigger" class="crate-label cursor-pointer hover:scale-110 transition-transform">COLLECTION</div>
+            <div id="crate-active-title" class="absolute bottom-4 w-full text-center typewriter text-[10px] text-[#f4ebd8] opacity-60 px-2 truncate"></div>
+        </div>
+    `;
     
+    // Re-attach listener since we just blew away the innerHTML
+    const newTrigger = document.getElementById('collection-trigger');
+    if (newTrigger) {
+        newTrigger.onclick = (e) => {
+            e.stopPropagation();
+            openCollectionOverlay();
+        };
+    }
+
     myCollection.forEach((record, i) => {
         const el = document.createElement('div');
         el.className = 'crate-record border border-black/40 bg-neutral-900';
@@ -173,18 +222,52 @@ function buildCrateDOM() {
 
 function updateCrateTransforms() {
     const records = crate.querySelectorAll('.crate-record');
+    const titleDisplay = document.getElementById('crate-active-title');
+    
     records.forEach((el, i) => {
         if (i === crateIndex) {
-            gsap.to(el, { z: 20, y: -240, rotationX: 0, rotationZ: 0, opacity: 1, duration: 0.5, ease: "back.out(1.2)" });
+            // ACTIVE RECORD: Pulled straight up
+            gsap.to(el, { 
+                z: 20, 
+                y: -240, 
+                scale: 1, 
+                rotationX: 0, 
+                rotationZ: 0, 
+                opacity: 1, 
+                duration: 0.5, 
+                ease: "back.out(1.2)" 
+            });
             el.style.zIndex = 100;
+            if (titleDisplay) titleDisplay.innerText = myCollection[i].title;
         } 
         else if (i < crateIndex) {
-            gsap.to(el, { z: 80 - ((crateIndex - i) * 2), y: 0, rotationX: -15, rotationZ: (i % 2 === 0 ? 1 : -1) * 1.5, opacity: 1, duration: 0.4, ease: "power2.out" });
-            el.style.zIndex = 60 + i; 
+            // FLIPPED PAST: Lower and smaller, tucked into front
+            const dist = crateIndex - i;
+            gsap.to(el, { 
+                z: 20 - (dist * 2), // Slightly in front of crate-front (z=100)
+                y: 40,              // Much lower to stay within the crate box
+                scale: 0.75,         // Smaller to look "stored"
+                rotationX: -20,      // Leaning forward
+                rotationZ: (i % 2 === 0 ? 1 : -1) * 2, 
+                opacity: 1, 
+                duration: 0.4, 
+                ease: "power2.out" 
+            });
+            el.style.zIndex = 80 + i; 
         } 
         else {
+            // IN STACK: Leaning back
             const pos = i - crateIndex;
-            gsap.to(el, { z: -20 - (pos * 12), y: 0, rotationX: 12, rotationZ: (pos % 2 === 0 ? 1 : -1) * 0.4, opacity: 1, duration: 0.4, ease: "power2.out" });
+            gsap.to(el, { 
+                z: -30 - (pos * 15), 
+                y: 0, 
+                scale: 0.95, 
+                rotationX: 15, 
+                rotationZ: (pos % 2 === 0 ? 1 : -1) * 0.5, 
+                opacity: 1, 
+                duration: 0.4, 
+                ease: "power2.out" 
+            });
             el.style.zIndex = 40 - pos;
         }
     });
@@ -192,13 +275,22 @@ function updateCrateTransforms() {
 
 // --- PLAYBACK SEQUENCE LOGIC ---
 async function selectFromCrate(record) {
-    if (currentRecord && record.id === currentRecord.id && isPlaying) return; 
+    if (currentRecord && record.id === currentRecord.id) {
+        if (!isPlaying) resumePlayback();
+        return;
+    }
 
-    // Fetch track preview if available
+    console.log(`Searching for: ${record.title} by ${record.artist}`);
     const info = await fetchSpotifyImage(`${record.title} ${record.artist}`, 'track');
     record.preview_url = info.preview_url;
+    
+    if (!record.preview_url) {
+        console.warn("No preview URL found for this track. Spotify often returns null for previews now.");
+    } else {
+        console.log("Preview URL found:", record.preview_url);
+    }
 
-    if (isPlaying) {
+    if (isPlaying || audioPreview.src) {
         stopPlayback(() => { swapVinylAndPlay(record); });
     } else {
         swapVinylAndPlay(record);
@@ -230,6 +322,7 @@ function swapVinylAndPlay(record) {
 
 function startPlayback() {
     isPlaying = true;
+    updatePlayOverlay();
     
     gsap.fromTo(vinyl, { opacity: 0, scale: 0.9, y: -40, rotation: 0 }, { opacity: 1, scale: 1, y: 0, duration: 0.8, ease: "power2.out" });
     gsap.to(tonearm, { rotation: 12, duration: 0.8, delay: 0.8, ease: "power2.out" });
@@ -243,13 +336,16 @@ function startPlayback() {
     // Audio preview
     if (currentRecord.preview_url) {
         audioPreview.src = currentRecord.preview_url;
-        setTimeout(() => audioPreview.play(), 1600);
+        setTimeout(() => {
+            if (isPlaying) audioPreview.play();
+        }, 1600);
     }
 }
 
 function stopPlayback(onCompleteCallback) {
     isPlaying = false;
     audioPreview.pause();
+    audioPreview.src = '';
     gsap.to(tonearm, { rotation: -25, duration: 0.6, ease: "power2.in" });
 
     if(spinTween) spinTween.pause();
@@ -302,6 +398,86 @@ if (crateScene) {
             setTimeout(() => isCrateAnimating = false, 200);
         }
     });
+}
+
+// --- Collection Overlay Logic ---
+const collectionOverlay = document.getElementById('collection-overlay');
+const collectionTrigger = document.getElementById('collection-trigger');
+const closeCollectionBtn = document.getElementById('close-collection');
+const albumGrid = document.getElementById('album-grid');
+
+if (collectionTrigger) {
+    collectionTrigger.onclick = (e) => {
+        e.stopPropagation();
+        openCollectionOverlay();
+    };
+}
+
+if (closeCollectionBtn) {
+    closeCollectionBtn.onclick = closeCollectionOverlay;
+}
+
+function openCollectionOverlay() {
+    if (!albumGrid.children.length) {
+        renderAlbumGrid();
+    }
+    document.body.style.overflow = 'hidden';
+    collectionOverlay.classList.remove('hidden');
+    gsap.fromTo(collectionOverlay, 
+        { opacity: 0, backdropFilter: "blur(0px)" }, 
+        { opacity: 1, backdropFilter: "blur(10px)", duration: 0.5, ease: "power2.out" }
+    );
+    
+    gsap.from(".album-tile", {
+        scale: 0.8,
+        opacity: 0,
+        y: 20,
+        stagger: 0.01,
+        duration: 0.6,
+        ease: "back.out(1.2)"
+    });
+}
+
+function closeCollectionOverlay() {
+    gsap.to(collectionOverlay, {
+        opacity: 0,
+        backdropFilter: "blur(0px)",
+        duration: 0.4,
+        ease: "power2.in",
+        onComplete: () => {
+            collectionOverlay.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+    });
+}
+
+function renderAlbumGrid() {
+    if (!myCollection.length) return;
+    albumGrid.innerHTML = '';
+    myCollection.forEach((record, i) => {
+        const tile = document.createElement('div');
+        tile.className = 'album-tile';
+        tile.innerHTML = `
+            <img src="${record.cover}" alt="${record.title}" loading="lazy">
+            <div class="album-info-overlay">
+                <p class="album-info-title">${record.title}</p>
+                <p class="album-info-artist">${record.artist}</p>
+            </div>
+        `;
+        
+        tile.onclick = () => {
+            crateIndex = i;
+            updateCrateTransforms();
+            selectFromCrate(record);
+            closeCollectionOverlay();
+        };
+        
+        albumGrid.appendChild(tile);
+    });
+
+    
+    // Refresh lucide icons if any were added (though we don't have any in tiles yet)
+    if (window.lucide) lucide.createIcons();
 }
 
 // --- INIT ---
