@@ -25,7 +25,7 @@ body {
     border-top: 4px solid #2a1a17;
 }
 
-/* --- MUSIC THEMED NAVIGATION (Cassette/Tracklist Style) --- */
+/* --- MUSIC THEMED NAVIGATION --- */
 .tracklist-nav {
     position: fixed;
     top: 20px;
@@ -70,9 +70,7 @@ body {
     transform: rotate(-1deg);
 }
 
-.nav-menu.active {
-    display: flex;
-}
+.nav-menu.active { display: flex; }
 
 .nav-menu::before {
     content: "SIDE A";
@@ -96,15 +94,8 @@ body {
     justify-content: space-between;
 }
 
-.nav-item:hover {
-    background: rgba(26, 20, 15, 0.1);
-    transform: scale(1.05);
-}
-
-.nav-item.active {
-    font-weight: bold;
-    text-decoration: underline;
-}
+.nav-item:hover { background: rgba(26, 20, 15, 0.1); transform: scale(1.05); }
+.nav-item.active { font-weight: bold; text-decoration: underline; }
 
 /* --- THE WOODEN CRATE --- */
 .crate-scene {
@@ -112,9 +103,9 @@ body {
     transform-style: preserve-3d;
     width: 100%;
     max-width: 340px;
-    height: 300px; /* Explicit height for hit area */
+    height: 300px;
     touch-action: none;
-    pointer-events: auto; /* Ensure it captures events */
+    pointer-events: auto;
     position: relative;
     z-index: 10;
 }
@@ -157,6 +148,7 @@ body {
     border: 1px solid #000;
     transform: rotate(-2deg);
     margin-top: -30px;
+    pointer-events: auto !important;
 }
 
 .crate-record {
@@ -216,7 +208,6 @@ body {
     border-radius: 50%;
 }
 
-/* --- PLAY BUTTON ON VINYL --- */
 .play-overlay {
     position: absolute;
     inset: 0;
@@ -232,49 +223,99 @@ body {
     cursor: pointer;
 }
 
-.vinyl-texture:hover .play-overlay {
-    opacity: 1;
-}
+.vinyl-texture:hover .play-overlay { opacity: 1; }
 
-/* --- ORGANIZED POLAROIDS --- */
-.polaroid-col {
+/* --- TRACK QUEUE STYLES --- */
+.track-bar {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 12px 20px;
+    border-radius: 4px;
     display: flex;
-    flex-direction: column;
-    gap: 2rem;
-    pointer-events: auto;
-    justify-content: center;
-}
-
-.polaroid {
-    background: white;
-    padding: 8px 8px 20px 8px;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.4);
-    transition: transform 0.3s ease, z-index 0s;
+    align-items: center;
+    gap: 16px;
+    transition: all 0.3s ease;
     cursor: pointer;
     position: relative;
+    overflow: hidden;
 }
 
-.polaroid:hover {
-    transform: scale(1.15) rotate(0deg) !important;
-    z-index: 50;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+.track-bar:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateX(10px);
+    border-color: #1DB954;
 }
 
-.polaroid:nth-child(odd) { transform: rotate(-3deg); }
-.polaroid:nth-child(even) { transform: rotate(4deg); }
-
-.handwriting {
-    font-family: 'Caveat', cursive;
-    line-height: 1.2;
-    color: #1a365d;
+.track-bar-img {
+    width: 48px;
+    height: 48px;
+    border-radius: 2px;
+    object-fit: cover;
 }
 
-.typewriter {
-    font-family: 'Space Mono', monospace;
-    text-transform: uppercase;
+.track-bar-info {
+    flex: 1;
+    min-width: 0;
 }
 
-/* --- Spotify Branded Elements --- */
+/* --- Integrated Turntable Display --- */
+#turntable-display {
+    background: #0a0a0a;
+    border: 2px solid #2a2a2a;
+    border-radius: 4px;
+    box-shadow: inset 0 2px 10px rgba(0,0,0,0.8), 0 1px 1px rgba(255,255,255,0.1);
+    position: absolute;
+    bottom: 15%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 240px;
+    height: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0 15px;
+    z-index: 60;
+    pointer-events: none;
+}
+
+#display-title {
+    color: #1DB954;
+    text-shadow: 0 0 8px rgba(29, 185, 84, 0.6);
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+#display-artist {
+    color: #a89f91;
+    font-size: 9px;
+    opacity: 0.8;
+    margin-top: 2px;
+}
+
+/* --- Floating Info Animation --- */
+#album-info-floating {
+    display: none; /* Removed in favor of integrated display */
+}
+
+#album-info-floating.visible {
+    display: none;
+}
+
+/* --- Turntable Position Switches --- */
+.turntable-active {
+    /* Removed rotation as per request */
+    transform: scale(1.02) translateY(-5px);
+}
+
+/* --- GLOBAL STYLES --- */
+.max-w-custom {
+    max-width: 56rem; /* Equivalent to max-w-4xl */
+}
+.handwriting { font-family: 'Caveat', cursive; line-height: 1.2; color: #1a365d; }
+.typewriter { font-family: 'Space Mono', monospace; text-transform: uppercase; }
+
 .spotify-link {
     color: #1DB954;
     font-size: 14px;
@@ -282,74 +323,30 @@ body {
     align-items: center;
     gap: 5px;
     text-decoration: none;
-    margin-top: 10px;
     font-family: 'Space Mono', monospace;
+    letter-spacing: 1px;
 }
 
-.spotify-link:hover {
-    text-decoration: underline;
-}
+.spotify-link:hover { text-decoration: underline; }
 
-/* --- COLLECTION OVERLAY --- */
-
-
-.album-tile:hover img {
-    filter: brightness(0.2);
-}
-
+/* --- Collection Styles --- */
+.album-tile:hover img { filter: brightness(0.2); }
 .album-info-overlay {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 1rem;
-    text-align: center;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    pointer-events: none;
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    justify-content: center; align-items: center; padding: 1rem; text-align: center;
+    opacity: 0; transition: opacity 0.3s ease; pointer-events: none;
 }
+.album-tile:hover .album-info-overlay { opacity: 1; }
+.album-info-title { font-size: 0.8rem; font-weight: bold; color: #f4ebd8; font-family: 'Space Mono', monospace; }
+.album-info-artist { font-family: 'Caveat', cursive; font-size: 1.1rem; color: #a89f91; }
 
-.album-tile:hover .album-info-overlay {
-    opacity: 1;
-}
+/* Artists Grid */
+#artists-grid .group:hover { transform: translateY(-5px); }
+#artists-grid img { filter: grayscale(0.4); }
+#artists-grid .group:hover img { filter: grayscale(0); }
 
-.album-info-title {
-    font-size: 0.8rem;
-    font-weight: bold;
-    color: #f4ebd8;
-    margin-bottom: 0.25rem;
-    line-height: 1.2;
-    text-transform: uppercase;
-    font-family: 'Space Mono', monospace;
-}
-
-.album-info-artist {
-    font-family: 'Caveat', cursive;
-    font-size: 1.1rem;
-    color: #a89f91;
-}
-
-/* Ensure trigger is clickable */
-#collection-trigger {
-    pointer-events: auto !important;
-}
-/* --- GLOBAL SCROLLBAR STYLING --- */
-::-webkit-scrollbar {
-    width: 10px;
-}
-
-::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.8);
-}
-
-::-webkit-scrollbar-thumb {
-    background: rgba(244, 235, 216, 0.15); 
-    border-radius: 8px;
-    border: 2px solid rgba(0, 0, 0, 0.8);
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: rgba(244, 235, 216, 0.3); 
-}
+/* --- Scrollbar --- */
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.8); }
+::-webkit-scrollbar-thumb { background: rgba(244, 235, 216, 0.15); border-radius: 8px; border: 2px solid rgba(0, 0, 0, 0.8); }
+::-webkit-scrollbar-thumb:hover { background: rgba(244, 235, 216, 0.3); }

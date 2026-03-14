@@ -1,10 +1,10 @@
 sport
-project opening mssg, my comp directory, post and videos, menu icons, time calender, about me, start menu contact me, 
-music rework
+project post and videos, menu icons,  
 lit short story/poem rating sys, sort
 games rating sys not being able to add wishlist games
 movies wrong, not able to add to library, anime csv fix 
 travel singapore(7/24),goa(3/25),vaishno(12/25), varkala (3/26)
 art add more paintings
 food noodle steam, more recipies
+music
 home

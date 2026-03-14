@@ -40,16 +40,31 @@
         </div>
     </nav>
 
-    <!-- MAIN ROOM -->
-    <div class="flex-1 flex flex-row w-full min-h-screen relative z-10 p-4 md:p-8 justify-between items-center pointer-events-none pb-24">
-        
-        <!-- LEFT: ARTIST POLAROIDS -->
-        <div class="hidden lg:flex w-32 xl:w-48 min-h-full polaroid-col items-center pl-4" id="artists-col">
-            <!-- Artist Polaroids Injected Here -->
+    <!-- HEADER SECTION -->
+    <header class="w-full py-8 px-4 md:px-12 relative z-50 border-b border-white/5 bg-black/20 backdrop-blur-sm">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 bg-[#1DB954] rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(29,185,84,0.4)]">
+                    <i data-lucide="music" class="w-6 h-6 text-black"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold tracking-tighter text-[#f4ebd8]">SOUNDSCAPE</h1>
+                    <p class="text-[10px] typewriter text-[#a89f91] opacity-60">Personal Audio Archive v2.0</p>
+                </div>
+            </div>
+            <div class="hidden md:flex items-center gap-8 text-[10px] typewriter tracking-widest text-[#a89f91]">
+                <span class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-[#1DB954] animate-pulse"></span> SYSTEM ACTIVE</span>
+                <span>VOL: 100%</span>
+                <span>BPM: 128</span>
+            </div>
         </div>
+    </header>
 
+    <!-- MAIN ROOM -->
+    <div class="flex-1 flex flex-col w-full min-h-screen relative z-10 p-4 md:p-8 items-center pointer-events-none pb-24">
+        
         <!-- CENTER: CRATE & TURNTABLE -->
-        <div class="flex-1 flex flex-col xl:flex-row justify-center items-center gap-16 pointer-events-auto min-h-full max-w-5xl mx-auto py-12">
+        <div class="flex flex-col xl:flex-row justify-center items-center gap-16 pointer-events-auto max-w-5xl mx-auto py-12 relative">
             
             <!-- THE CRATE AREA -->
             <div class="w-full xl:w-[400px] flex flex-col items-center">
@@ -76,7 +91,7 @@
             </div>
 
             <!-- THE TURNTABLE PLAYER -->
-            <div class="relative w-[340px] md:w-[420px] aspect-square turntable-base flex items-center justify-center flex-shrink-0">
+            <div id="turntable-container" class="relative w-[340px] md:w-[420px] aspect-square turntable-base flex items-center justify-center flex-shrink-0 transition-transform duration-700">
                 
                 <!-- Platter -->
                 <div class="w-[85%] h-[85%] platter rounded-full relative flex items-center justify-center shadow-2xl">
@@ -111,13 +126,60 @@
                         <div class="absolute bottom-1 w-1 h-2 bg-red-500 rounded-full shadow-[0_0_4px_rgba(239,68,68,0.8)]"></div>
                     </div>
                 </div>
+
+                <!-- INTEGRATED DISPLAY ON TURNTABLE -->
+                <div id="turntable-display" class="absolute bottom-12 left-1/2 -translate-x-1/2 w-2/3 h-12 bg-black/40 border border-white/10 rounded flex flex-col items-center justify-center px-4 overflow-hidden opacity-0 transition-opacity duration-500">
+                    <div id="display-title" class="text-[10px] typewriter text-[#f4ebd8] truncate w-full text-center"></div>
+                    <div id="display-artist" class="text-[8px] typewriter text-[#a89f91] truncate w-full text-center opacity-60"></div>
+                </div>
+
+                <!-- EJECT BUTTON -->
+                <button id="eject-btn" class="absolute bottom-4 right-4 w-10 h-10 bg-red-900/40 hover:bg-red-600 border border-red-500 rounded-full flex items-center justify-center text-white transition-all transform hover:scale-110 opacity-0 pointer-events-none z-50">
+                    <i data-lucide="log-out" class="w-5 h-5"></i>
+                </button>
                 
             </div>
         </div>
 
-        <!-- RIGHT: LYRIC POLAROIDS -->
-        <div class="hidden lg:flex w-36 xl:w-56 min-h-full polaroid-col items-center pr-4" id="lyrics-col">
-            <!-- Lyric Polaroids Injected Here -->
+        <!-- FULL ARTISTS SECTION (NOW ABOVE TRACKS) -->
+        <div class="w-full max-w-7xl mx-auto mt-24 px-4 pointer-events-auto">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-12 border-b border-white/10 pb-6 gap-4">
+                <div>
+                    <h2 class="text-4xl font-bold tracking-tight text-[#f4ebd8] uppercase">Top Artists</h2>
+                    <p class="typewriter text-[#a89f91] text-xs mt-2 opacity-60">My favorite creators</p>
+                </div>
+                <div class="flex items-center gap-4 bg-[#1a140f] p-2 border border-[#5c4033] rounded">
+                    <span class="text-xs typewriter opacity-60">Sort By:</span>
+                    <select id="sort-artists" class="bg-transparent text-[#f4ebd8] text-sm focus:outline-none cursor-pointer">
+                        <option value="default" class="bg-[#1a140f]">Default</option>
+                        <option value="name" class="bg-[#1a140f]">Name (A-Z)</option>
+                    </select>
+                </div>
+            </div>
+            <div id="artists-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-8 mb-24">
+                <!-- Artists Injected via JS -->
+            </div>
+        </div>
+
+        <!-- FULL TRACKS SECTION (QUEUE STYLE) -->
+        <div class="w-full max-w-4xl mx-auto mt-24 px-4 pointer-events-auto">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-8 border-b border-white/10 pb-6 gap-4">
+                <div>
+                    <h2 class="text-3xl font-bold tracking-tight text-[#f4ebd8] uppercase">Now Playing Queue</h2>
+                    <p class="typewriter text-[#a89f91] text-[10px] mt-2 opacity-60">Top Tracklist</p>
+                </div>
+                <div class="flex items-center gap-4 bg-[#1a140f] p-2 border border-[#5c4033] rounded">
+                    <span class="text-xs typewriter opacity-60">Sort:</span>
+                    <select id="sort-tracks" class="bg-transparent text-[#f4ebd8] text-sm focus:outline-none cursor-pointer">
+                        <option value="default" class="bg-[#1a140f]">Default</option>
+                        <option value="name" class="bg-[#1a140f]">Track Name</option>
+                        <option value="popularity" class="bg-[#1a140f]">Popularity</option>
+                    </select>
+                </div>
+            </div>
+            <div id="tracks-queue" class="flex flex-col gap-2 mb-24">
+                <!-- Tracks Injected via JS as Bars -->
+            </div>
         </div>
 
     </div>
@@ -128,16 +190,26 @@
     <!-- COLLECTION OVERLAY -->
     <div id="collection-overlay" class="fixed inset-0 z-[6000] hidden bg-black/95 flex flex-col p-0 overflow-y-auto pointer-events-auto">
         <div class="w-full flex flex-col min-h-full">
-            <div class="flex justify-between items-center p-8 md:p-12 border-b border-white/10">
+            <div class="flex flex-col md:flex-row justify-between items-center p-8 md:p-12 border-b border-white/10 gap-6">
                 <div>
                     <h2 class="text-3xl md:text-5xl font-bold tracking-tight text-[#f4ebd8] uppercase">The Archive</h2>
                     <p class="typewriter text-[#a89f91] text-xs mt-2 opacity-60">Complete record collection / Click to play</p>
                 </div>
-                <button id="close-collection" class="p-4 hover:bg-white/10 rounded-full transition-colors text-[#f4ebd8]">
-                    <i data-lucide="x" class="w-8 h-8"></i>
-                </button>
+                <div class="flex items-center gap-6">
+                    <div class="flex items-center gap-4 bg-white/5 p-3 border border-white/10 rounded">
+                        <span class="text-xs typewriter opacity-60">Sort:</span>
+                        <select id="sort-albums" class="bg-transparent text-[#f4ebd8] text-sm focus:outline-none cursor-pointer">
+                            <option value="default" class="bg-black">Default</option>
+                            <option value="title" class="bg-black">Album Title (A-Z)</option>
+                            <option value="artist" class="bg-black">Artist Name (A-Z)</option>
+                        </select>
+                    </div>
+                    <button id="close-collection" class="p-4 hover:bg-white/10 rounded-full transition-colors text-[#f4ebd8]">
+                        <i data-lucide="x" class="w-8 h-8"></i>
+                    </button>
+                </div>
             </div>
-            <div id="album-grid" class="grid grid-cols-7 gap-0 border-l border-t border-white/5 content-start">
+            <div id="album-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-7 gap-0 border-l border-t border-white/5 content-start">
                 <!-- Tiles Injected via JS -->
             </div>
         </div>

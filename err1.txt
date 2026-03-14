@@ -1,0 +1,25 @@
+[{
+	"resource": "/e:/Projects/PortfolioV2/client/CSS/musicstyle.css",
+	"owner": "_generated_diagnostic_collection_name_#5",
+	"code": "css-colonexpected",
+	"severity": 8,
+	"message": "colon expected",
+	"source": "css",
+	"startLineNumber": 287,
+	"startColumn": 14,
+	"endLineNumber": 287,
+	"endColumn": 15,
+	"origin": "extHost1"
+},{
+	"resource": "/e:/Projects/PortfolioV2/client/CSS/musicstyle.css",
+	"owner": "_generated_diagnostic_collection_name_#5",
+	"code": "unknownProperties",
+	"severity": 4,
+	"message": "Unknown property: 'object-cover'",
+	"source": "css",
+	"startLineNumber": 253,
+	"startColumn": 5,
+	"endLineNumber": 253,
+	"endColumn": 17,
+	"origin": "extHost1"
+}]
