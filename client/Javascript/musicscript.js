@@ -1,6 +1,10 @@
 lucide.createIcons();
 
 // --- STATE ---
+const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:3000'
+    : '';
+
 let topTracksData = [];
 let rawTracksData = []; 
 let topArtistsData = [];
@@ -101,7 +105,7 @@ document.onclick = () => navMenu.classList.remove('active');
 // --- DATA Loading ---
 async function fetchSpotifyImage(query, type) {
     try {
-        const response = await fetch(`/api/spotify/search?q=${encodeURIComponent(query)}&type=${type}&limit=1`);
+        const response = await fetch(`${API_BASE_URL}/api/spotify/search?q=${encodeURIComponent(query)}&type=${type}&limit=1`);
         const data = await response.json();
         if (type === 'artist') {
             return {
@@ -126,83 +130,86 @@ async function fetchSpotifyImage(query, type) {
     }
 }
 
-function loadMusicData() {
-    Papa.parse("../data/spotify_top_tracks.csv", {
-        download: true,
-        header: true,
-        complete: async function(results) {
-            const rows = results.data.filter(row => row['Track Name']).slice(0, 10);
-            rawTracksData = await Promise.all(rows.map(async (row) => {
-                let imageUrl = row['Image_URL'];
-                let trackUrl = row['Track URL'];
-                if (!imageUrl) {
-                    const info = await fetchSpotifyImage(`${row['Track Name']} ${row['Artist(s)']}`, 'track');
-                    imageUrl = info.url;
-                    if (!trackUrl) trackUrl = info.spotify_url;
-                }
-                return {
-                    name: row['Track Name'],
-                    artist: row['Artist(s)'],
-                    album: row['Album Name'],
-                    popularity: parseInt(row['Popularity']) || 0,
-                    image: imageUrl,
-                    track_url: trackUrl || `https://open.spotify.com/search/${encodeURIComponent(row['Track Name'])}`
-                };
-            }));
-            topTracksData = [...rawTracksData];
-            renderTracksQueue();
-        }
-    });
+async function loadMusicData() {
+    // 1. Load Tracks
+    try {
+        const tracksResponse = await fetch(`${API_BASE_URL}/api/music/tracks`);
+        const tracks = await tracksResponse.json();
+        const rows = tracks.filter(row => row['Track Name']).slice(0, 10);
+        rawTracksData = await Promise.all(rows.map(async (row) => {
+            let imageUrl = row['Image_URL'];
+            let trackUrl = row['Track URL'];
+            if (!imageUrl) {
+                const info = await fetchSpotifyImage(`${row['Track Name']} ${row['Artist(s)']}`, 'track');
+                imageUrl = info.url;
+                if (!trackUrl) trackUrl = info.spotify_url;
+            }
+            return {
+                name: row['Track Name'],
+                artist: row['Artist(s)'],
+                album: row['Album Name'],
+                popularity: parseInt(row['Popularity']) || 0,
+                image: imageUrl,
+                track_url: trackUrl || `https://open.spotify.com/search/${encodeURIComponent(row['Track Name'])}`
+            };
+        }));
+        topTracksData = [...rawTracksData];
+        renderTracksQueue();
+    } catch (e) {
+        console.error("Failed to load tracks from MongoDB:", e);
+    }
 
-    Papa.parse("../data/spotify_top_artists.csv", {
-        download: true,
-        header: true,
-        complete: async function(results) {
-            const rows = results.data.filter(row => row['Artist Name']).slice(0, 10);
-            rawArtistsData = await Promise.all(rows.map(async (row) => {
-                let imageUrl = row['Image_URL'];
-                let spotifyUrl = row['Artist URL'];
-                if (!imageUrl) {
-                    const info = await fetchSpotifyImage(row['Artist Name'], 'artist');
-                    imageUrl = info.url;
-                    if (!spotifyUrl) spotifyUrl = info.spotify_url;
-                }
-                return {
-                    artist: row['Artist Name'],
-                    image: imageUrl,
-                    spotify_url: spotifyUrl || `https://open.spotify.com/search/${encodeURIComponent(row['Artist Name'])}`
-                };
-            }));
-            topArtistsData = [...rawArtistsData];
-            renderArtistsGrid();
-        }
-    });
+    // 2. Load Artists
+    try {
+        const artistsResponse = await fetch(`${API_BASE_URL}/api/music/artists`);
+        const artists = await artistsResponse.json();
+        const rows = artists.filter(row => row['Artist Name']).slice(0, 10);
+        rawArtistsData = await Promise.all(rows.map(async (row) => {
+            let imageUrl = row['Image_URL'];
+            let spotifyUrl = row['Artist URL'];
+            if (!imageUrl) {
+                const info = await fetchSpotifyImage(row['Artist Name'], 'artist');
+                imageUrl = info.url;
+                if (!spotifyUrl) spotifyUrl = info.spotify_url;
+            }
+            return {
+                artist: row['Artist Name'],
+                image: imageUrl,
+                spotify_url: spotifyUrl || `https://open.spotify.com/search/${encodeURIComponent(row['Artist Name'])}`
+            };
+        }));
+        topArtistsData = [...rawArtistsData];
+        renderArtistsGrid();
+    } catch (e) {
+        console.error("Failed to load artists from MongoDB:", e);
+    }
 
-    Papa.parse("../data/spotify_saved_albums.csv", {
-        download: true,
-        header: true,
-        complete: async function(results) {
-            const rows = results.data.filter(row => row['Album Name']);
-            rawCollectionData = await Promise.all(rows.map(async (row, i) => {
-                let imageUrl = row['Image_URL'];
-                let spotifyUrl = row['Album URL'];
-                if (!imageUrl) {
-                    const info = await fetchSpotifyImage(`${row['Album Name']} ${row['Artist(s)']}`, 'album');
-                    imageUrl = info.url;
-                    if (!spotifyUrl) spotifyUrl = info.spotify_url;
-                }
-                return {
-                    id: i,
-                    title: row['Album Name'],
-                    artist: row['Artist(s)'],
-                    cover: imageUrl,
-                    spotify_url: spotifyUrl || `https://open.spotify.com/search/${encodeURIComponent(row['Album Name'])}`
-                };
-            }));
-            myCollection = [...rawCollectionData];
-            buildCrateDOM();
-        }
-    });
+    // 3. Load Albums
+    try {
+        const albumsResponse = await fetch(`${API_BASE_URL}/api/music/albums`);
+        const albums = await albumsResponse.json();
+        const rows = albums.filter(row => row['Album Name']);
+        rawCollectionData = await Promise.all(rows.map(async (row, i) => {
+            let imageUrl = row['Image_URL'];
+            let spotifyUrl = row['Album URL'];
+            if (!imageUrl) {
+                const info = await fetchSpotifyImage(`${row['Album Name']} ${row['Artist(s)']}`, 'album');
+                imageUrl = info.url;
+                if (!spotifyUrl) spotifyUrl = info.spotify_url;
+            }
+            return {
+                id: i,
+                title: row['Album Name'],
+                artist: row['Artist(s)'],
+                cover: imageUrl,
+                spotify_url: spotifyUrl || `https://open.spotify.com/search/${encodeURIComponent(row['Album Name'])}`
+            };
+        }));
+        myCollection = [...rawCollectionData];
+        buildCrateDOM();
+    } catch (e) {
+        console.error("Failed to load albums from MongoDB:", e);
+    }
 }
 
 function renderTracksQueue() {

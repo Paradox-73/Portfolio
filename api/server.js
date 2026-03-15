@@ -112,16 +112,8 @@ async function run() {
         // New Spotify Music Endpoints
         app.get('/api/music/tracks', async (req, res) => {
             try {
-                // Assuming collection name 'spotify_top_tracks' and fields like 'Track Name', 'Artist(s)', 'Album Name', 'Image_URL', 'Preview_URL'
                 const data = await db.collection('music_tracks').find({}).toArray();
-                const formattedData = data.map(item => ({
-                    Track: item['Track Name'],
-                    Artist: item['Artist(s)'],
-                    Album: item['Album Name'],
-                    Image_URL: item.Image_URL, // Assuming this field exists after upload
-                    Preview_URL: item.Preview_URL // Assuming this field exists after upload
-                }));
-                res.json(formattedData);
+                res.json(data);
             } catch (error) {
                 console.error("Failed to fetch music tracks:", error);
                 res.status(500).json({ message: 'Failed to fetch music tracks.', details: error.message });
@@ -130,13 +122,8 @@ async function run() {
 
         app.get('/api/music/artists', async (req, res) => {
             try {
-                // Assuming collection name 'spotify_top_artists' and fields like 'Artist Name', 'Image_URL'
                 const data = await db.collection('music_artists').find({}).toArray();
-                const formattedData = data.map(item => ({
-                    Artist: item['Artist Name'],
-                    Image_URL: item.Image_URL // Assuming this field exists after upload
-                }));
-                res.json(formattedData);
+                res.json(data);
             } catch (error) {
                 console.error("Failed to fetch music artists:", error);
                 res.status(500).json({ message: 'Failed to fetch music artists.', details: error.message });
@@ -145,14 +132,8 @@ async function run() {
 
         app.get('/api/music/albums', async (req, res) => {
             try {
-                // Assuming collection name 'spotify_saved_albums' and fields like 'Album Name', 'Artist(s)', 'Image_URL'
                 const data = await db.collection('music_albums').find({}).toArray();
-                const formattedData = data.map(item => ({
-                    Album: item['Album Name'],
-                    Artist: item['Artist(s)'],
-                    Image_URL: item.Image_URL // Assuming this field exists after upload
-                }));
-                res.json(formattedData);
+                res.json(data);
             } catch (error) {
                 console.error("Failed to fetch music albums:", error);
                 res.status(500).json({ message: 'Failed to fetch music albums.', details: error.message });

@@ -1,5 +1,6 @@
 // server/migrate.js
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 const fs = require('fs');
 const csv = require('csv-parser');
 const { MongoClient } = require('mongodb');
@@ -24,7 +25,7 @@ async function migrate() {
 
         for (const [file, collectionName] of Object.entries(MAPPING)) {
             const data = [];
-            const filePath = `../client/data/${file}`;
+            const filePath = path.join(__dirname, '../data', file);
             
             if (!fs.existsSync(filePath)) {
                 console.warn(`File not found, skipping: ${filePath}`);
