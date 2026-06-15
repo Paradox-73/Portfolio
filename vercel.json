@@ -22,8 +22,8 @@
     ],
     "crons": [
         {
-            "path": "/api/sync-letterboxd?cron_secret=${CRON_SECRET}",
-            "schedule": "0 0 * * *"
+            "path": "/api/sync-letterboxd",
+            "schedule": "0 0 * * 0"
         }
     ]
 }

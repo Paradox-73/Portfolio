@@ -218,7 +218,8 @@
                     cover: game.cover || game.background_image || 'https://via.placeholder.com/100x100?text=No+Image',
                     id: game.id, // Keep RAWG ID for API interaction
                     my_rating: game.my_rating, // Include my_rating from the fetched game data
-                    trailer: '' // will be fetched later
+                    year: (game.released || '').slice(0, 4), // release year, used to refine trailer search
+                    trailer: '' // resolved on demand (RAWG clip / YouTube search / known ID)
                 };
             }).filter(g => g.title);
             init();
@@ -275,7 +276,7 @@
             "ELDEN RING": "E3Hk0uP_z_4",
             // Add more specific trailers for your games if you have them
         };
-        const videoId = knownTrailers[gameTitle] || 'gHzuHo80U2M'; // Default placeholder trailer
+        const videoId = knownTrailers[gameTitle] || null; // No placeholder fallback
         console.log(`[YouTube] Returning video ID for ${gameTitle}: ${videoId}`);
         return videoId;
     }
@@ -285,6 +286,7 @@
     const container = document.getElementById('carousel-container');
     const bgImg = document.getElementById('dynamic-bg-img');
     const youtubeContainer = document.getElementById('youtube-bg-container');
+    const trailerVideo = document.getElementById('trailer-video');
     const clockEl = document.getElementById('clock');
     const settingsMenu = document.getElementById('settings-menu');
     const searchInput = document.getElementById('search-input');
@@ -814,26 +816,78 @@
         clearTimeout(holdTimer);
         youtubeContainer.style.opacity = '0';
         if (ytPlayer && ytPlayer.stopVideo) ytPlayer.stopVideo();
+        if (trailerVideo) trailerVideo.pause();
 
         if (itemData) {
             holdTimer = setTimeout(() => playTrailer(itemData.title), 3000);
         }
     }
 
-    function playTrailer(gameTitle) {
-        console.log(`[YouTube] Attempting to play trailer for: ${gameTitle}`);
+    async function playTrailer(gameTitle) {
+        console.log(`[Trailer] Attempting to play trailer for: ${gameTitle}`);
         const game = gameLibrary.find(g => g.title === gameTitle);
-        console.log(`[YouTube] Game object found: ${!!game}`);
-        let videoId = 'gHzuHo80U2M'; // default
-        if (game && game.trailer) {
-            videoId = game.trailer;
-            console.log(`[YouTube] Using pre-fetched trailer ID: ${videoId}`);
-        } else {
-            videoId = getYoutubeTrailer(gameTitle);
-            if(game) game.trailer = videoId;
-            console.log(`[YouTube] Fetched new trailer ID: ${videoId}`);
+        if (!game) {
+            console.log('[Trailer] Game object not found in library.');
+            return;
         }
 
+        // 0) Use a previously resolved YouTube ID if we already have one (avoids re-querying).
+        if (game.trailer) {
+            console.log(`[Trailer] Using cached YouTube ID for ${gameTitle}: ${game.trailer}`);
+            playYoutube(game.trailer, gameTitle);
+            return;
+        }
+
+        // 1) Prefer a real RAWG trailer clip (MP4) for this game.
+        if (game.id) {
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/rawg/games/${game.id}/movies`);
+                if (res.ok) {
+                    const data = await res.json();
+                    const clip = data && data.results && data.results[0] && data.results[0].data;
+                    const clipUrl = clip && (clip.max || clip['480']);
+                    if (clipUrl) {
+                        console.log(`[Trailer] Playing RAWG clip for ${gameTitle}: ${clipUrl}`);
+                        playClip(clipUrl);
+                        return;
+                    }
+                }
+                console.log(`[Trailer] No RAWG clip available for ${gameTitle}.`);
+            } catch (err) {
+                console.warn('[Trailer] RAWG clip fetch failed:', err);
+            }
+        }
+
+        // 2) Search YouTube via the Data API (gracefully skipped if the key isn't configured).
+        try {
+            const query = `${gameTitle}${game.year ? ' ' + game.year : ''} game trailer`;
+            const res = await fetch(`${API_BASE_URL}/api/youtube/search?q=${encodeURIComponent(query)}`);
+            if (res.ok) {
+                const data = await res.json();
+                if (data.videoId) {
+                    console.log(`[Trailer] Playing YouTube search result for ${gameTitle}: ${data.videoId}`);
+                    game.trailer = data.videoId; // cache it
+                    playYoutube(data.videoId, gameTitle);
+                    return;
+                }
+                console.log(`[Trailer] YouTube search returned no result for ${gameTitle}.`);
+            }
+        } catch (err) {
+            console.warn('[Trailer] YouTube search failed:', err);
+        }
+
+        // 3) Fallback: a known/hardcoded YouTube trailer ID, if we have one for this title.
+        const videoId = getYoutubeTrailer(gameTitle);
+        if (!videoId) {
+            console.log(`[Trailer] No trailer available for ${gameTitle}; keeping static background.`);
+            return;
+        }
+        game.trailer = videoId;
+        playYoutube(videoId, gameTitle);
+    }
+
+    function playYoutube(videoId, gameTitle) {
+        if (trailerVideo) trailerVideo.pause();
         if (isYoutubePlayerReady && ytPlayer && ytPlayer.loadVideoById) {
             ytPlayer.loadVideoById({ videoId: videoId, startSeconds: 0 });
             youtubeContainer.style.opacity = '1';
@@ -843,6 +897,19 @@
             console.log(`[YouTube] YouTube player not ready, queuing trailer: ${videoId} for ${gameTitle}`);
             queuedTrailer = { videoId: videoId, gameTitle: gameTitle };
         }
+    }
+
+    function playClip(url) {
+        if (!trailerVideo) return;
+        if (ytPlayer && ytPlayer.stopVideo) ytPlayer.stopVideo(); // stop any YouTube playback
+        trailerVideo.src = url;
+        trailerVideo.muted = true;
+        const playPromise = trailerVideo.play();
+        if (playPromise && playPromise.catch) {
+            playPromise.catch(err => console.warn('[Trailer] Video autoplay was blocked:', err));
+        }
+        youtubeContainer.style.opacity = '1';
+        resetHideTimer();
     }
 
     function loadQueuedTrailer() {

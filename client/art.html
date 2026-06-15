@@ -8,7 +8,82 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <link rel="stylesheet" href="CSS/artstyle.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    
+
+    <style>
+        /* Recommendation frame UI */
+        #reco-hint {
+            position: fixed;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.75);
+            color: #ffd700;
+            border: 1px solid rgba(255, 215, 0, 0.5);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+            display: none;
+            z-index: 60;
+            pointer-events: none;
+        }
+        #reco-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+        }
+        #reco-overlay .reco-box {
+            background: #1c1c22;
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            border-radius: 10px;
+            padding: 28px;
+            width: min(90vw, 460px);
+            color: #eee;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+        }
+        #reco-overlay h2 {
+            margin: 0 0 6px;
+            font-size: 20px;
+            color: #ffd700;
+        }
+        #reco-overlay p.sub {
+            margin: 0 0 18px;
+            font-size: 13px;
+            opacity: 0.7;
+        }
+        #reco-overlay input,
+        #reco-overlay textarea {
+            width: 100%;
+            box-sizing: border-box;
+            background: #2a2a32;
+            border: 1px solid #444;
+            border-radius: 6px;
+            color: #fff;
+            padding: 10px 12px;
+            font-size: 14px;
+            margin-bottom: 12px;
+            font-family: inherit;
+        }
+        #reco-overlay textarea { resize: vertical; min-height: 96px; }
+        #reco-overlay .reco-actions { display: flex; gap: 10px; justify-content: flex-end; }
+        #reco-overlay button {
+            border: none;
+            border-radius: 6px;
+            padding: 9px 18px;
+            font-size: 14px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        #reco-submit { background: #ffd700; color: #1c1c22; font-weight: 600; }
+        #reco-cancel { background: #3a3a42; color: #ddd; }
+        #reco-status { font-size: 13px; margin: 0 0 12px; min-height: 16px; }
+    </style>
 </head>
 <body>
     <audio id="music" loop>
@@ -25,6 +100,7 @@
             <b>M</b>: Mute / Unmute Music<br>
             <b>N</b>: Toggle Ceiling<br>
             <b>O</b>: Open Door / Menu<br>
+            <b>R</b>: Leave a Recommendation<br>
             <b>H</b>: Toggle this hint
         </div>
     </div>
@@ -41,6 +117,7 @@
                 <button id="btn-m" class="virtual-btn">M</button>
                 <button id="btn-n" class="virtual-btn">N</button>
                 <button id="btn-o" class="virtual-btn">O</button>
+                <button id="btn-r" class="virtual-btn">R</button>
             </div>
         </div>
     </div>
@@ -58,6 +135,22 @@
             <li><a href="sport.html">Sport</a></li>
         </ul>
     </nav>
+
+    <div id="reco-hint">Press <b>R</b> to leave a recommendation</div>
+
+    <div id="reco-overlay">
+        <div class="reco-box">
+            <h2>Leave a Recommendation</h2>
+            <p class="sub">Suggest an artwork, artist, or anything you'd love to see in this gallery.</p>
+            <p id="reco-status"></p>
+            <input id="reco-name" type="text" placeholder="Your name (optional)" maxlength="80">
+            <textarea id="reco-text" placeholder="Your recommendation..." maxlength="1000"></textarea>
+            <div class="reco-actions">
+                <button id="reco-cancel">Cancel</button>
+                <button id="reco-submit">Send</button>
+            </div>
+        </div>
+    </div>
 
 <script  src="Javascript/artscript.js"></script>
 </body>

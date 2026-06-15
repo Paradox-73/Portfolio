@@ -6,7 +6,14 @@ const axios = require('axios');
 const cron = require('node-cron');
 const Parser = require('rss-parser');
 
-const parser = new Parser();
+// Letterboxd returns 403 to clients without a browser-like User-Agent.
+const parser = new Parser({
+    timeout: 60000,
+    headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; PortfolioBot/1.0; +https://letterboxd.com)',
+        'Accept': 'application/rss+xml, application/xml, text/xml; q=0.9, */*; q=0.8'
+    }
+});
 
 // --- CONFIGURATION ---
 const MONGO_URI = process.env.MONGO_URI;

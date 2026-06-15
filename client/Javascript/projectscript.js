@@ -227,6 +227,85 @@
                     "Video Demo.mp4": { type: "app", appId: "wmp", path: "PredictiveAutoScaling_Demo.mp4", icon: "fas fa-film", color: "#9B59B6" }
                 }
             },
+            "Multi-Pipeline ETL Framework": {
+                type: "folder",
+                icon: "assets/projects/folder.png",
+                content: {
+                    "Blog Post.html": {
+                        type: "notepad_render",
+                        html: `
+                            <div style="padding:15px; font-family:'Tahoma', sans-serif; font-size:14px; line-height:1.4;">
+                                <h2>Multi-Pipeline ETL & Reporting Framework</h2>
+                                <p>A framework that processes semi-structured NASA web server logs through four interchangeable data-processing paradigms while keeping the ETL logic identical across all of them, enabling a fair, apples-to-apples performance comparison.</p>
+                                <h3>Highlights:</h3>
+                                <ul>
+                                    <li><strong>Four Pipelines:</strong> Apache Pig, MapReduce, Apache Hive, and MongoDB run the same logical ETL steps and queries.</li>
+                                    <li><strong>Python Orchestration:</strong> A controller batches raw logs, triggers the chosen engine, collects results, and loads them with execution metadata into a central PostgreSQL reporting database.</li>
+                                </ul>
+                            </div>
+                        `
+                    },
+                    "Github Link.url": {
+                        type: "url_redirect",
+                        url: "https://github.com/Bhavzzzzzz/Multipipeline-ETL", // TODO: add GitHub link
+                        icon: "assets/projects/exe-icon.png"
+                    }
+                }
+            },
+            "Adaptive Hybrid School Recommendation System": {
+                type: "folder",
+                icon: "assets/projects/folder.png",
+                content: {
+                    "Paper.pdf": {
+                        type: "app",
+                        appId: "pdfViewer",
+                        path: "assets/projects/README/Adaptive Hybrid School Recommendation System.pdf",
+                        icon: "assets/projects/notepad.png",
+                        color: "#2B579A"
+                    },
+                    "Github Link.url": {
+                        type: "url_redirect",
+                        url: "https://github.com/jayantt23/edu-recommendation-system", // TODO: add GitHub link
+                        icon: "assets/projects/exe-icon.png"
+                    }
+                }
+            },
+            "Provenance": {
+                type: "folder",
+                icon: "assets/projects/folder.png",
+                content: {
+                    "Paper.pdf": {
+                        type: "app",
+                        appId: "pdfViewer",
+                        path: "assets/projects/README/Provenance.pdf",
+                        icon: "assets/projects/notepad.png",
+                        color: "#2B579A"
+                    },
+                    "Github Link.url": {
+                        type: "url_redirect",
+                        url: "https://github.com/Paradox-73/Provenance", // TODO: add GitHub link
+                        icon: "assets/projects/exe-icon.png"
+                    }
+                }
+            },
+            "Robotics": {
+                type: "folder",
+                icon: "assets/projects/folder.png",
+                content: {
+                    "Paper.pdf": {
+                        type: "app",
+                        appId: "pdfViewer",
+                        path: "assets/projects/README/robotics.pdf",
+                        icon: "assets/projects/notepad.png",
+                        color: "#2B579A"
+                    },
+                    "Github Link.url": {
+                        type: "url_redirect",
+                        url: "https://github.com/Paradox-73/FedTraffic-RL", // TODO: add GitHub link
+                        icon: "assets/projects/exe-icon.png"
+                    }
+                }
+            },
             "My Resume.doc": {
                 type: "app",
                 appId: "pdfViewer",

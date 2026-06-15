@@ -54,26 +54,33 @@ async function run() {
         // --- API Endpoints ---
         // Each endpoint fetches data from its corresponding MongoDB collection.
 
-        // Endpoint for Vercel Cron Job to trigger Letterboxd sync
-        app.post('/api/sync-letterboxd', async (req, res) => {
+        // Endpoint for Vercel Cron to trigger the Letterboxd sync.
+        // Vercel Cron sends a GET request and (when a CRON_SECRET env var is set) automatically
+        // includes an "Authorization: Bearer <CRON_SECRET>" header. We also accept POST and a
+        // ?cron_secret= query param so the sync can be triggered manually for testing.
+        const handleLetterboxdSync = async (req, res) => {
             const { authorization } = req.headers;
             const { cron_secret: querySecret } = req.query;
             const cronSecret = process.env.CRON_SECRET;
-        
-            const requestSecret = querySecret || (authorization ? authorization.split(' ')[1] : null);
-        
+
+            const headerSecret = authorization ? authorization.replace(/^Bearer\s+/i, '') : null;
+            const requestSecret = headerSecret || querySecret;
+
             if (!cronSecret || requestSecret !== cronSecret) {
                 return res.status(401).json({ message: 'Unauthorized' });
             }
-        
+
             try {
                 await syncLetterboxd();
                 res.status(200).json({ message: 'Letterboxd sync completed successfully.' });
             } catch (error) {
-                console.error('Vercel cron job for Letterboxd sync failed:', error);
+                console.error('Letterboxd sync failed:', error);
                 res.status(500).json({ message: 'Letterboxd sync failed.', details: error.message });
             }
-        });        
+        };
+        app.get('/api/sync-letterboxd', handleLetterboxdSync);
+        app.post('/api/sync-letterboxd', handleLetterboxdSync);
+
         app.get('/api/movies', async (req, res) => {
             const data = await db.collection('movies').find({}).toArray();
             res.json(data);
@@ -302,6 +309,51 @@ async function run() {
                 console.error('RAWG API Proxy Error:', error.response ? error.response.data : error.message);
                 res.status(error.response?.status || 500).json({
                     message: 'Error fetching data from RAWG API.',
+                    details: error.message
+                });
+            }
+        });
+
+        // Proxy for RAWG game trailers/clips
+        app.get('/api/rawg/games/:id/movies', async (req, res) => {
+            if (!RAWG_API_KEY) {
+                return res.status(500).json({ message: 'RAWG API key is not configured.' });
+            }
+            try {
+                const { id } = req.params;
+                const url = `https://api.rawg.io/api/games/${id}/movies?key=${RAWG_API_KEY}`;
+                const response = await axios.get(url);
+                res.json(response.data);
+            } catch (error) {
+                console.error('RAWG Movies Proxy Error:', error.response ? error.response.data : error.message);
+                res.status(error.response?.status || 500).json({
+                    message: 'Error fetching trailers from RAWG API.',
+                    details: error.message
+                });
+            }
+        });
+
+        // Proxy for YouTube Data API search (optional — used as a trailer fallback).
+        // Returns { videoId } of the first embeddable result, or { videoId: null }.
+        const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
+        app.get('/api/youtube/search', async (req, res) => {
+            if (!YOUTUBE_API_KEY) {
+                // Not configured — let the client gracefully fall through to other sources.
+                return res.status(200).json({ videoId: null, message: 'YouTube API key not configured.' });
+            }
+            const { q } = req.query;
+            if (!q) {
+                return res.status(400).json({ message: 'Missing search query.' });
+            }
+            try {
+                const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&videoEmbeddable=true&maxResults=1&q=${encodeURIComponent(q)}&key=${YOUTUBE_API_KEY}`;
+                const response = await axios.get(url);
+                const videoId = response.data?.items?.[0]?.id?.videoId || null;
+                res.json({ videoId });
+            } catch (error) {
+                console.error('YouTube Search Proxy Error:', error.response ? error.response.data : error.message);
+                res.status(error.response?.status || 500).json({
+                    message: 'Error searching YouTube.',
                     details: error.message
                 });
             }
@@ -628,6 +680,36 @@ async function run() {
             }
         });
         
+// Art Gallery Recommendation Endpoint — emails a visitor's art recommendation.
+app.post('/api/art-recommendation', async (req, res) => {
+    const { recommendation, name } = req.body;
+
+    if (!recommendation || !recommendation.trim()) {
+        return res.status(400).json({ message: 'Recommendation text is required.' });
+    }
+
+    const fromName = (name && name.trim()) ? name.trim() : 'Anonymous visitor';
+
+    try {
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: process.env.EMAIL_TO,
+            subject: `New Art Recommendation from ${fromName}`,
+            html: `
+                <p><strong>From:</strong> ${fromName}</p>
+                <p><strong>Recommendation:</strong></p>
+                <p>${recommendation}</p>
+            `,
+        };
+
+        await transporter.sendMail(mailOptions);
+        res.status(200).json({ message: 'Recommendation sent successfully!' });
+    } catch (error) {
+        console.error('Error sending art recommendation email:', error);
+        res.status(500).json({ message: 'Failed to send recommendation.', details: error.message });
+    }
+});
+
 // Contact Form Submission Endpoint
 app.post('/api/contact', async (req, res) => {
     const { name, email, message } = req.body;

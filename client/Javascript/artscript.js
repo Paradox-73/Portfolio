@@ -1,10 +1,17 @@
 let scene, camera, renderer, ceiling;
     let moveSpeedBase = 0.05; // Slower base speed as requested
     let speedMultiplier = 1;
-    let isMusicPlaying = false; 
+    let isMusicPlaying = false;
     let isDetailedHintsOpen = false;
     let doorMesh;
     let isStarryNight = false;
+    let recoFrame;                 // 3D "leave a recommendation" frame
+    let recoFramePos = null;       // its world position, for proximity checks
+    let isRecoFormOpen = false;
+
+    const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? 'http://localhost:3000'
+        : '';
 
     // Joystick variables
     let joystickActive = false;
@@ -62,7 +69,29 @@ let scene, camera, renderer, ceiling;
         { url: 'assets/Art/c09fbc89defa3423ea3dcbc454ca91eb.jpg', position: [28, 2, -3.95], rotation: [0, 0, 0], description: 'Gond painting of a tree of life' },
         { url: 'assets/Art/d8bc8c943f69263eb4d633707a4da70e.jpg', position: [32, 2, 3.95], rotation: [0, Math.PI, 0], description: 'Painting of a suffering figure' },
         { url: 'assets/Art/e6bfeaed6e6753892197a86295f4bd28.jpg', position: [35.95, 2, 0], rotation: [0, -Math.PI/2, 0], description: '"The Persistence of Memory" by Salvador Dalí'},
-        { url: 'assets/Art/ebc72607a942ea600e5ff072cf8ab589.jpg', position: [24, 2, -3.95], rotation: [0, 0, 0], description: '"The Unseen Audience" by Zdzisław Beksiński'}
+        { url: 'assets/Art/ebc72607a942ea600e5ff072cf8ab589.jpg', position: [24, 2, -3.95], rotation: [0, 0, 0], description: '"The Unseen Audience" by Zdzisław Beksiński'},
+
+        // --- Added from Pinterest board (in.pinterest.com/Paradox_73/art) ---
+        { url: 'assets/Art/110b047759b03fc20a3ff67d05d431c1.jpg', position: [-3.95, 2, -30], rotation: [0, Math.PI/2, 0], description: '"Wheatfield with Crows" by Vincent van Gogh' },
+        { url: 'assets/Art/166c129b38c0645895c9bab74b756472.jpg', position: [-3.95, 2, -27], rotation: [0, Math.PI/2, 0], description: "Ink drawing of a weary frog clutching a mug of coffee" },
+        { url: 'assets/Art/1989e70a29bc6424bca707a0ee7a8cb9.jpg', position: [-3.95, 2, -5], rotation: [0, Math.PI/2, 0], description: '"Head of a Skeleton with a Burning Cigarette" by Vincent van Gogh' },
+        { url: 'assets/Art/23ee6c6f5a5fe27c6a83089e5e0cc243.jpg', position: [-3.95, 2, 5], rotation: [0, Math.PI/2, 0], description: '"Soir Bleu" by Edward Hopper' },
+        { url: 'assets/Art/281ad0d993f9d916d4d6153d0458695f.jpg', position: [3.95, 2, -30], rotation: [0, -Math.PI/2, 0], description: "Surrealist collage of a radiant eye: is it possible not to see your face in everything I see?" },
+        { url: 'assets/Art/5f2129c2ef6bf1735c5143b8454d62d9.jpg', position: [3.95, 2, -27], rotation: [0, -Math.PI/2, 0], description: '"The Lovers" by René Magritte' },
+        { url: 'assets/Art/6f344fa0a040d511f34904cf51760e05.jpg', position: [3.95, 2, -5], rotation: [0, -Math.PI/2, 0], description: "Ink sketch of a spiky-toothed monster" },
+        { url: 'assets/Art/6fd91318fcd30cde8efda056b4c505ad.jpg', position: [3.95, 2, 5], rotation: [0, -Math.PI/2, 0], description: '"The Son of Man" by René Magritte' },
+        { url: 'assets/Art/797a5e34678a68e1ee43d98928a94b1e.jpg', position: [-34, 2, -3.95], rotation: [0, 0, 0], description: "Painting of a black cat stretching on a windowsill as a distant blast lights up the city" },
+        { url: 'assets/Art/9c55cc8ef717befd2784e9c7a09808e7.jpg', position: [-31, 2, -3.95], rotation: [0, 0, 0], description: '"Sunflowers" by Vincent van Gogh' },
+        { url: 'assets/Art/9f8d481923c88118843ab411e137e036.jpg', position: [-21, 2, -3.95], rotation: [0, 0, 0], description: "Marker illustration of a rainbow-haired figure slumped over a bathtub" },
+        { url: 'assets/Art/a7fb862f642a217049206c15f288e934.jpg', position: [-18, 2, -3.95], rotation: [0, 0, 0], description: "Illustrated poster: your suffering is not noble" },
+        { url: 'assets/Art/a99eade643efe42ac177328675875287.jpg', position: [-12, 2, -3.95], rotation: [0, 0, 0], description: '"Café Terrace at Night" by Vincent van Gogh' },
+        { url: 'assets/Art/b98988990fbc8c94a63e7c310e45593d.jpg', position: [-9, 2, -3.95], rotation: [0, 0, 0], description: "Palette-knife painting of a moonlit French Quarter street at night" },
+        { url: 'assets/Art/c26f51fbb1787a2ab8f1f62accbec693.jpg', position: [-6, 2, -3.95], rotation: [0, 0, 0], description: '"Bedroom in Arles" by Vincent van Gogh' },
+        { url: 'assets/Art/dd6837dc108fcdd98ff16b70530ea18e.jpg', position: [-29, 2, 3.95], rotation: [0, Math.PI, 0], description: "A collection of nine hand-drawn skull doodles" },
+        { url: 'assets/Art/ed5f979520f63fc0193c0ed4825dc0ca.jpg', position: [-21, 2, 3.95], rotation: [0, Math.PI, 0], description: "Moody painting of two lovers beneath a crescent moon and shooting star" },
+        { url: 'assets/Art/f5a97ab87476077cb98df759b4d899fe.jpg', position: [-18, 2, 3.95], rotation: [0, Math.PI, 0], description: "Photo-collage poster: I'm still trying to figure out who I really am" },
+        { url: 'assets/Art/f84080b6d9d6559c8642e9d112bcb3e5.jpg', position: [-15, 2, 3.95], rotation: [0, Math.PI, 0], description: "Infographic on traditional Indian art forms: Madhubani, Kalamkari, Tanjore, Kalighat, Gond, and Cheriyal" },
+        { url: 'assets/Art/fd65e370585738b637b7a1e517ccc7a8.jpg', position: [-7, 2, 3.95], rotation: [0, Math.PI, 0], description: "Surrealist allegory of a blindfolded winged figure balancing scales on a bull's horns" }
     ];
 
     // Helper function to wrap text on canvas
@@ -91,6 +120,119 @@ let scene, camera, renderer, ceiling;
         context.fillText(line, x, currentY);
         lineCount++;
         return lineCount * lineHeight; // Return total height used
+    }
+
+    // Builds the interactive "Leave a Recommendation" frame on the entrance wall.
+    function createRecoFrame() {
+        const group = new THREE.Group();
+        const frameW = 2.2, frameH = 2.6;
+
+        const borderMat = new THREE.MeshStandardMaterial({ color: 0x3a2a10, roughness: 0.6, metalness: 0.3 });
+        const border = new THREE.Mesh(new THREE.BoxGeometry(frameW + 0.25, frameH + 0.25, 0.12), borderMat);
+        group.add(border);
+
+        // Canvas texture for the panel label.
+        const canvas = document.createElement('canvas');
+        canvas.width = 512; canvas.height = 600;
+        const ctx = canvas.getContext('2d');
+        const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+        grad.addColorStop(0, '#26262e');
+        grad.addColorStop(1, '#15151a');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.strokeStyle = '#ffd700';
+        ctx.lineWidth = 6;
+        ctx.strokeRect(16, 16, canvas.width - 32, canvas.height - 32);
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#ffd700';
+        ctx.font = '120px serif';
+        ctx.fillText('✒', canvas.width / 2, 210);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 44px Georgia, serif';
+        ctx.fillText('Leave a', canvas.width / 2, 310);
+        ctx.fillText('Recommendation', canvas.width / 2, 366);
+        ctx.fillStyle = '#bbbbbb';
+        ctx.font = '28px Georgia, serif';
+        ctx.fillText('Walk up and press  R', canvas.width / 2, 480);
+
+        const tex = new THREE.CanvasTexture(canvas);
+        // Pre-mirror horizontally so the text reads correctly after the 180° Y rotation below.
+        tex.center.set(0.5, 0.5);
+        tex.repeat.x = -1;
+
+        const panel = new THREE.Mesh(
+            new THREE.PlaneGeometry(frameW, frameH),
+            new THREE.MeshBasicMaterial({ map: tex })
+        );
+        panel.position.z = 0.07;
+        group.add(panel);
+
+        group.position.set(2, 2, 15.75); // entrance wall, right of the door
+        group.rotation.y = Math.PI;       // face into the gallery
+        scene.add(group);
+
+        recoFrame = group;
+        recoFramePos = group.position.clone();
+    }
+
+    function openRecoForm() {
+        if (isRecoFormOpen) return;
+        isRecoFormOpen = true;
+        document.getElementById('reco-overlay').style.display = 'flex';
+        document.getElementById('reco-status').textContent = '';
+        document.exitPointerLock();
+        // Stop any movement so the player doesn't drift while typing.
+        Object.keys(keys).forEach(k => keys[k] = false);
+        setTimeout(() => document.getElementById('reco-text').focus(), 50);
+    }
+
+    function closeRecoForm() {
+        isRecoFormOpen = false;
+        document.getElementById('reco-overlay').style.display = 'none';
+        if (!isMobileDevice()) document.body.requestPointerLock();
+    }
+
+    async function submitReco() {
+        const text = document.getElementById('reco-text').value.trim();
+        const name = document.getElementById('reco-name').value.trim();
+        const status = document.getElementById('reco-status');
+        if (!text) {
+            status.style.color = '#ff8888';
+            status.textContent = 'Please enter a recommendation.';
+            return;
+        }
+        const submitBtn = document.getElementById('reco-submit');
+        submitBtn.disabled = true;
+        status.style.color = '#ffd700';
+        status.textContent = 'Sending...';
+        try {
+            const res = await fetch(`${API_BASE_URL}/api/art-recommendation`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ recommendation: text, name })
+            });
+            if (!res.ok) throw new Error('Request failed');
+            status.style.color = '#88ff88';
+            status.textContent = 'Thank you! Your recommendation was sent.';
+            document.getElementById('reco-text').value = '';
+            document.getElementById('reco-name').value = '';
+            setTimeout(closeRecoForm, 1200);
+        } catch (err) {
+            console.error('Failed to send recommendation:', err);
+            status.style.color = '#ff8888';
+            status.textContent = 'Could not send. Please try again later.';
+        } finally {
+            submitBtn.disabled = false;
+        }
+    }
+
+    // Shows a hint when the player is near the recommendation frame.
+    function updateRecoHint() {
+        const hint = document.getElementById('reco-hint');
+        if (!hint || !recoFramePos) return;
+        if (isRecoFormOpen) { hint.style.display = 'none'; return; }
+        const near = camera.position.distanceTo(recoFramePos) < 6;
+        hint.style.display = near ? 'block' : 'none';
     }
 
     function init() {
@@ -123,9 +265,12 @@ let scene, camera, renderer, ceiling;
         doorGeometry.translate(-1, 0, 0); 
         const doorMaterial = new THREE.MeshStandardMaterial({ color: 0x5C4033, roughness: 0.8 });
         doorMesh = new THREE.Mesh(doorGeometry, doorMaterial);
-        doorMesh.position.set(-1, 2, 15.9); 
+        doorMesh.position.set(-1, 2, 15.9);
         doorMesh.rotation.y = Math.PI; // Face inwards
         scene.add(doorMesh);
+
+        // --- Recommendation Frame (on the entrance wall, right of the door) ---
+        createRecoFrame();
 
         // --- Floors ---
         const carpetTexture = loadCarpetTexture();
@@ -421,6 +566,14 @@ let scene, camera, renderer, ceiling;
 
     document.addEventListener('keydown', (e) => {
         const key = e.key.toLowerCase();
+
+        // While the recommendation form is open, let the user type freely and
+        // ignore movement / other shortcuts (Escape closes it).
+        if (isRecoFormOpen) {
+            if (e.key === 'Escape') closeRecoForm();
+            return;
+        }
+
         if (key in keys) keys[key] = true;
 
         if (key === 'o') toggleDoorMenu();
@@ -428,6 +581,7 @@ let scene, camera, renderer, ceiling;
         if (key === 'h') toggleHints();
         if (key === 'm') toggleMusic();
         if (key === '2') toggleSpeed();
+        if (key === 'r') openRecoForm();
     });
 
     document.addEventListener('keyup', (e) => {
@@ -441,6 +595,8 @@ let scene, camera, renderer, ceiling;
     let yaw = 0;
 
     document.addEventListener('click', () => {
+    // Don't grab pointer lock while the recommendation form is open (let the user type).
+    if (isRecoFormOpen) return;
     // For desktop, lock pointer on click
     if (!isMobileDevice() && !isMouseLocked) {
         document.body.requestPointerLock();
@@ -527,6 +683,7 @@ let scene, camera, renderer, ceiling;
         requestAnimationFrame(animate);
         updatePosition();
         updateDoor();
+        updateRecoHint();
         renderer.render(scene, camera);
     }
 
@@ -575,6 +732,10 @@ let scene, camera, renderer, ceiling;
 window.onload = function() {
     init(); // Call init only after all resources are loaded
 
+    // Recommendation form buttons (all devices)
+    document.getElementById('reco-submit')?.addEventListener('click', submitReco);
+    document.getElementById('reco-cancel')?.addEventListener('click', closeRecoForm);
+
     // Mobile joystick initialization
     if (isMobileDevice()) {
         joystickHandle = document.querySelector('#virtual-joystick-left .joystick-handle');
@@ -604,6 +765,7 @@ window.onload = function() {
         document.getElementById('btn-m')?.addEventListener('click', toggleMusic);
         document.getElementById('btn-n')?.addEventListener('click', toggleCeiling);
         document.getElementById('btn-o')?.addEventListener('click', toggleDoorMenu);
+        document.getElementById('btn-r')?.addEventListener('click', openRecoForm);
 
         // Virtual Joystick Movement
         if (joystickBase) {
