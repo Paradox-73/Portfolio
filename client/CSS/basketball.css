@@ -1,0 +1,333 @@
+:root {
+    --pixel: 'Press Start 2P', monospace;
+    --disp: 'Russo One', 'Arial Black', sans-serif;
+    --orange: #ff7a1a;
+    --cyan: #22d3ee;
+}
+
+#basketball-game {
+    position: fixed;
+    inset: 0;
+    display: none;
+}
+
+#basketball-game.active {
+    display: block;
+}
+
+#basketball-game #three {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+}
+
+#basketball-game canvas {
+    display: block;
+}
+
+#basketball-game .hud {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 5;
+}
+
+#basketball-game .topbar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 14px 18px;
+    background: linear-gradient(180deg, rgba(0, 0, 0, .55), transparent);
+}
+
+#basketball-game .stat {
+    font-family: var(--pixel);
+    font-size: 10px;
+    letter-spacing: 1px;
+    line-height: 1.9;
+    color: #cfe;
+    text-shadow: 0 1px 2px #000;
+}
+
+#basketball-game .stat b {
+    color: #fff;
+}
+
+#basketball-game .stat .big {
+    font-family: var(--disp);
+    font-size: 30px;
+    color: var(--orange);
+    text-shadow: 0 0 14px rgba(255, 120, 30, .6);
+    letter-spacing: 1px;
+}
+
+#basketball-game .right {
+    text-align: right;
+}
+
+#basketball-game .clock {
+    font-family: var(--disp);
+    font-size: 26px;
+    color: #ffd86b;
+}
+
+#basketball-game .clock.warn {
+    color: #ff4d4d;
+    animation: pulse .5s infinite;
+}
+
+@keyframes pulse {
+    50% {
+        opacity: .45;
+    }
+}
+
+#basketball-game .spotpips {
+    display: flex;
+    gap: 5px;
+    margin-top: 6px;
+    justify-content: flex-end;
+}
+
+#basketball-game .pip {
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    border: 2px solid #fff7;
+}
+
+#basketball-game .pip.done {
+    background: var(--orange);
+    border-color: var(--orange);
+    box-shadow: 0 0 8px var(--orange);
+}
+
+#basketball-game .pip.cur {
+    border-color: var(--cyan);
+    box-shadow: 0 0 8px var(--cyan);
+}
+
+#basketball-game .hint {
+    position: absolute;
+    bottom: 14px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-family: var(--pixel);
+    font-size: 9px;
+    color: #9fb;
+    letter-spacing: 1px;
+    text-shadow: 0 1px 2px #000;
+}
+
+#basketball-game .hint b {
+    color: #fff;
+}
+
+#basketball-game .badge {
+    position: absolute;
+    top: 64px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--pixel);
+    font-size: 11px;
+    color: #fff;
+    letter-spacing: 2px;
+    background: rgba(0, 0, 0, .45);
+    padding: 7px 12px;
+    border-radius: 8px;
+}
+
+#basketball-game .cross {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 46px;
+    height: 46px;
+    transform: translate(-50%, -50%);
+    z-index: 6;
+    pointer-events: none;
+}
+
+#basketball-game .cross::before,
+#basketball-game .cross::after {
+    content: "";
+    position: absolute;
+    background: #fff;
+    box-shadow: 0 0 6px #000;
+}
+
+#basketball-game .cross::before {
+    left: 50%;
+    top: 0;
+    width: 2px;
+    height: 100%;
+    transform: translateX(-50%);
+}
+
+#basketball-game .cross::after {
+    top: 50%;
+    left: 0;
+    height: 2px;
+    width: 100%;
+    transform: translateY(-50%);
+}
+
+#basketball-game .cross .ring {
+    position: absolute;
+    inset: 6px;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 6px #000;
+}
+
+#basketball-game .cross.good .ring {
+    border-color: #33ff99;
+    box-shadow: 0 0 10px #33ff99;
+}
+
+#basketball-game .cross.good::before,
+#basketball-game .cross.good::after {
+    background: #33ff99;
+}
+
+#basketball-game .pmeter {
+    position: absolute;
+    right: 46px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 26px;
+    height: 210px;
+    z-index: 6;
+    pointer-events: none;
+    background: rgba(0, 0, 0, .5);
+    border: 2px solid #fff;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+#basketball-game .pmeter .zone {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 22px;
+    background: rgba(80, 255, 140, .35);
+    border-top: 2px solid #5f9;
+    border-bottom: 2px solid #5f9;
+}
+
+#basketball-game .pmeter .fill {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 0%;
+    background: linear-gradient(0deg, #ffd34d, #ff7a1a 60%, #ff3b3b);
+}
+
+#basketball-game .pmeter .lab {
+    position: absolute;
+    top: -22px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--pixel);
+    font-size: 8px;
+    color: #fff;
+}
+
+#basketball-game .overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 20;
+    background: radial-gradient(120% 120% at 50% 40%, rgba(10, 8, 20, .78), rgba(0, 0, 0, .92));
+    text-align: center;
+    padding: 24px;
+    pointer-events: auto;
+}
+
+#basketball-game .overlay h1 {
+    font-size: clamp(34px, 8vw, 78px);
+    line-height: .95;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+    background: linear-gradient(180deg, #fff, #ffb84d 60%, #ff5a1a);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+#basketball-game .overlay p {
+    font-family: var(--pixel);
+    font-size: 11px;
+    line-height: 2.4;
+    color: #cdd;
+    max-width: 580px;
+}
+
+#basketball-game .overlay .keys {
+    margin-top: 14px;
+    font-family: var(--pixel);
+    font-size: 9.5px;
+    color: #9ad;
+    line-height: 2.4;
+    letter-spacing: 1px;
+}
+
+#basketball-game .overlay .keys b {
+    color: #ffd86b;
+}
+
+#basketball-game .btnrow {
+    margin-top: 18px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+#basketball-game .btn {
+    font-family: var(--pixel);
+    font-size: 10px;
+    letter-spacing: 1px;
+    padding: 11px 16px;
+    border-radius: 9px;
+    border: 2px solid #2b3a66;
+    background: #0e1430;
+    color: #dfe;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+#basketball-game .btn:hover {
+    border-color: var(--cyan);
+    color: #fff;
+}
+
+#basketball-game .btn.go {
+    background: var(--orange);
+    color: #190a00;
+    border-color: var(--orange);
+}
+
+#basketball-game .err {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-family: var(--pixel);
+    font-size: 11px;
+    color: #fbb;
+    padding: 30px;
+    z-index: 30;
+    line-height: 2;
+}

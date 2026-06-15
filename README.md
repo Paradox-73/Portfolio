@@ -10,15 +10,15 @@ Welcome to my interactive portfolio! This project is a creative showcase of my w
 *   **Dynamic Loading**: An engaging loader with a progress bar keeps you company while everything loads, followed by a personal welcome message from me.
 *   **Ambient Music**: I've integrated a background music player using the YouTube IFrame API to set the mood, complete with an autoplay fallback and toggle controls.
 *   **Detailed Portfolio Sections**: Each interactive item leads to a dedicated page:
-    *   **Music**: Dive into my sonic world with popular playlists, featured artists, recommended albums, and an integrated music player, all powered by data fetched from Spotify.
-    *   **Movies & TV**: Explore my cinematic tastes, with dynamic content integrated from TMDB and OMDB.
-    *   **Games**: Discover my gaming universe, with data pulled from the RAWG API.
-    *   **Travel**: Journey through my travel memories and aspirations.
-    *   **Food**: Savor my culinary adventures and recipes.
-    *   **Literature**: Browse my favorite reads and literary escapes.
-    *   **Art**: Step into my creative canvas, showcasing my artistic inspirations.
-    *   **Sport**: See the sports I've played and enjoy.
-    *   **Projects**: Experience an XP-themed desktop environment featuring my key development projects.
+    *   **Music**: An immersive "Soundscape" experience featuring a virtual turntable, a scrollable record crate, and live-sorted artist and track archives.
+    *   **Movies & TV**: Explore my cinematic tastes with a Netflix-style interface, dynamic content from TMDB/OMDB, and an automated Letterboxd diary sync.
+    *   **Games**: A PlayStation-inspired arcade experience with dynamic backgrounds, game trailers, and RAWG API integration.
+    *   **Travel**: A digital scrapbook with a realistic page-flipping effect, sharing stories and photos from my journeys.
+    *   **Food**: A retro diner-themed menu featuring recipes, witty descriptions, and allergen information.
+    *   **Literature**: A cozy virtual library with interactive book covers, a search system, and an integrated reader for my own works.
+    *   **Art**: A navigable 3D gallery built with Three.js, showcasing a curated collection with dynamic lighting and environments.
+    *   **Sport**: An arcade-style hub featuring playable mini-games like basketball, golf, and a martial arts simulator.
+    *   **Projects**: A retro Windows XP desktop environment where you can explore my development work through simulated applications.
 *   **Holographic Contact Display**: Hover over the phone in my digital room to reveal a holographic display, providing quick access to my GitHub, LinkedIn, Email, and Resume.
 *   **Backend Services**: I've built a Node.js/Express.js API to manage data in MongoDB and to proxy external APIs securely.
 *   **Automated Movie Diary Sync**: A custom-built ETL pipeline automatically fetches my latest movie entries from my public Letterboxd RSS feed, enriches them with data from The Movie Database (TMDB), and saves them to MongoDB. This sync runs on a daily schedule, ensuring my movie list is always up-to-date without manual intervention.
@@ -74,13 +74,13 @@ This is the central hub of my portfolio, designed as a cozy, pixel-art inspired 
 
 ### My Sonic World (Music) (`Music.html`)
 
-This page is a deep dive into my musical tastes. I've designed it with a modern layout, featuring:
-*   **Sidebar Navigation**: A persistent navigation bar to easily jump between all portfolio categories.
-*   **Popular Playlists**: A dynamic carousel (powered by Swiper.js) showcasing playlists, some linked directly to Spotify.
-*   **Featured Artists**: A collection of artists I admire, with images and names.
-*   **Recommended Albums/Podcasts**: My curated list of albums and episodes for you to check out.
-*   **Recommended Songs**: A list of individual tracks I recommend.
-*   **Integrated Music Player**: A functional music player that loads audio previews from Spotify data and features a rotating album cover, progress bar, and playback controls.
+A high-fidelity audio archive with a focus on tactile interaction:
+*   **Interactive Vinyl Turntable**: Play selected records on a realistic turntable with animated tonearm and spinning vinyl.
+*   **Scrollable Record Crate**: A 3D-style crate (powered by GSAP) where you can "dig" through albums.
+*   **Top Artists & Tracks**: Explore favorite creators and top tracks with dynamic sorting and Spotify links.
+*   **The Archive**: A full-screen collection overlay for browsing and filtering the entire record library.
+*   **Integrated Display**: Track and artist info are displayed directly on the virtual turntable's screen.
+*   **Tracklist Navigation**: A unique disc-themed menu for quick access to other portfolio sections.
 
 ### My Reel Life (Movies & TV) (`MoviesTV.html`)
 

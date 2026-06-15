@@ -1,4 +1,9 @@
-// --- MODAL HELPER FUNCTIONS ---
+// --- API ---
+    const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? 'http://localhost:3000'
+        : '';
+
+    // --- MODAL HELPER FUNCTIONS ---
     function showInputModal(title, label, placeholder = '', inputType = 'text') {
         return new Promise((resolve) => {
             const modal = document.getElementById('input-modal');
@@ -141,7 +146,7 @@
         
                         try {
                             console.log(`Attempting to toggle played status for ${title} (ID: ${itemId})...`);
-                            const response = await fetch(`/api/wishlist/games/${itemId}/togglePlayed`, {
+                            const response = await fetch(`${API_BASE_URL}/api/wishlist/games/${itemId}/togglePlayed`, {
                                 method: 'PUT',
                                 headers: {
                                     'Content-Type': 'application/json',
@@ -202,7 +207,7 @@
 
     async function loadGamesFromAPI() {
         try {
-            const response = await fetch('/api/games');
+            const response = await fetch(`${API_BASE_URL}/api/games`);
             const fetchedGames = await response.json();
             playedGameTitles.clear();
             gameLibrary = fetchedGames.map(game => {
@@ -224,7 +229,7 @@
 
     async function loadWishlistData() { // Renamed and refactored
         try {
-            const response = await fetch('/api/wishlist/games');
+            const response = await fetch(`${API_BASE_URL}/api/wishlist/games`);
             if (response.ok) {
                 const fetchedWishlist = await response.json();
                 wishlist = fetchedWishlist.map(item => ({
@@ -568,13 +573,13 @@
     async function fetchGameDetails(gameName) {
         try {
             // First call to search for the game by name
-            const searchRes = await fetch(`/api/rawg/games?search=${encodeURIComponent(gameName)}&page_size=1`);
+            const searchRes = await fetch(`${API_BASE_URL}/api/rawg/games?search=${encodeURIComponent(gameName)}&page_size=1`);
             const searchData = await searchRes.json();
 
             if (searchData.results && searchData.results.length > 0) {
                 const id = searchData.results[0].id;
                 // Second call to get full details by ID
-                const detailsRes = await fetch(`/api/rawg/games?id=${id}`);
+                const detailsRes = await fetch(`${API_BASE_URL}/api/rawg/games?id=${id}`);
                 return await detailsRes.json();
             }
         } catch (e) {
@@ -874,7 +879,7 @@
         }
 
         try {
-            const response = await fetch('/api/wishlist/games', {
+            const response = await fetch(`${API_BASE_URL}/api/wishlist/games`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -902,7 +907,7 @@
 
     async function loadWishlistData() { 
         try {
-            const response = await fetch('/api/wishlist/games');
+            const response = await fetch(`${API_BASE_URL}/api/wishlist/games`);
             if (response.ok) {
                 wishlist = await response.json();
                 wishlistGameTitles.clear();
@@ -960,7 +965,7 @@
         // Global Search
         if (v.length > 2) {
             try {
-                const res = await fetch(`/api/rawg/games?search=${encodeURIComponent(v)}&page_size=5`);
+                const res = await fetch(`${API_BASE_URL}/api/rawg/games?search=${encodeURIComponent(v)}&page_size=5`);
                 const data = await res.json();
                 data.results.forEach(g => {
                     if (owned.some(o => o.title.toLowerCase() === g.name.toLowerCase())) return;

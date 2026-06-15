@@ -1,5 +1,10 @@
 lucide.createIcons();
 
+            // --- API ---
+            const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+                ? 'http://localhost:3000'
+                : '';
+
             // --- DATA ---
             const FALLBACK_BOOKS = ["The Great Gatsby", "Dune", "Sapiens", "Atomic Habits", "Project Hail Mary", "Clean Code"];
             const BOOK_COLORS = ['#2a1b12', '#3e2723', '#4e342e', '#5d4037', '#1a237e', '#004d40', '#b71c1c'];
@@ -145,7 +150,7 @@ lucide.createIcons();
                 const recommender = name.trim() === "" ? "Anonymous" : name;
 
                 try {
-                    const response = await fetch('/api/recommendations', {
+                    const response = await fetch(`${API_BASE_URL}/api/recommendations`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -199,10 +204,26 @@ lucide.createIcons();
                             submitText: "Confirm"
                         });
 
-                        if(pwd === "admin123") {
+                        if (pwd === null) return; // cancelled
+
+                        let verified = false;
+                        try {
+                            const verifyRes = await fetch(`${API_BASE_URL}/api/admin/verify-password`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ password: pwd })
+                            });
+                            verified = (await verifyRes.json()).success;
+                        } catch (err) {
+                            await showAlert("Error", "Could not verify password.");
+                            checkbox.checked = false;
+                            return;
+                        }
+
+                        if (verified) {
                             checkbox.checked = true;
                             try {
-                                const addResponse = await fetch('/api/books', {
+                                const addResponse = await fetch(`${API_BASE_URL}/api/books`, {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
                                     body: JSON.stringify({
@@ -214,7 +235,7 @@ lucide.createIcons();
                                 });
                                 if (!addResponse.ok) throw new Error('Failed to add book to read collection.');
 
-                                const deleteResponse = await fetch(`/api/wishlist/${docId}`, {
+                                const deleteResponse = await fetch(`${API_BASE_URL}/api/wishlist/${docId}`, {
                                     method: 'DELETE'
                                 });
                                 if (!deleteResponse.ok) throw new Error('Failed to remove book from wishlist.');
@@ -227,7 +248,7 @@ lucide.createIcons();
                             } catch(err) {
                                 await showAlert("Update Failed", err.message);
                             }
-                        } else if(pwd !== null) {
+                        } else {
                             await showAlert("Error", "Incorrect Password.");
                             checkbox.checked = false;
                         }
@@ -294,7 +315,7 @@ lucide.createIcons();
                     return pages;
                 }
 
-                fetch('/api/works')
+                fetch(`${API_BASE_URL}/api/works`)
                     .then(response => response.json())
                     .then(works => {
                         works.forEach(work => {
@@ -327,7 +348,7 @@ lucide.createIcons();
                 document.getElementById('loading-msg').style.display = 'none';
 
                 try {
-                    const response = await fetch('/api/books');
+                    const response = await fetch(`${API_BASE_URL}/api/books`);
                     if (!response.ok) throw new Error('Network response was not ok');
                     const books = await response.json();
                     
@@ -362,7 +383,7 @@ lucide.createIcons();
 
             async function loadWishlist() {
                 try {
-                    const response = await fetch('/api/wishlist');
+                    const response = await fetch(`${API_BASE_URL}/api/wishlist`);
                     if (!response.ok) throw new Error('Network response was not ok');
                     const books = await response.json();
 

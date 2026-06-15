@@ -1,0 +1,274 @@
+:root {
+    --pixel: 'Press Start 2P', monospace;
+    --disp: 'Russo One', 'Arial Black', sans-serif;
+    --red: #ff2d55;
+    --gold: #ffcf3f;
+}
+
+#martialarts-game {
+    position: fixed;
+    inset: 0;
+    display: none;
+    background: #000;
+    font-family: var(--disp);
+    color: #fff;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+#martialarts-game.active {
+    display: block;
+}
+
+#martialarts-game canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    cursor: default;
+}
+
+#martialarts-game .hud {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 5;
+}
+
+#martialarts-game .bars {
+    position: absolute;
+    top: 14px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 0 18px;
+    align-items: flex-start;
+}
+
+#martialarts-game .barwrap {
+    flex: 1;
+    max-width: 42%;
+}
+
+#martialarts-game .barwrap.r {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+#martialarts-game .barname {
+    font-family: var(--pixel);
+    font-size: 9px;
+    letter-spacing: 1px;
+    color: #ffd;
+    margin-bottom: 5px;
+}
+
+#martialarts-game .bar {
+    height: 18px;
+    border: 2px solid #000;
+    background: #2a0a0e;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, .15);
+}
+
+#martialarts-game .barwrap .bar {
+    width: 100%;
+}
+
+#martialarts-game .fill {
+    height: 100%;
+    width: 100%;
+    transition: width .12s linear;
+}
+
+#martialarts-game .fill.hp {
+    background: linear-gradient(180deg, #7CFF6B, #2faa1f);
+}
+
+#martialarts-game .fill.bag {
+    background: linear-gradient(180deg, #ff7a7a, #c0392b);
+}
+
+#martialarts-game .mid {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+}
+
+#martialarts-game .timer {
+    font-family: var(--disp);
+    font-size: 40px;
+    color: var(--gold);
+    text-shadow: 0 0 14px rgba(255, 200, 60, .5);
+    line-height: 1;
+}
+
+#martialarts-game .lvl {
+    font-family: var(--pixel);
+    font-size: 9px;
+    color: #ffb3b3;
+    letter-spacing: 2px;
+    margin-top: 3px;
+}
+
+#martialarts-game .score {
+    font-family: var(--pixel);
+    font-size: 11px;
+    color: #fff;
+    margin-top: 6px;
+    letter-spacing: 1px;
+}
+
+#martialarts-game .super {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(420px, 70vw);
+}
+
+#martialarts-game .super .lab {
+    font-family: var(--pixel);
+    font-size: 8px;
+    letter-spacing: 2px;
+    color: var(--gold);
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+#martialarts-game .super .bar {
+    height: 12px;
+}
+
+#martialarts-game .fill.sup {
+    background: linear-gradient(90deg, #ffcf3f, #ff8a00, #ff2d55);
+    width: 0%;
+}
+
+#martialarts-game .super.ready .lab {
+    animation: bl .6s steps(2) infinite;
+}
+
+@keyframes bl {
+    50% {
+        opacity: .25;
+    }
+}
+
+#martialarts-game .hint {
+    position: absolute;
+    bottom: 42px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-family: var(--pixel);
+    font-size: 8.5px;
+    color: #f9b;
+    letter-spacing: 1px;
+}
+
+#martialarts-game .hint b {
+    color: #fff;
+}
+
+#martialarts-game .overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 20;
+    background: radial-gradient(120% 120% at 50% 40%, rgba(30, 4, 8, .82), rgba(0, 0, 0, .94));
+    text-align: center;
+    padding: 22px;
+    pointer-events: auto;
+}
+
+#martialarts-game .overlay h1 {
+    font-size: clamp(32px, 8vw, 76px);
+    line-height: .95;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    background: linear-gradient(180deg, #fff, #ff9aa6 55%, #ff2d55);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+#martialarts-game .moves {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 26px;
+    font-family: var(--pixel);
+    font-size: 8.5px;
+    color: #ccd;
+    max-width: 660px;
+    margin-top: 10px;
+    line-height: 2.3;
+    text-align: left;
+}
+
+#martialarts-game .moves b {
+    color: var(--gold);
+}
+
+#martialarts-game .moves .sp b {
+    color: #7ad7ff;
+}
+
+#martialarts-game .keys {
+    margin-top: 14px;
+    font-family: var(--pixel);
+    font-size: 9px;
+    color: #9ad;
+    line-height: 2.3;
+    letter-spacing: 1px;
+}
+
+#martialarts-game .keys b {
+    color: var(--gold);
+}
+
+#martialarts-game .btnrow {
+    margin-top: 18px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+#martialarts-game .btn {
+    font-family: var(--pixel);
+    font-size: 10px;
+    letter-spacing: 1px;
+    padding: 11px 16px;
+    border-radius: 9px;
+    border: 2px solid #5a1a26;
+    background: #1a0810;
+    color: #fde;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+#martialarts-game .btn:hover {
+    border-color: var(--red);
+    color: #fff;
+}
+
+#martialarts-game .btn.go {
+    background: var(--red);
+    color: #1a0008;
+    border-color: var(--red);
+}
+
+#martialarts-game .hidden {
+    display: none !important;
+}
