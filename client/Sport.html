@@ -85,10 +85,101 @@
         .nav-item:hover .tooltip {
             opacity: 1;
         }
+
+        /* --- Rotate-to-landscape prompt --- */
+        #rotate-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: #050505;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 30px;
+            gap: 18px;
+        }
+        #rotate-overlay .rot-icon {
+            font-size: 64px;
+            color: #ffd700;
+            animation: rotateHint 1.8s ease-in-out infinite;
+        }
+        #rotate-overlay h2 { font-size: 18px; }
+        #rotate-overlay p { color: #aaa; font-size: 13px; max-width: 320px; line-height: 1.5; }
+        @keyframes rotateHint { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(90deg); } }
+
+        /* Show the prompt only on small screens held in portrait */
+        @media (max-width: 900px) and (orientation: portrait) {
+            #rotate-overlay { display: flex; }
+        }
+
+        /* Keep the three game cards in a row on small landscape screens so they fit */
+        @media (orientation: landscape) and (max-width: 1024px) {
+            #mainMenu > div { flex-direction: row !important; gap: 0.75rem !important; padding: 0 12px !important; }
+        }
+
+        /* Compact the arcade menu + game overlays on short screens (landscape phones) */
+        @media (max-height: 500px) {
+            #mainMenu h1 { font-size: 1.5rem !important; margin-bottom: 0.75rem !important; }
+            #mainMenu button { padding: 0.75rem !important; }
+            #mainMenu button h3 { font-size: 1rem !important; margin-bottom: 0.2rem !important; }
+            #mainMenu button p { font-size: 0.7rem !important; }
+            #mainMenu button .text-6xl { font-size: 2rem !important; }
+            .overlay h1 { font-size: 1.5rem !important; line-height: 1.1 !important; }
+            .overlay .keys, .overlay .moves, .overlay p { font-size: 0.62rem !important; }
+            .overlay .btn { padding: 6px 12px !important; font-size: 0.72rem !important; }
+            .nav-bar { height: 44px; }
+        }
+
+        /* --- On-screen touch controls --- */
+        /* Game start/pause/over overlays must sit ABOVE the touch controls, so when an
+           overlay is showing its buttons (TIP OFF, ARCADE, etc.) receive taps instead of
+           the on-screen controls. The controls only matter during active play, when the
+           overlay is hidden. */
+        #basketball-game .overlay,
+        #golf-game .overlay,
+        #martialarts-game .overlay { z-index: 200 !important; }
+
+        #touch-controls { display: none; }
+        #touch-controls.active { display: block; }
+        .tc-dpad {
+            position: fixed; left: 14px; bottom: 72px; z-index: 80;
+            width: 150px; height: 150px; pointer-events: none;
+        }
+        .tc-actions {
+            position: fixed; right: 14px; bottom: 72px; z-index: 80;
+            display: flex; flex-wrap: wrap-reverse; gap: 10px;
+            justify-content: flex-end; max-width: 200px; pointer-events: none;
+        }
+        .tc-btn {
+            pointer-events: auto;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            color: #fff; font-family: 'Press Start 2P', monospace;
+            font-size: 10px; width: 58px; height: 58px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            touch-action: none; user-select: none; -webkit-user-select: none;
+            backdrop-filter: blur(4px);
+        }
+        .tc-btn:active { background: rgba(255, 215, 0, 0.45); }
+        .tc-btn.big { width: 80px; height: 80px; font-size: 11px; background: rgba(255, 120, 0, 0.32); }
+        .tc-dpad .tc-btn { position: absolute; width: 50px; height: 50px; border-radius: 12px; }
+        .tc-up    { top: 0;     left: 50px; }
+        .tc-left  { top: 50px;  left: 0; }
+        .tc-right { top: 50px;  left: 100px; }
+        .tc-down  { top: 100px; left: 50px; }
     </style>
 </head>
 <body class="h-screen w-screen relative">
     <div class="absolute inset-0 scanlines"></div>
+
+    <!-- Rotate-to-landscape prompt (mobile portrait only) -->
+    <div id="rotate-overlay">
+        <i class="fa-solid fa-mobile-screen-button rot-icon"></i>
+        <h2 class="arcade-font">ROTATE YOUR DEVICE</h2>
+        <p>The Portfolio Arcade plays best in landscape. Turn your phone sideways to enter the arena.</p>
+    </div>
 
     <!-- Navigation Bar -->
     <nav class="nav-bar">
@@ -320,6 +411,17 @@
         </div>
     </div>
 
+    <!-- On-screen touch controls (mobile) -->
+    <div id="touch-controls">
+        <div class="tc-dpad">
+            <button class="tc-btn tc-up" data-key="ArrowUp">&#9650;</button>
+            <button class="tc-btn tc-left" data-key="ArrowLeft">&#9664;</button>
+            <button class="tc-btn tc-right" data-key="ArrowRight">&#9654;</button>
+            <button class="tc-btn tc-down" data-key="ArrowDown">&#9660;</button>
+        </div>
+        <div class="tc-actions" id="tc-actions"></div>
+    </div>
+
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="Javascript/basketball.js"></script>
@@ -330,7 +432,13 @@
             currentGame: null,
             loadGame(type) {
                 document.getElementById('mainMenu').classList.add('hidden');
-                
+                // Hide the whole menu wrapper too — it's a full-screen z-40 layer that would
+                // otherwise sit on top of the (position:fixed, z-auto) game and swallow every
+                // click (TIP OFF / ARCADE / gameplay).
+                document.getElementById('main-interface').classList.add('hidden');
+                // Tuck away the portfolio nav bar during a game.
+                document.querySelector('.nav-bar').classList.add('hidden');
+
                 // Hide all games first
                 document.getElementById('basketball-game').classList.remove('active');
                 document.getElementById('golf-game').classList.remove('active');
@@ -357,15 +465,19 @@
                         window.initMartialArts = null;
                     }
                 }
+
+                TouchControls.show(type);
             },
             exitGame() {
                 // Return to main menu
                 document.getElementById('basketball-game').classList.remove('active');
                 document.getElementById('golf-game').classList.remove('active');
                 document.getElementById('martialarts-game').classList.remove('active');
+                document.getElementById('main-interface').classList.remove('hidden');
+                document.querySelector('.nav-bar').classList.remove('hidden');
                 document.getElementById('mainMenu').classList.remove('hidden');
                 this.currentGame = null;
-                
+
                 window.location.reload();
             }
         };
@@ -376,6 +488,72 @@
                 app.exitGame();
             }
         });
+
+        // ---- On-screen touch controls ----
+        // Each button dispatches a synthetic keyboard event; the games already read
+        // window keydown/keyup via e.key, so no game logic needs to change.
+        const TouchControls = {
+            isTouch: ('ontouchstart' in window) || navigator.maxTouchPoints > 0,
+            config: {
+                basketball: [ { l: 'SHOOT', k: ' ', big: true }, { l: 'TIME', k: 't' }, { l: 'RST', k: 'r' } ],
+                golf:       [ { l: 'SWING', k: ' ', big: true } ],
+                martialArts:[ { l: 'JAB', k: 'j' }, { l: 'PUNCH', k: 'k' }, { l: 'KICK', k: 'l' },
+                              { l: 'HI-K', k: 'i' }, { l: 'BLOCK', k: ' ', big: true }, { l: 'SUPER', k: 'Enter' } ]
+            },
+            dispatch(key, down) {
+                window.dispatchEvent(new KeyboardEvent(down ? 'keydown' : 'keyup', { key: key, bubbles: true }));
+            },
+            bindButton(el, key) {
+                let held = false;
+                const press = (e) => { e.preventDefault(); if (held) return; held = true; this.dispatch(key, true); };
+                const release = () => { if (!held) return; held = false; this.dispatch(key, false); };
+                el.addEventListener('pointerdown', press);
+                el.addEventListener('pointerup', release);
+                el.addEventListener('pointerleave', release);
+                el.addEventListener('pointercancel', release);
+            },
+            // Drag anywhere on a game surface to aim (simulates the mouse the games already use).
+            bindDragAim(el, target) {
+                const emit = (e) => target.dispatchEvent(new MouseEvent('mousemove', { clientX: e.clientX, clientY: e.clientY, bubbles: true }));
+                el.addEventListener('pointerdown', (e) => { e.preventDefault(); emit(e); });
+                el.addEventListener('pointermove', (e) => { if (e.buttons || e.pointerType === 'touch') emit(e); });
+            },
+            init() {
+                if (!this.isTouch) return;
+                document.querySelectorAll('#touch-controls .tc-dpad .tc-btn').forEach(b => this.bindButton(b, b.dataset.key));
+                const bb = document.getElementById('bb-three'); if (bb) this.bindDragAim(bb, window);
+                const gcv = document.getElementById('golf-cv'); if (gcv) this.bindDragAim(gcv, gcv);
+            },
+            show(type) {
+                if (!this.isTouch) return;
+                const actions = this.config[type]; if (!actions) return;
+                const box = document.getElementById('tc-actions');
+                box.innerHTML = '';
+                actions.forEach(a => {
+                    const b = document.createElement('button');
+                    b.className = 'tc-btn' + (a.big ? ' big' : '');
+                    b.textContent = a.l;
+                    this.bindButton(b, a.k);
+                    box.appendChild(b);
+                });
+
+                // Only show the controls during actual play — hide them whenever a start/
+                // pause/over overlay is visible, so the on-screen buttons never cover the
+                // overlay's own buttons (TIP OFF, ARCADE, RESUME...).
+                const gameId = { basketball: 'basketball-game', golf: 'golf-game', martialArts: 'martialarts-game' }[type];
+                const wrap = document.getElementById('touch-controls');
+                const overlays = document.querySelectorAll('#' + gameId + ' .overlay');
+                const sync = () => {
+                    const anyOverlayVisible = Array.from(overlays).some(o => !o.classList.contains('hidden'));
+                    wrap.classList.toggle('active', !anyOverlayVisible);
+                };
+                if (this._obs) this._obs.disconnect();
+                this._obs = new MutationObserver(sync);
+                overlays.forEach(o => this._obs.observe(o, { attributes: true, attributeFilter: ['class'] }));
+                sync();
+            }
+        };
+        TouchControls.init();
     </script>
 </body>
 </html>

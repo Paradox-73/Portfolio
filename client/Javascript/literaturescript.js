@@ -46,21 +46,21 @@ lucide.createIcons();
                     searchResults.style.display='block';
                     searchResults.innerHTML = '<div class="p-2 text-gray-500 text-sm">Searching...</div>';
                     try {
-                        const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(q)}&maxResults=5`);
+                        const res = await fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(q)}&limit=6&fields=title,author_name,cover_i,key,first_publish_year,first_sentence`);
                         const data = await res.json();
                         searchResults.innerHTML = '';
-                        if(data.items) {
-                            data.items.forEach(item => {
+                        if(data.docs && data.docs.length) {
+                            data.docs.forEach(doc => {
+                                const bookInfo = olToBookInfo(doc);
                                 const div = document.createElement('div');
                                 div.className = 'search-item';
-                                const thumb = item.volumeInfo.imageLinks?.smallThumbnail || item.volumeInfo.imageLinks?.thumbnail || 'https://via.placeholder.com/35x50?text=No+Img';
-                                div.innerHTML = `<img src="${thumb}" class="w-8 h-12 object-cover rounded"><div class="text-xs text-gray-300 font-bold">${item.volumeInfo.title}</div>`;
-                                const bookInfo = item.volumeInfo;
+                                const thumb = bookInfo.imageLinks.thumbnail || 'https://via.placeholder.com/35x50?text=No+Img';
+                                div.innerHTML = `<img src="${thumb}" class="w-8 h-12 object-cover rounded"><div class="text-xs text-gray-300 font-bold">${bookInfo.title}</div>`;
                                 div.onclick = () => showRecommendPreview(bookInfo);
                                 searchResults.appendChild(div);
                             });
                         } else searchResults.innerHTML = '<div class="p-2 text-gray-500 text-sm">No results.</div>';
-                    } catch(e) { console.error(e); }
+                    } catch(e) { console.error(e); searchResults.innerHTML = '<div class="p-2 text-gray-500 text-sm">Search failed.</div>'; }
                 }, 400);
             };
 
@@ -108,10 +108,42 @@ lucide.createIcons();
                 activeAlertResolver = null;
             };
             
-            function showRecommendPreview(info) {
-                searchWrapper.classList.remove('active'); 
+            // Maps an Open Library search doc into the {title, authors, description, imageLinks}
+            // shape the rest of the page already uses (covers come from the cover id).
+            function olToBookInfo(doc) {
+                const cover = doc.cover_i
+                    ? `https://covers.openlibrary.org/b/id/${doc.cover_i}-M.jpg`
+                    : null;
+                let desc = '';
+                if (doc.first_sentence) {
+                    desc = Array.isArray(doc.first_sentence)
+                        ? doc.first_sentence[0]
+                        : (doc.first_sentence.value || doc.first_sentence);
+                }
+                return {
+                    title: doc.title || 'Untitled',
+                    authors: doc.author_name || ['Unknown'],
+                    description: desc,
+                    imageLinks: { thumbnail: cover, smallThumbnail: cover },
+                    workKey: doc.key // e.g. "/works/OL12345W"
+                };
+            }
+
+            async function showRecommendPreview(info) {
+                searchWrapper.classList.remove('active');
                 searchResults.style.display='none';
-                
+
+                // Open Library search doesn't include the full blurb; fetch it from the work record.
+                if ((!info.description || info.description.length < 5) && info.workKey) {
+                    try {
+                        const r = await fetch(`https://openlibrary.org${info.workKey}.json`);
+                        const w = await r.json();
+                        if (w.description) {
+                            info.description = typeof w.description === 'string' ? w.description : (w.description.value || '');
+                        }
+                    } catch (e) { /* non-fatal — show without a blurb */ }
+                }
+
                 const modal = document.getElementById('details-modal');
                 const footer = document.getElementById('modal-footer');
                 populateModal(info);
@@ -375,8 +407,8 @@ lucide.createIcons();
                     for(let t of FALLBACK_BOOKS) {
                         window.readTitles.add(normalizeTitle(t));
                         const el = createBookEl({title:t, authors:['...']}, shelf, 'read');
-                        fetch(`https://www.googleapis.com/books/v1/volumes?q=intitle:${encodeURIComponent(t)}&maxResults=1`)
-                            .then(r=>r.json()).then(d=>{ if(d.items) updateBookEl(el, d.items[0].volumeInfo); });
+                        fetch(`https://openlibrary.org/search.json?title=${encodeURIComponent(t)}&limit=1&fields=title,author_name,cover_i,key`)
+                            .then(r=>r.json()).then(d=>{ if(d.docs && d.docs[0]) updateBookEl(el, olToBookInfo(d.docs[0])); });
                     }
                 }
             }

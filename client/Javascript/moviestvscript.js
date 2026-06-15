@@ -307,6 +307,7 @@
                     lang: m.language,
                     country: m.country,
                     original_language: m.original_language || '',
+                    category: (m.category || '').toLowerCase(), // manual override: "anime" | "movie" | "show"
                     genre_str: m.genre,
                     release_date: m.year,
                     user_rating: parseFloat(m.user_rating) || 0,
@@ -329,6 +330,7 @@
                     lang: s.language,
                     country: s.country,
                     original_language: s.original_language || '',
+                    category: (s.category || '').toLowerCase(), // manual override: "anime" | "movie" | "show"
                     genre_str: s.genre,
                     release_date: s.year,
                     my_rating: parseFloat(s.my_rating) || 0,
@@ -347,9 +349,15 @@
                 allAnime = [];
 
                 const categorize = (item) => {
-                    // Anime = strictly Japanese animation. Requires BOTH the Animation genre
-                    // AND a Japanese origin, so Western animation (Pixar/Disney) and Japanese
-                    // live-action films are NOT clubbed in here.
+                    // 1) Manual override wins: set `category` on the document in MongoDB to
+                    //    "anime", "movie", or "show"/"tv" to force where a title lands.
+                    if (item.category === 'anime') { item.is_anime = true; allAnime.push(item); return; }
+                    if (item.category === 'movie') { allMovies.push(item); return; }
+                    if (item.category === 'show' || item.category === 'tv') { allShows.push(item); return; }
+
+                    // 2) Auto-detect: anime = strictly Japanese animation. Requires BOTH the
+                    //    Animation genre AND a Japanese origin, so Western animation
+                    //    (Pixar/Disney) and Japanese live-action films are NOT clubbed here.
                     const isAnimation = /animation/i.test(item.genre_str || '');
                     const isJapanese =
                         (item.original_language && item.original_language.toLowerCase() === 'ja') ||

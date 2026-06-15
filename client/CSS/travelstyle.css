@@ -361,26 +361,81 @@ h3 a{
   visibility: visible;
   left: 100%;
 }
+/* --- Mobile: keep the Turn.js single-page flip, but size it right, show the cover,
+       leave margins on every side, and fit each page's content to the narrow page. --- */
 @media (max-width: 768px) {
   body {
-    height: auto;
+    height: 100vh;
+    overflow: hidden; /* the book is centred by the flex body -> even margins all around */
+  }
+
+  /* Show the whole cover (it's ~square) instead of cropping it to the tall page */
+  #magazine .hard {
+    background-size: contain !important;
+    background-position: center !important;
+    background-color: #ece4d4;
+  }
+
+  /* Each scrapbook page scrolls internally if its content is taller than the page */
+  #magazine .scrapbook {
     overflow-y: auto;
-    align-items: flex-start;
+    -webkit-overflow-scrolling: touch;
+    padding: 12px 12px 20px;
+    box-sizing: border-box;
   }
-  #magazine {
-    width: 100vw;
-    height: 98vh; /* Slightly less for some margin */
-    margin: 1vh auto;
+  /* Desktop-only vertical spacers add dead space on mobile */
+  .desktop-space { display: none !important; }
+
+  /* Neutralise the desktop absolute-positioned text blocks so they flow */
+  #magazine .scrapbook .centered,
+  #magazine .scrapbook .skew-3,
+  #magazine .scrapbook .doodle,
+  #magazine .scrapbook div[style*="absolute"] {
+    position: relative !important;
+    left: auto !important; right: auto !important; top: auto !important; bottom: auto !important;
+    width: auto !important;
+    margin: 6px 0 !important;
+    transform: none !important;
   }
-  .scrapbook, .hard {
-    width: 100%;
-    height: 100%;
-    /* Ensure borders and shadows are correctly rendered within this size */
+  #magazine .scrapbook p {
+    margin: 5px 2px !important;
+    font-size: 0.95rem !important;
+    line-height: 1.3 !important;
+    transform: none !important;
   }
-  .hard {
-    
+  #magazine .scrapbook .diary-body p { font-size: 1rem !important; }
+  #magazine .scrapbook .diary-date { font-size: 0.85rem !important; margin: 2px 2px 6px !important; }
+  #magazine .scrapbook h3 { padding: 4px; font-size: 1.3rem; }
+  #magazine .scrapbook .tcap { font-size: 0.8rem; margin: 0 0 4px 6px !important; }
+
+  /* Photos: flow, responsive, centred, no skew */
+  #magazine .scrapbook .pondi,
+  #magazine .scrapbook .pondi2,
+  #magazine .scrapbook .pondi3,
+  #magazine .scrapbook .grouppicpondi,
+  #magazine .scrapbook .coorg,
+  #magazine .scrapbook .shimla1,
+  #magazine .scrapbook .shimla2,
+  #magazine .scrapbook .shimla3,
+  #magazine .scrapbook .singapore,
+  #magazine .scrapbook .image-one,
+  #magazine .scrapbook .tphoto {
+    position: relative !important;
+    display: block !important;
+    left: auto !important; right: auto !important; top: auto !important; bottom: auto !important;
+    width: 66% !important;
+    max-width: 200px !important;
+    height: auto !important;
+    aspect-ratio: 4 / 3;
+    margin: 8px auto !important;
+    transform: none !important;
+    background-size: cover !important;
+    border-width: 6px !important;
   }
-  .scrapbook {
-    border-radius: 0; /* Remove specific corner radii for mobile */
-  }
+  #magazine .scrapbook .pondi2,
+  #magazine .scrapbook .grouppicpondi,
+  #magazine .scrapbook .shimla1 { aspect-ratio: 3 / 4; }
+  #magazine .scrapbook .coorg:before,
+  #magazine .scrapbook .coorg:after,
+  #magazine .scrapbook .grouppicpondi:after { display: none !important; }
 }
