@@ -306,11 +306,13 @@
                     media_type: 'movie',
                     lang: m.language,
                     country: m.country,
+                    original_language: m.original_language || '',
                     genre_str: m.genre,
                     release_date: m.year,
-                    user_rating: parseFloat(m.user_rating) || 0, 
+                    user_rating: parseFloat(m.user_rating) || 0,
                     runtime: parseInt(m.runtime) || 0,
                     imdb_rating: parseFloat(m.imdb_rating) || 0,
+                    popularity: parseFloat(m.popularity) || 0,
                     metascore: parseInt(m.metascore) || 0,
                     rotten_tomatoes_rating: parseInt(m.rotten_tomatoes_rating) || 0,
                     watched_date: m.watched_date ? new Date(m.watched_date) : null,
@@ -326,11 +328,13 @@
                     media_type: 'tv',
                     lang: s.language,
                     country: s.country,
+                    original_language: s.original_language || '',
                     genre_str: s.genre,
-                    release_date: s.year, 
-                    my_rating: parseFloat(s.my_rating) || 0, 
+                    release_date: s.year,
+                    my_rating: parseFloat(s.my_rating) || 0,
                     runtime: parseInt(s.runtime) || 0,
                     imdb_rating: parseFloat(s.imdb_rating) || 0,
+                    popularity: parseFloat(s.popularity) || 0,
                     watched_date: s.watched_date ? new Date(s.watched_date) : null,
                     overview: s.overview || s.description || s.plot || "No description available."
                 })).filter(s => s.title);
@@ -343,10 +347,15 @@
                 allAnime = [];
 
                 const categorize = (item) => {
-                    let isAnime = false;
-                    if (item.country && (item.country.includes('Japan') || item.country.includes('JP'))) isAnime = true;
-                    if (item.lang && (item.lang.includes('japanese') || item.lang === 'ja')) isAnime = true;
-                    if (item.genre_str && item.genre_str.includes('Animation')) isAnime = true;
+                    // Anime = strictly Japanese animation. Requires BOTH the Animation genre
+                    // AND a Japanese origin, so Western animation (Pixar/Disney) and Japanese
+                    // live-action films are NOT clubbed in here.
+                    const isAnimation = /animation/i.test(item.genre_str || '');
+                    const isJapanese =
+                        (item.original_language && item.original_language.toLowerCase() === 'ja') ||
+                        (item.lang && /japanese/i.test(item.lang)) ||
+                        (item.country && /japan/i.test(item.country));
+                    const isAnime = isAnimation && isJapanese;
 
                     if (isAnime) {
                         item.is_anime = true;
@@ -521,8 +530,8 @@
             // Update UI
             document.getElementById('mTitle').innerText = d.title || d.name;
             const modalMeta = document.querySelector('#detailModal .modal-meta');
-            const rating = d.user_rating || d.my_rating;
-            const ratingStarsHtml = rating ? renderStars(rating) : '';
+            const myRating = Number(item.user_rating) || Number(item.my_rating) || Number(d.user_rating) || Number(d.my_rating) || 0;
+            const ratingStarsHtml = myRating ? `<span style="color:#aaa; margin-left:10px;">My rating:</span> ${renderStars(myRating)}` : '';
             
             modalMeta.innerHTML = `
                 <span id="mMatch" class="match-text">98% Match</span>
@@ -709,14 +718,18 @@
                 sortSelect.id = 'sortFilter'; sortSelect.className = 'genre-select';
                 sortSelect.innerHTML = `
                     <option value="default">Sort By</option>
-                    <option value="az">Name (A-Z)</option>
-                    <option value="za">Name (Z-A)</option>
+                    <option value="watched_desc">Recently Watched</option>
+                    <option value="watched_asc">Earliest Watched</option>
+                    <option value="rating_desc">My Rating (High &rarr; Low)</option>
+                    <option value="rating_asc">My Rating (Low &rarr; High)</option>
                     <option value="year_desc">Release Date (Newest)</option>
                     <option value="year_asc">Release Date (Oldest)</option>
-                    <option value="watched_desc">Recently Watched</option>
-                    <option value="rating_desc">My Rating (Highest)</option>
+                    <option value="az">Name (A&ndash;Z)</option>
+                    <option value="za">Name (Z&ndash;A)</option>
                     <option value="runtime_desc">Film Length (Longest)</option>
+                    <option value="runtime_asc">Film Length (Shortest)</option>
                     <option value="critic_desc">Critic Rating (Highest)</option>
+                    <option value="popularity_desc">Popularity</option>
                 `;
                 sortSelect.onchange = applyGridFilter;
                 headerDiv.prepend(sortSelect);
@@ -742,14 +755,27 @@
             let res = [...currentGridItems];
             if (sGenre !== 'all') res = res.filter(i => i.genre_str && i.genre_str.includes(sGenre));
             
+            // Helpers — release_date is stored as a year (number or string); watched_date may be a Date or null.
+            const yearOf = x => parseInt(String(x.release_date || '').substring(0, 4)) || 0;
+            const ratingOf = x => Number(x.user_rating) || Number(x.my_rating) || 0;
+            const watchedTime = (x, missing) => {
+                const d = x.watched_date;
+                const t = d instanceof Date ? d.getTime() : (d ? new Date(d).getTime() : NaN);
+                return isNaN(t) ? missing : t; // unwatched items pushed to the bottom in both directions
+            };
+
             if(sSort === 'az') res.sort((a,b)=>(a.title||a.name).localeCompare(b.title||b.name));
             else if(sSort === 'za') res.sort((a,b)=>(b.title||b.name).localeCompare(a.title||a.name));
-            else if(sSort === 'year_desc') res.sort((a,b)=> parseInt((b.release_date||'').substring(0,4)||0) - parseInt((a.release_date||'').substring(0,4)||0));
-            else if(sSort === 'year_asc') res.sort((a,b)=> parseInt((a.release_date||'').substring(0,4)||0) - parseInt((b.release_date||'').substring(0,4)||0));
-            else if(sSort === 'watched_desc') res.sort((a,b) => new Date(b.watched_date || 0) - new Date(a.watched_date || 0));
-            else if(sSort === 'rating_desc') res.sort((a,b) => (b.user_rating || b.my_rating || 0) - (a.user_rating || a.my_rating || 0));
-            else if(sSort === 'runtime_desc') res.sort((a,b) => (parseInt(b.runtime) || 0) - (parseInt(a.runtime) || 0));
-            else if(sSort === 'critic_desc') res.sort((a,b) => (parseFloat(b.imdb_rating) || 0) - (parseFloat(a.imdb_rating) || 0));
+            else if(sSort === 'year_desc') res.sort((a,b)=> yearOf(b) - yearOf(a));
+            else if(sSort === 'year_asc') res.sort((a,b)=> yearOf(a) - yearOf(b));
+            else if(sSort === 'watched_desc') res.sort((a,b)=> watchedTime(b, -Infinity) - watchedTime(a, -Infinity));
+            else if(sSort === 'watched_asc') res.sort((a,b)=> watchedTime(a, Infinity) - watchedTime(b, Infinity));
+            else if(sSort === 'rating_desc') res.sort((a,b)=> ratingOf(b) - ratingOf(a));
+            else if(sSort === 'rating_asc') res.sort((a,b)=> ratingOf(a) - ratingOf(b));
+            else if(sSort === 'runtime_desc') res.sort((a,b)=> (parseInt(b.runtime)||0) - (parseInt(a.runtime)||0));
+            else if(sSort === 'runtime_asc') res.sort((a,b)=> (parseInt(a.runtime)||0) - (parseInt(b.runtime)||0));
+            else if(sSort === 'critic_desc') res.sort((a,b)=> (parseFloat(b.imdb_rating)||0) - (parseFloat(a.imdb_rating)||0));
+            else if(sSort === 'popularity_desc') res.sort((a,b)=> (Number(b.popularity)||0) - (Number(a.popularity)||0));
             
             renderGrid(res);
         };

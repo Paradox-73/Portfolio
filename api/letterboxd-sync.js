@@ -104,6 +104,14 @@ async function syncLetterboxd() {
         for (const item of feed.items) {
             const guid = item.guid;
 
+            // The Letterboxd RSS feed includes list activity (guid "letterboxd-list-...") alongside
+            // watched films (guid "letterboxd-watch-..."). Only diary films should be synced —
+            // lists like "Horror" or "Yorgos Lanthimos" otherwise get matched to bogus TMDB results.
+            if (!guid || guid.includes('letterboxd-list')) {
+                console.log(`Skipping non-film entry (list): ${item.title}`);
+                continue;
+            }
+
             const existingMovie = await moviesCollection.findOne({ letterboxd_guid: guid });
             if (existingMovie) {
                 continue;

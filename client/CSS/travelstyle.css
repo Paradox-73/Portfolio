@@ -219,6 +219,35 @@ h3 a{
   transform: skew(15deg, -15deg);
 }
 
+/* --- Reusable scrapbook photo + caption (added for new trip entries) --- */
+.tphoto {
+  display: inline-block;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border: solid 12px white;
+  box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 18px 0 rgba(0, 0, 0, 0.19);
+  margin: 8px;
+  vertical-align: top;
+}
+.tcap {
+  color: #555;
+  font-size: 90%;
+  margin: 0 0 6px 14px !important;
+}
+.diary-date {
+  color: #990000;
+  font-size: 95%;
+  margin: 2px 0 8px 10px !important;
+  transform: skew(-5deg, 2deg);
+}
+.diary-body p {
+  font-size: 108%;
+  line-height: 1.45;
+}
+.skew-l { transform: skew(4deg, -4deg); }
+.skew-r { transform: skew(-4deg, 4deg); }
+
 .red-marker {
   color: #990000;
   font-weight: bold;
