@@ -15,19 +15,11 @@
                 type: "folder",
                 icon: "assets/projects/folder.png",
                 content: {
-                    "Blog Post.html": {
-                        type: "notepad_render",
-                        html: `
-                            <div style="padding:15px; font-family:'Tahoma', sans-serif; font-size:14px; line-height:1.4;">
-                                <h2>Chimera: Elevating Large-Scale Neural Network Training</h2>
-                                <p>Chimera is a groundbreaking framework designed for the efficient training of large-scale neural networks using bidirectional pipelines. This project addresses computational challenges in distributed AI systems by optimizing data flow and resource utilization.</p>
-                                <h3>Key Innovations:</h3>
-                                <ul>
-                                    <li><strong>Bidirectional Pipelines:</strong> Implemented a novel approach to pipeline parallelism that significantly enhances data flow efficiency.</li>
-                                    <li><strong>Resource Optimization:</strong> Maximizes GPU/CPU utilization across multiple distributed nodes.</li>
-                                </ul>
-                            </div>
-                        `
+                    "README.md": {
+                        type: "readme_md",
+                        path: "assets/projects/README/Chimera.md",
+                        icon: "assets/projects/notepad.png",
+                        color: "#2B579A"
                     },
                     "Github Link.url": {
                         type: "url_redirect",
@@ -67,20 +59,11 @@
                 type: "folder",
                 icon: "assets/projects/folder.png",
                 content: {
-                    "Blog Post.html": {
-                        type: "notepad_render",
-                        html: `
-                            <div style="padding:15px; font-family:'Tahoma', sans-serif; font-size:14px; line-height:1.4;">
-                                <h2>MusicBucket: Personalized Music Discovery</h2>
-                                <p>MusicBucket transforms how enthusiasts interact with music by providing detailed habit tracking and discovery tools through the Spotify API.</p>
-                                <h3>Technical Stack:</h3>
-                                <ul>
-                                    <li><strong>Frontend:</strong> React.js and TypeScript for a robust, type-safe user experience.</li>
-                                    <li><strong>Backend:</strong> Supabase and PostgreSQL for real-time data storage and analytics.</li>
-                                    <li><strong>API Integration:</strong> Seamlessly manages data synchronization with the Spotify Web API.</li>
-                                </ul>
-                            </div>
-                        `
+                    "README.md": {
+                        type: "readme_md",
+                        path: "assets/projects/README/MusicBucket.md",
+                        icon: "assets/projects/notepad.png",
+                        color: "#2B579A"
                     },
                     "Github Link.url": {
                         type: "url_redirect",
@@ -94,19 +77,11 @@
                 type: "folder",
                 icon: "assets/projects/folder.png",
                 content: {
-                    "Blog Post.html": {
-                        type: "notepad_render",
-                        html: `
-                            <div style="padding:15px; font-family:'Tahoma', sans-serif; font-size:14px; line-height:1.4;">
-                                <h2>Personal Media Intelligence Hub (PMIH)</h2>
-                                <p>PMIH is a hyper-personalized ML-powered recommendation engine that predicts personal ratings across diverse media domains including games, movies, and music.</p>
-                                <h3>ML Innovations:</h3>
-                                <ul>
-                                    <li><strong>XGBoost Models:</strong> Fine-tuned models for accurate rating prediction based on personal consumption data.</li>
-                                    <li><strong>Semantic Embeddings:</strong> Utilized Sentence-Transformers to grasp nuanced relationships between media titles and descriptions.</li>
-                                </ul>
-                            </div>
-                        `
+                    "README.md": {
+                        type: "readme_md",
+                        path: "assets/projects/README/PMIH.md",
+                        icon: "assets/projects/notepad.png",
+                        color: "#2B579A"
                     },
                     "Github Link.url": {
                         type: "url_redirect",
@@ -120,19 +95,11 @@
                 type: "folder",
                 icon: "assets/projects/folder.png",
                 content: {
-                    "Blog Post.html": {
-                        type: "notepad_render",
-                        html: `
-                            <div style="padding:15px; font-family:'Tahoma', sans-serif; font-size:14px; line-height:1.4;">
-                                <h2>WhatsApp Chat Analyzer: Private Data Insights</h2>
-                                <p>A privacy-first analytics tool designed to visualize social dynamics and communication patterns in WhatsApp group chats.</p>
-                                <h3>Key Features:</h3>
-                                <ul>
-                                    <li><strong>Local Analysis:</strong> Ensures user privacy by processing all data 100% locally.</li>
-                                    <li><strong>Psychometric Metrics:</strong> Extracts insights like response speeds and conversational dominance patterns.</li>
-                                </ul>
-                            </div>
-                        `
+                    "README.md": {
+                        type: "readme_md",
+                        path: "assets/projects/README/WhatsappChatAnalyzer.md",
+                        icon: "assets/projects/notepad.png",
+                        color: "#2B579A"
                     },
                     "Github Link.url": {
                         type: "url_redirect",
@@ -231,19 +198,11 @@
                 type: "folder",
                 icon: "assets/projects/folder.png",
                 content: {
-                    "Blog Post.html": {
-                        type: "notepad_render",
-                        html: `
-                            <div style="padding:15px; font-family:'Tahoma', sans-serif; font-size:14px; line-height:1.4;">
-                                <h2>Multi-Pipeline ETL & Reporting Framework</h2>
-                                <p>A framework that processes semi-structured NASA web server logs through four interchangeable data-processing paradigms while keeping the ETL logic identical across all of them, enabling a fair, apples-to-apples performance comparison.</p>
-                                <h3>Highlights:</h3>
-                                <ul>
-                                    <li><strong>Four Pipelines:</strong> Apache Pig, MapReduce, Apache Hive, and MongoDB run the same logical ETL steps and queries.</li>
-                                    <li><strong>Python Orchestration:</strong> A controller batches raw logs, triggers the chosen engine, collects results, and loads them with execution metadata into a central PostgreSQL reporting database.</li>
-                                </ul>
-                            </div>
-                        `
+                    "README.md": {
+                        type: "readme_md",
+                        path: "assets/projects/README/Multipipeline-ETL.md",
+                        icon: "assets/projects/notepad.png",
+                        color: "#2B579A"
                     },
                     "Github Link.url": {
                         type: "url_redirect",
@@ -605,7 +564,7 @@
         win.style.zIndex = ++zIndexCounter;
 
         win.innerHTML = `
-            <div class="title-bar" onmousedown="startDrag(event, '${id}')">
+            <div class="title-bar" onmousedown="startDrag(event, '${id}')" ontouchstart="startDrag(event, '${id}')">
                 <div class="title-text"><i class="${iconClass}"></i> ${title}</div>
                 <div class="window-controls">
                     <button class="control-btn" onclick="minimizeWindow('${id}')">_</button>
@@ -616,7 +575,7 @@
             <div class="window-body">
                 <div class="window-content" id="win-content-${id}"></div>
             </div>
-            <div class="resize-handle" onmousedown="startResize(event, '${id}')"></div>
+            <div class="resize-handle" onmousedown="startResize(event, '${id}')" ontouchstart="startResize(event, '${id}')"></div>
         `;
 
         win.onmousedown = () => focusWindow(id);
@@ -682,7 +641,14 @@
         }
     }
 
-    // Dragging Logic
+    // Pointer position from either a mouse or touch event.
+    function pointerXY(e) {
+        const p = e.touches && e.touches[0] ? e.touches[0]
+                : (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0] : e);
+        return { x: p.clientX, y: p.clientY };
+    }
+
+    // Dragging Logic (mouse + touch)
     let dragObj = null;
     let offsetX, offsetY;
     function startDrag(e, id) {
@@ -692,48 +658,60 @@
 
         dragObj = document.getElementById(`win-${id}`);
         const rect = dragObj.getBoundingClientRect();
-        offsetX = e.clientX - rect.left;
-        offsetY = e.clientY - rect.top;
+        const p = pointerXY(e);
+        offsetX = p.x - rect.left;
+        offsetY = p.y - rect.top;
         document.addEventListener('mousemove', doDrag);
         document.addEventListener('mouseup', stopDrag);
+        document.addEventListener('touchmove', doDrag, { passive: false });
+        document.addEventListener('touchend', stopDrag);
     }
     function doDrag(e) {
         if (!dragObj) return;
-        dragObj.style.top = (e.clientY - offsetY) + 'px';
-        dragObj.style.left = (e.clientX - offsetX) + 'px';
+        if (e.touches) e.preventDefault(); // stop the page scrolling while dragging
+        const p = pointerXY(e);
+        dragObj.style.top = (p.y - offsetY) + 'px';
+        dragObj.style.left = (p.x - offsetX) + 'px';
     }
     function stopDrag() {
         dragObj = null;
         document.removeEventListener('mousemove', doDrag);
         document.removeEventListener('mouseup', stopDrag);
+        document.removeEventListener('touchmove', doDrag);
+        document.removeEventListener('touchend', stopDrag);
     }
 
-    // Resizing Logic
+    // Resizing Logic (mouse + touch)
     let resizeObj = null;
     let startWidth, startHeight, startMouseX, startMouseY;
 
     function startResize(e, id) {
         // Prevent drag from interfering with resize
         e.stopPropagation();
-        
+
         resizeObj = document.getElementById(`win-${id}`);
         startWidth = parseInt(document.defaultView.getComputedStyle(resizeObj).width, 10);
         startHeight = parseInt(document.defaultView.getComputedStyle(resizeObj).height, 10);
-        startMouseX = e.clientX;
-        startMouseY = e.clientY;
+        const p = pointerXY(e);
+        startMouseX = p.x;
+        startMouseY = p.y;
 
         document.addEventListener('mousemove', doResize);
         document.addEventListener('mouseup', stopResize);
+        document.addEventListener('touchmove', doResize, { passive: false });
+        document.addEventListener('touchend', stopResize);
     }
 
     function doResize(e) {
         if (!resizeObj) return;
+        if (e.touches) e.preventDefault();
 
         const minWidth = 200; // Minimum width for a window
         const minHeight = 150; // Minimum height for a window
+        const p = pointerXY(e);
 
-        let newWidth = startWidth + (e.clientX - startMouseX);
-        let newHeight = startHeight + (e.clientY - startMouseY);
+        let newWidth = startWidth + (p.x - startMouseX);
+        let newHeight = startHeight + (p.y - startMouseY);
 
         resizeObj.style.width = Math.max(minWidth, newWidth) + 'px';
         resizeObj.style.height = Math.max(minHeight, newHeight) + 'px';
@@ -743,6 +721,8 @@
         resizeObj = null;
         document.removeEventListener('mousemove', doResize);
         document.removeEventListener('mouseup', stopResize);
+        document.removeEventListener('touchmove', doResize);
+        document.removeEventListener('touchend', stopResize);
     }
 
     /** --- APP LAUNCHERS --- */
@@ -818,6 +798,8 @@
         
         if (fileObj.type === 'notepad_render' && fileObj.html) {
             launchNotepad(filename, fileObj.html); // Pass HTML content to Notepad
+        } else if (fileObj.type === 'readme_md') {
+            launchReadme(filename, fileObj.path); // Fetch & render the README markdown
         } else if (filename.endsWith('.txt') || filename.endsWith('.js') || filename.endsWith('.py')) {
             launchNotepad(filename, content);
         } else if (filename.endsWith('.mp4') || filename === 'demo.mp4') {
@@ -1056,6 +1038,22 @@
             </div>
             <div class="notepad-area" style="white-space: pre-wrap; word-wrap: break-word;" spellcheck="false" contenteditable="false">${content}</div>
         `;
+    }
+
+    // Fetch a README .md file and render it (via marked.js) inside a Notepad window.
+    async function launchReadme(filename, path) {
+        let body;
+        try {
+            const res = await fetch(path);
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const md = await res.text();
+            body = (window.marked && marked.parse) ? marked.parse(md)
+                 : md.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/\n/g, '<br>');
+        } catch (e) {
+            body = `<p>Could not load README (${e.message}).</p>`;
+        }
+        const html = `<div class="readme-render" style="padding:18px; white-space:normal; font-family:'Tahoma',sans-serif; font-size:14px; line-height:1.55; color:#000;">${body}</div>`;
+        launchNotepad(filename, html);
     }
 
     // 4. CALCULATOR
@@ -1332,7 +1330,9 @@
         
         function getPos(e) {
             const rect = canvas.getBoundingClientRect();
-            return { x: Math.floor(e.clientX - rect.left), y: Math.floor(e.clientY - rect.top) };
+            const src = (e.touches && e.touches[0]) ? e.touches[0]
+                      : (e.changedTouches && e.changedTouches[0]) ? e.changedTouches[0] : e;
+            return { x: Math.floor(src.clientX - rect.left), y: Math.floor(src.clientY - rect.top) };
         }
 
         function draw(e) {
@@ -1385,10 +1385,10 @@
             }
         }
 
-        canvas.addEventListener('mousedown', (e) => { 
+        function onPaintDown(e) {
             const pos = getPos(e);
             startX = pos.x; startY = pos.y;
-            
+
             if (tool === 'fill') {
                 floodFill(startX, startY, e.button === 2 ? bgColor : fgColor);
                 return;
@@ -1397,42 +1397,42 @@
             painting = true;
             ctx.beginPath();
             ctx.moveTo(startX, startY);
-            
+
             if(tool === 'line' || tool === 'rect' || tool === 'ellipse') {
                 snapshot = ctx.getImageData(0,0, canvas.width, canvas.height);
             }
-            
+
             if(tool === 'spray') {
-                 sprayInterval = setInterval(() => {
-                     // Update startX/Y to current mouse pos if moving
-                     // But here we rely on mousemove updating a global or similar.
-                     // Simple Spray: just spray at initial click, and update in mousemove
-                     spray(); 
-                 }, 50);
+                 sprayInterval = setInterval(() => { spray(); }, 50);
                  spray(); // Initial burst
             }
-        });
-        
-        canvas.addEventListener('mouseup', () => { 
-            painting = false; 
+        }
+
+        function onPaintUp() {
+            painting = false;
             ctx.beginPath();
             if(sprayInterval) clearInterval(sprayInterval);
-        });
-        
-        canvas.addEventListener('mousemove', (e) => {
+        }
+
+        function onPaintMove(e) {
             const pos = getPos(e);
             if(tool === 'spray' && painting) {
-                startX = pos.x; 
+                startX = pos.x;
                 startY = pos.y;
             } else {
                 draw(e);
             }
-        });
-        
-        canvas.addEventListener('mouseleave', () => {
-             painting = false;
-             if(sprayInterval) clearInterval(sprayInterval);
-        });
+        }
+
+        // Mouse
+        canvas.addEventListener('mousedown', onPaintDown);
+        canvas.addEventListener('mouseup', onPaintUp);
+        canvas.addEventListener('mousemove', onPaintMove);
+        canvas.addEventListener('mouseleave', onPaintUp);
+        // Touch (preventDefault so the canvas doesn't scroll/zoom while drawing)
+        canvas.addEventListener('touchstart', (e) => { e.preventDefault(); onPaintDown(e); }, { passive: false });
+        canvas.addEventListener('touchmove', (e) => { e.preventDefault(); onPaintMove(e); }, { passive: false });
+        canvas.addEventListener('touchend', (e) => { e.preventDefault(); onPaintUp(e); }, { passive: false });
     }
 
     // 6. INTERNET EXPLORER
@@ -1592,6 +1592,22 @@
                         }
                     };
                     cellEl.oncontextmenu = (e) => e.preventDefault();
+
+                    // Touch: tap = reveal, long-press = flag
+                    let lpTimer = null, longPressed = false;
+                    cellEl.addEventListener('touchstart', (e) => {
+                        if (gameOver) return;
+                        e.preventDefault(); // avoid a synthesized mousedown firing reveal too
+                        longPressed = false;
+                        lpTimer = setTimeout(() => { longPressed = true; handleFlag(wid, r, c); }, 450);
+                    }, { passive: false });
+                    cellEl.addEventListener('touchend', (e) => {
+                        if (gameOver) return;
+                        e.preventDefault();
+                        clearTimeout(lpTimer);
+                        if (!longPressed && !grid[r][c].flagged) handleReveal(wid, r, c);
+                    }, { passive: false });
+                    cellEl.addEventListener('touchcancel', () => clearTimeout(lpTimer));
 
                     gridEl.appendChild(cellEl);
                 }

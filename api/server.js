@@ -106,6 +106,115 @@ async function run() {
             }
         });
 
+        // Hardcover proxy — keeps the API token server-side (set HARDCOVER_API_KEY in api/.env
+        // and in your Vercel project env vars). Returns the user's "read" books normalized to
+        // the same shape as /api/books so the frontend render path is unchanged.
+        app.get('/api/hardcover-books', async (req, res) => {
+            const token = process.env.HARDCOVER_API_KEY;
+            if (!token) return res.status(500).json({ message: 'HARDCOVER_API_KEY not configured on the server.' });
+
+            const query = `query {
+                me {
+                    user_books(where: {status_id: {_eq: 3}}, order_by: {date_added: desc}) {
+                        rating
+                        book {
+                            title
+                            description
+                            cached_image
+                            contributions { author { name } }
+                        }
+                    }
+                }
+            }`;
+
+            try {
+                const hc = await axios.post(
+                    'https://api.hardcover.app/v1/graphql',
+                    { query },
+                    { headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': /^Bearer\s/i.test(token) ? token : `Bearer ${token}`
+                    } }
+                );
+
+                const me = hc.data && hc.data.data ? hc.data.data.me : null;
+                const meObj = Array.isArray(me) ? me[0] : me;
+                const userBooks = (meObj && meObj.user_books) ? meObj.user_books : [];
+
+                const books = userBooks
+                    .filter(ub => ub.book && ub.book.title)
+                    .map(ub => {
+                        const b = ub.book;
+                        const authors = (b.contributions || [])
+                            .map(c => c.author && c.author.name)
+                            .filter(Boolean)
+                            .join(', ');
+                        const cover = b.cached_image && (b.cached_image.url || b.cached_image)
+                            ? (b.cached_image.url || b.cached_image) : '';
+                        return {
+                            title: b.title,
+                            authors,
+                            description: b.description || 'No description available.',
+                            thumbnail: cover,
+                            my_rating: ub.rating
+                        };
+                    });
+
+                res.json(books);
+            } catch (error) {
+                console.error('Hardcover fetch failed:', error.response ? error.response.data : error.message);
+                res.status(500).json({ message: 'Hardcover fetch failed.', details: error.response ? error.response.data : error.message });
+            }
+        });
+
+        // Hardcover book search (Typesense-backed) — used by the Literature recommend search
+        // and as a description fallback. Returns books normalized with full descriptions.
+        app.get('/api/hardcover-search', async (req, res) => {
+            const token = process.env.HARDCOVER_API_KEY;
+            if (!token) return res.status(500).json({ message: 'HARDCOVER_API_KEY not configured on the server.' });
+
+            const q = (req.query.q || '').trim();
+            if (q.length < 2) return res.json([]);
+
+            const query = `query Search($q: String!) {
+                search(query: $q, query_type: "Book", per_page: 12) { results }
+            }`;
+
+            try {
+                const hc = await axios.post(
+                    'https://api.hardcover.app/v1/graphql',
+                    { query, variables: { q } },
+                    { headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': /^Bearer\s/i.test(token) ? token : `Bearer ${token}`
+                    } }
+                );
+
+                const results = ((((hc.data || {}).data || {}).search) || {}).results;
+                const docs = (results && results.hits) ? results.hits.map(h => h.document).filter(Boolean) : [];
+
+                // Dedupe by title, preferring the edition that actually has a description + cover.
+                const byTitle = new Map();
+                docs.filter(d => d.title).forEach(d => {
+                    const cand = {
+                        title: d.title,
+                        authors: Array.isArray(d.author_names) ? d.author_names : [],
+                        description: d.description || '',
+                        imageLinks: { thumbnail: (d.image && d.image.url) ? d.image.url : '' }
+                    };
+                    const key = d.title.toLowerCase().trim();
+                    const ex = byTitle.get(key);
+                    const richer = (a) => (a.description ? 2 : 0) + (a.imageLinks.thumbnail ? 1 : 0);
+                    if (!ex || richer(cand) > richer(ex)) byTitle.set(key, cand);
+                });
+
+                res.json(Array.from(byTitle.values()).slice(0, 8));
+            } catch (error) {
+                console.error('Hardcover search failed:', error.response ? error.response.data : error.message);
+                res.status(500).json({ message: 'Hardcover search failed.', details: error.response ? error.response.data : error.message });
+            }
+        });
+
         app.get('/api/games', async (req, res) => {
             const data = await db.collection('games').find({}).toArray();
             res.json(data);

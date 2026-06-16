@@ -61,9 +61,33 @@ body { margin: 0; overflow: hidden; background-color: #000; }
         }
 
         #nav-menu a:hover { color: #fff; }
-        
+
+        #nav-close {
+            position: absolute; top: 14px; right: 22px;
+            background: none; border: none; color: #d4af37;
+            font-size: 46px; line-height: 1; cursor: pointer; z-index: 1001;
+            font-family: serif;
+        }
+        #nav-close:hover { color: #fff; }
+
+        /* Mobile-only quick hint (desktop uses the H hint in #ui-container) */
+        #mobile-hint { display: none; }
+
         #mobile-controls {
             display: none;
+        }
+
+        @media (max-width: 768px) {
+            #mobile-hint {
+                display: block; position: fixed; top: 14px; left: 50%;
+                transform: translateX(-50%); z-index: 1000;
+                background: rgba(0, 0, 0, 0.55); color: #fff;
+                padding: 8px 14px; border-radius: 8px;
+                font-family: sans-serif; font-size: 13px; text-align: center;
+                max-width: 90%; pointer-events: none;
+                transition: opacity 1s ease;
+            }
+            #mobile-hint.fade { opacity: 0; }
         }
         
         @media (max-width: 768px) {

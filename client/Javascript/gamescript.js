@@ -109,16 +109,76 @@
             navTabs.forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
 
-            if (tab.innerText === 'Games') {
+            const label = tab.innerText.trim();
+            if (label === 'Library') {
+                currentView = 'library';
+                showLibrary();
+            } else if (label === 'Games') {
                 currentView = 'games';
+                hideLibrary();
                 renderCarouselAndInfo(gameLibrary, 'HOME', 'Welcome back. Select a game to begin.');
             } else { // Wishlist tab
                 currentView = 'wishlist';
+                hideLibrary();
                 await loadWishlistData(); // Load wishlist data
                 renderCarouselAndInfo(wishlist, 'WISHLIST', 'Select an item from your wishlist.');
             }
         });
     });
+
+    // --- Library (grid) view: all games as tiles, sortable, click for details ---
+    function sortGames(list) {
+        const sel = document.getElementById('library-sort');
+        const v = sel ? sel.value : 'name-asc';
+        const arr = list.slice();
+        const num = x => parseFloat(x) || 0;
+        switch (v) {
+            case 'name-desc':   arr.sort((a, b) => b.title.localeCompare(a.title)); break;
+            case 'rating-desc': arr.sort((a, b) => num(b.my_rating) - num(a.my_rating)); break;
+            case 'rating-asc':  arr.sort((a, b) => num(a.my_rating) - num(b.my_rating)); break;
+            case 'year-desc':   arr.sort((a, b) => num(b.year) - num(a.year)); break;
+            case 'year-asc':    arr.sort((a, b) => num(a.year) - num(b.year)); break;
+            default:            arr.sort((a, b) => a.title.localeCompare(b.title)); // name-asc
+        }
+        return arr;
+    }
+
+    function renderLibrary() {
+        const grid = document.getElementById('library-grid');
+        if (!grid) return;
+        grid.innerHTML = '';
+        sortGames(gameLibrary).forEach(g => {
+            const card = document.createElement('div');
+            card.className = 'lib-card';
+            card.tabIndex = 0;
+            const rating = g.my_rating ? `★ ${g.my_rating}` : '';
+            const meta = [g.year, rating].filter(Boolean).join('  ·  ');
+            card.innerHTML = `
+                <img class="lib-cover" src="${g.cover || ''}" alt="${g.title}" loading="lazy"
+                     onerror="this.src='https://via.placeholder.com/150?text=No+Image'">
+                <div class="lib-title" title="${g.title}">${g.title}</div>
+                <div class="lib-meta">${meta}</div>`;
+            const open = () => showDetails(g.title);
+            card.addEventListener('click', open);
+            card.addEventListener('keydown', e => { if (e.key === 'Enter') open(); });
+            grid.appendChild(card);
+        });
+    }
+
+    function showLibrary() {
+        carouselSection.style.display = 'none';
+        gameInfo.style.display = 'none';
+        document.getElementById('library-view').classList.add('active');
+        renderLibrary();
+    }
+
+    function hideLibrary() {
+        document.getElementById('library-view').classList.remove('active');
+        carouselSection.style.display = '';
+        gameInfo.style.display = '';
+    }
+
+    document.getElementById('library-sort')?.addEventListener('change', renderLibrary);
 
     // --- mainPlayBtn event listener ---
     mainPlayBtn.addEventListener('click', async () => {

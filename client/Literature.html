@@ -45,7 +45,7 @@
             <a href="Food.html"><i class="fa fa-cutlery"></i> Food</a>
             <a href="Travel.html"><i class="fa fa-suitcase"></i> Travel</a>
             <a href="art.html"><i class="fa fa-brush"></i> Art</a>
-            <a href="sport.html"><i class="fa fa-basketball"></i> Sports</a>
+            <a href="Sport.html"><i class="fa fa-basketball"></i> Sports</a>
             <a href="Projects.html"><i class="fa fa-code"></i> Projects</a>
         </div>
     </div>
@@ -75,8 +75,8 @@
     <!-- DETAILS MODAL -->
     <div id="details-modal" class="modal-bg">
         <div class="relative bg-[#1e140e] border border-[#5c4033] rounded shadow-2xl w-[90%] max-w-2xl flex flex-col md:flex-row overflow-y-auto max-h-[80vh]">
-            <button onclick="document.getElementById('details-modal').style.display='none'; document.body.style.overflow = '';" class="absolute top-2 right-2 text-gray-400 hover:text-white z-20"><i data-lucide="x"></i></button>
-            <div class="w-full md:w-1/3 bg-[#120c09] flex items-center justify-center p-6">
+            <button id="modal-close" onclick="document.getElementById('details-modal').style.display='none'; document.body.style.overflow = '';" class="absolute top-2 right-2 text-gray-400 hover:text-white z-20"><i data-lucide="x"></i></button>
+            <div id="modal-cover-wrap" class="w-full md:w-1/3 bg-[#120c09] flex items-center justify-center p-6">
                 <img id="modal-cover" class="shadow-xl rounded max-h-48 object-contain">
             </div>
             <div class="w-full md:w-2/3 p-6 flex flex-col bg-[#1e140e] text-[#e5e5e5]">

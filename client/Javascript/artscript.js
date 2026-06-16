@@ -736,6 +736,12 @@ window.onload = function() {
     document.getElementById('reco-submit')?.addEventListener('click', submitReco);
     document.getElementById('reco-cancel')?.addEventListener('click', closeRecoForm);
 
+    // Close the nav menu (X button or tapping the backdrop) — fixes the menu
+    // "taking over" with no way back on mobile.
+    document.getElementById('nav-close')?.addEventListener('click', () => { if (doorOpen) toggleDoorMenu(); });
+    const navMenuEl = document.getElementById('nav-menu');
+    navMenuEl?.addEventListener('click', (e) => { if (e.target === navMenuEl && doorOpen) toggleDoorMenu(); });
+
     // Mobile joystick initialization
     if (isMobileDevice()) {
         joystickHandle = document.querySelector('#virtual-joystick-left .joystick-handle');
@@ -767,72 +773,85 @@ window.onload = function() {
         document.getElementById('btn-o')?.addEventListener('click', toggleDoorMenu);
         document.getElementById('btn-r')?.addEventListener('click', openRecoForm);
 
+        // Auto-fade the mobile hint after a few seconds.
+        const mobileHint = document.getElementById('mobile-hint');
+        if (mobileHint) setTimeout(() => mobileHint.classList.add('fade'), 6000);
+
+        // --- Multi-touch: track joystick and camera-look by touch IDENTIFIER so the
+        // user can MOVE (joystick) and LOOK (drag) with two fingers simultaneously. ---
+        function findTouchById(list, id) {
+            for (let i = 0; i < list.length; i++) if (list[i].identifier === id) return list[i];
+            return null;
+        }
+
+        let joystickTouchId = null;
+
         // Virtual Joystick Movement
         if (joystickBase) {
             joystickBase.addEventListener('touchstart', (e) => {
-                e.preventDefault(); // Prevent scrolling
+                e.preventDefault();
+                if (joystickTouchId !== null) return; // already tracking a finger
+                const t = e.changedTouches[0];
+                joystickTouchId = t.identifier;
                 joystickActive = true;
-                const touch = e.touches[0];
-                updateJoystick(touch.clientX, touch.clientY);
-            });
+                updateJoystick(t.clientX, t.clientY);
+            }, { passive: false });
 
             joystickBase.addEventListener('touchmove', (e) => {
-                e.preventDefault(); // Prevent scrolling
-                if (joystickActive) {
-                    const touch = e.touches[0];
-                    updateJoystick(touch.clientX, touch.clientY);
-                }
-            });
+                e.preventDefault();
+                const t = findTouchById(e.touches, joystickTouchId);
+                if (t) updateJoystick(t.clientX, t.clientY);
+            }, { passive: false });
 
-            joystickBase.addEventListener('touchend', () => {
+            const endJoystick = (e) => {
+                if (joystickTouchId === null || !findTouchById(e.changedTouches, joystickTouchId)) return;
+                joystickTouchId = null;
                 joystickActive = false;
-                // Reset keys
                 keys.w = keys.a = keys.s = keys.d = false;
-                // Snap handle back to center
                 if (joystickHandle) {
                     joystickHandle.style.left = '50%';
                     joystickHandle.style.top = '50%';
                     joystickHandle.style.transform = `translate(-50%, -50%)`;
                 }
-            });
+            };
+            joystickBase.addEventListener('touchend', endJoystick);
+            joystickBase.addEventListener('touchcancel', endJoystick);
         }
 
         // Touch Look (on the canvas, excluding joystick and buttons)
         let lastTouchLookX = 0;
         let lastTouchLookY = 0;
-        let touchLookIsActive = false;
+        let lookTouchId = null;
 
         renderer.domElement.addEventListener('touchstart', (e) => {
-            // Only activate touch look if not touching joystick or virtual buttons
-            const target = e.target;
-            if (target.closest('#virtual-joystick-left') || target.closest('#virtual-buttons-right')) {
-                touchLookIsActive = false;
+            if (lookTouchId !== null) return; // already tracking a look finger
+            const t = e.changedTouches[0];
+            const target = t.target;
+            // Ignore fingers that started on the joystick or the virtual buttons.
+            if (target.closest && (target.closest('#virtual-joystick-left') || target.closest('#virtual-buttons-right'))) {
                 return;
             }
-            touchLookIsActive = true;
-            lastTouchLookX = e.touches[0].clientX;
-            lastTouchLookY = e.touches[0].clientY;
-        });
+            lookTouchId = t.identifier;
+            lastTouchLookX = t.clientX;
+            lastTouchLookY = t.clientY;
+        }, { passive: false });
 
         renderer.domElement.addEventListener('touchmove', (e) => {
-            if (touchLookIsActive) {
-                e.preventDefault(); // Prevent scrolling
-                const touch = e.touches[0];
-                const deltaX = touch.clientX - lastTouchLookX;
-                const deltaY = touch.clientY - lastTouchLookY;
+            const t = findTouchById(e.touches, lookTouchId);
+            if (!t) return;
+            e.preventDefault();
+            yaw -= (t.clientX - lastTouchLookX) * 0.005;
+            pitch -= (t.clientY - lastTouchLookY) * 0.005;
+            pitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, pitch));
+            lastTouchLookX = t.clientX;
+            lastTouchLookY = t.clientY;
+        }, { passive: false });
 
-                yaw -= deltaX * 0.005; // Adjust sensitivity
-                pitch -= deltaY * 0.005; // Adjust sensitivity
-                pitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, pitch));
-
-                lastTouchLookX = touch.clientX;
-                lastTouchLookY = touch.clientY;
-            }
-        });
-
-        renderer.domElement.addEventListener('touchend', () => {
-            touchLookIsActive = false;
-        });
+        const endLook = (e) => {
+            if (lookTouchId !== null && findTouchById(e.changedTouches, lookTouchId)) lookTouchId = null;
+        };
+        renderer.domElement.addEventListener('touchend', endLook);
+        renderer.domElement.addEventListener('touchcancel', endLook);
         }
     }; // End of window.onload
 

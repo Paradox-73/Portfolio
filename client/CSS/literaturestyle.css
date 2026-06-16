@@ -301,3 +301,9 @@
 
         /* Modal Background */
         .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 9000; display: none; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+/* Mobile details modal: hide the cover (item 4) and make the close button black */
+@media (max-width: 768px) {
+    #modal-cover-wrap { display: none !important; }
+    #modal-close { color: #000 !important; }
+    #modal-close:hover { color: #333 !important; }
+}

@@ -7,6 +7,7 @@
             if (profileLayer) profileLayer.classList.add('hidden');
             if (app) app.classList.remove('hidden');
 
+            injectSkeletons(); // grey placeholder cards so rows aren't empty while data loads
             initSeenList();
             await initRecommendedList(); // Await this async function
             await loadDataFromAPI();     // Await this async function
@@ -456,6 +457,18 @@
                 }
                 createCard(rec, track, true, rec.recommender);
             }
+        }
+
+        // Fill the home rows with grey placeholder cards so they don't look empty
+        // before the API responds. renderHomeRows() clears these when real cards arrive.
+        function injectSkeletons() {
+            ['recTrack', 'recommendedByYouTrack', 'moviesTrack', 'showsTrack', 'animeTrack'].forEach(id => {
+                const track = document.getElementById(id);
+                if (!track || track.children.length) return;
+                let html = '';
+                for (let i = 0; i < 10; i++) html += '<div class="movie-box skeleton"></div>';
+                track.innerHTML = html;
+            });
         }
 
         function renderHomeRows() {

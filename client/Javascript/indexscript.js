@@ -120,9 +120,15 @@
 
             function rand(min, max) { return min + Math.random() * (max - min); }
 
-            const SIZE = 52;          // Uniform icon size (bigger than before)
-            const RAD = SIZE * 0.42;  // Collision radius
+            let SIZE = 52;            // Uniform icon size (shrinks on small screens)
+            let RAD = SIZE * 0.42;    // Collision radius
             const SPEED = 0.7;        // DVD-style cruising speed
+
+            // Smaller icons on phones / narrow screens.
+            function updateSize() {
+                SIZE = w < 480 ? 26 : (w < 768 ? 34 : 52);
+                RAD = SIZE * 0.42;
+            }
 
             function buildParticles() {
                 // Repeat icons randomly; denser count scaled to the viewport area.
@@ -146,7 +152,9 @@
                 canvas.width = Math.round(w * dpr);
                 canvas.height = Math.round(h * dpr);
                 ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                updateSize();
                 if (!particles.length) buildParticles();
+                else particles.forEach(function (p) { p.size = SIZE; });
             }
 
             function frame() {
@@ -254,6 +262,11 @@
             };
         }
 
+        // Start the floating page icons IMMEDIATELY (script runs at end of <body>, so the
+        // DOM is ready) — they should be the first thing on screen, before assets finish
+        // loading. This does not delay anything else; window.onload still drives the rest.
+        let stopLoaderBg = startLoaderIconField(document.getElementById('loader-bg'));
+
         window.onload = function() {
             const loader = document.getElementById('loader');
             const progressBarFill = document.querySelector('.progress-bar-fill');
@@ -263,9 +276,6 @@
             const speaker = document.getElementById('speaker');
 
             // ---- Loading-screen enhancements ----
-            // Floating, mouse-reactive page icons behind the loader content.
-            const stopLoaderBg = startLoaderIconField(document.getElementById('loader-bg'));
-
             // Escalating "he's busy" messages while the wait drags on.
             const busyText = document.getElementById('busy-text');
             const busyTimers = [];

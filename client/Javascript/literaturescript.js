@@ -46,15 +46,15 @@ lucide.createIcons();
                     searchResults.style.display='block';
                     searchResults.innerHTML = '<div class="p-2 text-gray-500 text-sm">Searching...</div>';
                     try {
-                        const res = await fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(q)}&limit=6&fields=title,author_name,cover_i,key,first_publish_year,first_sentence`);
-                        const data = await res.json();
+                        // Hardcover search returns full descriptions (Open Library usually didn't).
+                        const res = await fetch(`${API_BASE_URL}/api/hardcover-search?q=${encodeURIComponent(q)}`);
+                        const books = await res.json();
                         searchResults.innerHTML = '';
-                        if(data.docs && data.docs.length) {
-                            data.docs.forEach(doc => {
-                                const bookInfo = olToBookInfo(doc);
+                        if(Array.isArray(books) && books.length) {
+                            books.forEach(bookInfo => {
                                 const div = document.createElement('div');
                                 div.className = 'search-item';
-                                const thumb = bookInfo.imageLinks.thumbnail || 'https://via.placeholder.com/35x50?text=No+Img';
+                                const thumb = (bookInfo.imageLinks && bookInfo.imageLinks.thumbnail) || 'https://via.placeholder.com/35x50?text=No+Img';
                                 div.innerHTML = `<img src="${thumb}" class="w-8 h-12 object-cover rounded"><div class="text-xs text-gray-300 font-bold">${bookInfo.title}</div>`;
                                 div.onclick = () => showRecommendPreview(bookInfo);
                                 searchResults.appendChild(div);
@@ -216,6 +216,22 @@ lucide.createIcons();
             async function openDetailsModal(book, type, docId, recBy) {
                 const modal = document.getElementById('details-modal');
                 const footer = document.getElementById('modal-footer');
+
+                // Wishlist (and older) items can be stored without a description — look one
+                // up from Hardcover by title so the modal isn't blank.
+                const missingDesc = !book.description || book.description === 'No description available.' || book.description.length < 5;
+                if (missingDesc && book.title) {
+                    try {
+                        const r = await fetch(`${API_BASE_URL}/api/hardcover-search?q=${encodeURIComponent(book.title)}`);
+                        const matches = await r.json();
+                        const hit = Array.isArray(matches) ? matches.find(m => m.description) : null;
+                        if (hit) {
+                            book.description = hit.description;
+                            if (!book.imageLinks || !book.imageLinks.thumbnail) book.imageLinks = hit.imageLinks;
+                        }
+                    } catch (e) { /* non-fatal — show without a blurb */ }
+                }
+
                 populateModal(book);
                 footer.innerHTML = '';
 
@@ -380,7 +396,7 @@ lucide.createIcons();
                 document.getElementById('loading-msg').style.display = 'none';
 
                 try {
-                    const response = await fetch(`${API_BASE_URL}/api/books`);
+                    const response = await fetch(`${API_BASE_URL}/api/hardcover-books`);
                     if (!response.ok) throw new Error('Network response was not ok');
                     const books = await response.json();
                     

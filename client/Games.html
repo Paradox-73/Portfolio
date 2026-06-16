@@ -31,6 +31,7 @@
     <header id="main-header">
         <div class="nav-left">
             <div class="nav-tab active">Games</div>
+            <div class="nav-tab">Library</div>
             <div class="nav-tab">Wishlist</div>
         </div>
         <div class="status-bar">
@@ -60,6 +61,21 @@
         </button>
     </div>
 
+    <div id="library-view">
+        <div class="library-toolbar">
+            <h2>All Games</h2>
+            <select id="library-sort">
+                <option value="name-asc">Name (A–Z)</option>
+                <option value="name-desc">Name (Z–A)</option>
+                <option value="rating-desc">Rating (High–Low)</option>
+                <option value="rating-asc">Rating (Low–High)</option>
+                <option value="year-desc">Year (Newest)</option>
+                <option value="year-asc">Year (Oldest)</option>
+            </select>
+        </div>
+        <div id="library-grid"></div>
+    </div>
+
     <div id="detail-overlay">
         <div class="detail-content">
             <img src="" class="detail-img" id="detail-img">
@@ -86,7 +102,7 @@
                 <li><a href="Literature.html"><i class="fa fa-book"></i> Literature</a></li>
                 <li><a href="Food.html"><i class="fa fa-cutlery"></i> Food</a></li>
                 <li><a href="Travel.html"><i class="fa fa-suitcase"></i> Travel</a></li>
-                <li><a href="Art.html"><i class="fa fa-brush"></i> Art</a></li>
+                <li><a href="art.html"><i class="fa fa-brush"></i> Art</a></li>
                 <li><a href="Sport.html"><i class="fa fa-basketball"></i> Sports</a></li>
                 <li><a href="Projects.html"><i class="fa fa-code"></i> Projects</a></li>
             </ul>

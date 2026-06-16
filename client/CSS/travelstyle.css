@@ -16,6 +16,11 @@ body {
 #magazine {
   width: 95vw;
   height: 95vh;
+  /* Hidden until Turn.js builds the book, so the raw inside pages never flash first */
+  visibility: hidden;
+}
+#magazine.turn-ready {
+  visibility: visible;
 }
 .l {
   border-top-left-radius: 80px 5px;
