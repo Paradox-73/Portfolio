@@ -256,11 +256,11 @@
         /* --- LOADING OVERLAY (Optional but nice) --- */
         #loader {
             position: fixed; /* Use fixed to ensure it covers the whole viewport even if body doesn't */
-            top: 0; 
-            left: 0; 
-            width: 100%; 
+            top: 0;
+            left: 0;
+            width: 100%;
             height: 100%;
-            background: #1a1a1a;
+            background: #2a2a2a; /* Dark grey backdrop for the floating icons */
             color: white;
             display: flex; /* Use flexbox for centering loader content */
             justify-content: center;
@@ -269,9 +269,23 @@
             transition: opacity 0.5s ease-out; /* Smooth fade-out */
             flex-direction: column; /* Stack content vertically */
             gap: 20px; /* Space between text and progress bar */
+            overflow: hidden; /* Clip the floating icon canvas */
+        }
+
+        /* Floating page-icon background canvas */
+        #loader-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0; /* Sits behind the loader content */
+            display: block;
         }
 
         .loader-content {
+            position: relative;
+            z-index: 1; /* Above the floating icon canvas */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -294,27 +308,72 @@
         .progress-bar-container {
             width: 80vw; /* Use viewport width for responsiveness */
             max-width: 300px; /* Maximum width on larger screens */
-            height: 24px; /* Height of the progress bar */
-            border: 2px solid white; /* Pixelated border */
-            background-color: #555;
+            height: 28px; /* Height of the progress bar */
+            padding: 4px; /* Inner gutter so the fill reads as inset pixel cells */
+            border: 4px solid #e8e8e8; /* Chunky pixel border */
+            outline: 4px solid #000; /* Hard outer pixel edge */
+            background-color: #1b1b1b; /* Dark empty track */
+            /* Faint slanted grid of empty cells in the track */
+            background-image: repeating-linear-gradient(
+                -45deg,
+                rgba(255, 255, 255, 0.06) 0, rgba(255, 255, 255, 0.06) 14px,
+                transparent 14px, transparent 18px
+            );
             box-sizing: border-box; /* Include border in width/height */
             image-rendering: pixelated; /* Keep border crisp */
-            box-shadow: inset 0 0 5px rgba(0,0,0,0.5); /* Add depth */
         }
 
         .progress-bar-fill {
             height: 100%;
-            width: 0%; /* Starts at 0% */
-            background-color: #00ff00; /* Base green fill color */
-            background-image: repeating-linear-gradient(
-                -45deg, /* Slanted lines */
-                black 0, black 4px, /* Black line 4px wide */
-                transparent 4px, transparent 8px /* Transparent gap 4px wide */
+            width: 0%; /* Starts at 0% (snapped to cells by JS) */
+            background-color: #2be84f; /* Base phosphor-green */
+            background-image:
+                /* Beveled pixel shading: bright top row, dark bottom row */
+                linear-gradient(
+                    to bottom,
+                    rgba(255, 255, 255, 0.55) 0, rgba(255, 255, 255, 0.55) 25%,
+                    transparent 25%, transparent 68%,
+                    rgba(0, 0, 0, 0.4) 68%, rgba(0, 0, 0, 0.4) 100%
+                ),
+                /* Subtle moving scanline shimmer */
+                repeating-linear-gradient(
+                    -45deg,
+                    rgba(0, 0, 0, 0.18) 0, rgba(0, 0, 0, 0.18) 4px,
+                    transparent 4px, transparent 8px
+                );
+            background-size: 100% 100%, 16px 16px;
+            /* Carve the fill into slanted pixel cells (4px diagonal gaps every 18px) */
+            -webkit-mask-image: repeating-linear-gradient(
+                -45deg, #000 0, #000 14px, transparent 14px, transparent 18px
             );
-            background-size: 16px 16px; /* Adjust size for slanted lines */
-            animation: move-lines 0.5s linear infinite; /* Animation for rightward movement */
-            transition: width 0.1s linear; /* Smooth transition for progress */
+            mask-image: repeating-linear-gradient(
+                -45deg, #000 0, #000 14px, transparent 14px, transparent 18px
+            );
+            box-shadow: 0 0 8px rgba(43, 232, 79, 0.6); /* Soft green glow */
+            animation: move-lines 0.8s linear infinite; /* Drifting shimmer */
+            transition: width 0.12s steps(3, end); /* Pop in cell-by-cell */
             image-rendering: pixelated;
+        }
+
+        /* "He's kinda busy right now…" long-wait message */
+        #busy-text {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.85em;
+            text-align: center;
+            color: #d0a04a; /* Warm amber, distinct from the loading text */
+            margin: 4px 0 0;
+            opacity: 0;
+            transition: opacity 1s ease-in; /* Fade in slowly */
+            min-height: 1em;
+        }
+        #busy-text.visible {
+            opacity: 1;
+        }
+        @media (max-width: 768px) {
+            #busy-text {
+                font-size: 0.6em;
+                white-space: normal;
+            }
         }
 
         /* Ellipsis animation - Removed @keyframes here as JS directly updates content */

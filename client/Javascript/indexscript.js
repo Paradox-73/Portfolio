@@ -76,6 +76,184 @@
             // However, 'loop: 1' and 'playlist: VIDEO_ID' in playerVars should handle looping.
         }
 
+        // Floating, mouse-reactive page icons for the loading screen.
+        // Icons drift via Brownian motion in light grey; near the cursor they are
+        // pulled toward it and light up to their page's accent color.
+        // Returns a stop() function that halts animation and detaches listeners.
+        function startLoaderIconField(canvas) {
+            if (!canvas || !canvas.getContext) return function () {};
+            const ctx = canvas.getContext('2d');
+
+            // One Font Awesome 6 (Solid) glyph per page + its accent colour — same icons the site nav uses.
+            const FA_FONT = '900 24px "Font Awesome 6 Free"';
+            const ICONS = [
+                { color: '#1DB954', glyph: '' }, // Music       fa-music      (Spotify green)
+                { color: '#E50914', glyph: '' }, // Movies/TV   fa-film       (red)
+                { color: '#006FCD', glyph: '' }, // Games       fa-gamepad    (PlayStation blue)
+                { color: '#9B51E0', glyph: '' }, // Art         fa-brush      (purple)
+                { color: '#F2C94C', glyph: '' }, // Food        fa-utensils   (yellow)
+                { color: '#00B8D4', glyph: '' }, // Travel      fa-suitcase   (cyan)
+                { color: '#8D6E63', glyph: '' }, // Literature  fa-book       (brown)
+                { color: '#FF7A00', glyph: '' }, // Sport       fa-basketball (orange)
+                { color: '#FF4FA3', glyph: '' }  // Projects    fa-code       (magenta)
+            ];
+            const BASE_GREY = [150, 150, 150]; // Light grey on the dark backdrop
+
+            // Make sure the icon font is loaded before we paint glyphs on the canvas.
+            let fontReady = false;
+            if (document.fonts && document.fonts.load) {
+                document.fonts.load(FA_FONT).then(function () { fontReady = true; }, function () { fontReady = true; });
+            } else {
+                fontReady = true;
+            }
+
+            const rgb = ICONS.map(function (i) {
+                return [parseInt(i.color.slice(1, 3), 16), parseInt(i.color.slice(3, 5), 16), parseInt(i.color.slice(5, 7), 16)];
+            });
+
+            let w = 0, h = 0;
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            const mouse = { x: -9999, y: -9999 };
+            const RADIUS = 200; // px influence radius around the cursor
+            let particles = [];
+            let rafId = null;
+
+            function rand(min, max) { return min + Math.random() * (max - min); }
+
+            const SIZE = 52;          // Uniform icon size (bigger than before)
+            const RAD = SIZE * 0.42;  // Collision radius
+            const SPEED = 0.7;        // DVD-style cruising speed
+
+            function buildParticles() {
+                // Repeat icons randomly; denser count scaled to the viewport area.
+                const count = Math.max(50, Math.min(160, Math.round((w * h) / 11000)));
+                particles = [];
+                for (let k = 0; k < count; k++) {
+                    const ang = rand(0, Math.PI * 2);
+                    particles.push({
+                        icon: Math.floor(Math.random() * ICONS.length),
+                        x: rand(RAD, w - RAD), y: rand(RAD, h - RAD),
+                        vx: Math.cos(ang) * SPEED, vy: Math.sin(ang) * SPEED,
+                        size: SIZE,
+                        lit: 0
+                    });
+                }
+            }
+
+            function resize() {
+                const r = canvas.getBoundingClientRect();
+                w = r.width; h = r.height;
+                canvas.width = Math.round(w * dpr);
+                canvas.height = Math.round(h * dpr);
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                if (!particles.length) buildParticles();
+            }
+
+            function frame() {
+                ctx.clearRect(0, 0, w, h);
+
+                // Icon-vs-icon collisions (equal-mass elastic) — they clash and ricochet
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const a = particles[i], b = particles[j];
+                        const dx = b.x - a.x, dy = b.y - a.y;
+                        const d = Math.hypot(dx, dy);
+                        const minD = RAD * 2;
+                        if (d > 0 && d < minD) {
+                            const nx = dx / d, ny = dy / d;
+                            // Separate the overlap
+                            const overlap = (minD - d) / 2;
+                            a.x -= nx * overlap; a.y -= ny * overlap;
+                            b.x += nx * overlap; b.y += ny * overlap;
+                            // Exchange velocity along the normal only if closing
+                            const rel = (b.vx - a.vx) * nx + (b.vy - a.vy) * ny;
+                            if (rel < 0) {
+                                a.vx += rel * nx; a.vy += rel * ny;
+                                b.vx -= rel * nx; b.vy -= rel * ny;
+                            }
+                        }
+                    }
+                }
+
+                for (let p of particles) {
+                    // A touch of Brownian jitter so paths aren't perfectly straight
+                    p.vx += rand(-0.04, 0.04);
+                    p.vy += rand(-0.04, 0.04);
+
+                    // Mouse attraction — stronger the closer the icon is
+                    const dx = mouse.x - p.x, dy = mouse.y - p.y;
+                    const dist = Math.hypot(dx, dy);
+                    let target = 0;
+                    if (dist < RADIUS) {
+                        target = 1 - dist / RADIUS;
+                        const pull = target * 0.005;
+                        p.vx += (dx / (dist || 1)) * pull;
+                        p.vy += (dy / (dist || 1)) * pull;
+                    }
+                    // Ease the "lit" factor toward the proximity target
+                    p.lit += (target - p.lit) * 0.12;
+
+                    // Keep a steady DVD-like cruising speed (let collisions/mouse steer direction)
+                    const sp = Math.hypot(p.vx, p.vy) || 1;
+                    const targetSp = SPEED * (1 + target * 0.6);
+                    p.vx += (p.vx / sp) * (targetSp - sp) * 0.08;
+                    p.vy += (p.vy / sp) * (targetSp - sp) * 0.08;
+
+                    p.x += p.vx; p.y += p.vy;
+
+                    // Bounce off the walls like a DVD logo
+                    if (p.x < RAD) { p.x = RAD; p.vx = Math.abs(p.vx); }
+                    else if (p.x > w - RAD) { p.x = w - RAD; p.vx = -Math.abs(p.vx); }
+                    if (p.y < RAD) { p.y = RAD; p.vy = Math.abs(p.vy); }
+                    else if (p.y > h - RAD) { p.y = h - RAD; p.vy = -Math.abs(p.vy); }
+
+                    // Colour: grey -> accent by the lit factor
+                    const c = rgb[p.icon], t = p.lit;
+                    const cr = Math.round(BASE_GREY[0] + (c[0] - BASE_GREY[0]) * t);
+                    const cg = Math.round(BASE_GREY[1] + (c[1] - BASE_GREY[1]) * t);
+                    const cb = Math.round(BASE_GREY[2] + (c[2] - BASE_GREY[2]) * t);
+
+                    if (!fontReady) continue; // wait until the Font Awesome glyphs can be drawn
+                    const fontSize = p.size * (1 + t * 0.35);
+                    ctx.save();
+                    ctx.globalAlpha = 0.5 + t * 0.5;
+                    ctx.shadowColor = 'rgb(' + c[0] + ',' + c[1] + ',' + c[2] + ')';
+                    ctx.shadowBlur = t * 18;
+                    ctx.font = '900 ' + fontSize + 'px "Font Awesome 6 Free"';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillStyle = 'rgb(' + cr + ',' + cg + ',' + cb + ')';
+                    ctx.fillText(ICONS[p.icon].glyph, p.x, p.y);
+                    ctx.restore();
+                }
+                rafId = requestAnimationFrame(frame);
+            }
+
+            function onMove(e) {
+                const r = canvas.getBoundingClientRect();
+                const pt = e.touches ? e.touches[0] : e;
+                mouse.x = pt.clientX - r.left;
+                mouse.y = pt.clientY - r.top;
+            }
+            function onLeave() { mouse.x = -9999; mouse.y = -9999; }
+
+            window.addEventListener('resize', resize);
+            window.addEventListener('mousemove', onMove);
+            window.addEventListener('touchmove', onMove, { passive: true });
+            window.addEventListener('mouseout', onLeave);
+
+            resize();
+            frame();
+
+            return function stop() {
+                if (rafId) cancelAnimationFrame(rafId);
+                window.removeEventListener('resize', resize);
+                window.removeEventListener('mousemove', onMove);
+                window.removeEventListener('touchmove', onMove);
+                window.removeEventListener('mouseout', onLeave);
+            };
+        }
+
         window.onload = function() {
             const loader = document.getElementById('loader');
             const progressBarFill = document.querySelector('.progress-bar-fill');
@@ -83,6 +261,43 @@
             const dialogueBox = document.getElementById('dialogue-box');
             const beanBag = document.getElementById('bean-bag');
             const speaker = document.getElementById('speaker');
+
+            // ---- Loading-screen enhancements ----
+            // Floating, mouse-reactive page icons behind the loader content.
+            const stopLoaderBg = startLoaderIconField(document.getElementById('loader-bg'));
+
+            // Escalating "he's busy" messages while the wait drags on.
+            const busyText = document.getElementById('busy-text');
+            const busyTimers = [];
+            let busyInterval = null;
+
+            function showBusyMessage(msg) {
+                if (!busyText) return;
+                busyText.classList.remove('visible'); // brief dip so each message re-fades in
+                const t = setTimeout(() => {
+                    busyText.textContent = msg;
+                    busyText.classList.add('visible');
+                }, 180);
+                busyTimers.push(t);
+            }
+
+            function clearBusyMessages() {
+                busyTimers.forEach(clearTimeout);
+                if (busyInterval) clearInterval(busyInterval);
+            }
+
+            // 15s: "He's kinda busy right now…". 30s: "Ok, really busy…". Every +30s after: add a "really".
+            busyTimers.push(setTimeout(() => {
+                showBusyMessage("He's kinda busy right now…");
+            }, 15000));
+            busyTimers.push(setTimeout(() => {
+                let reallyCount = 1;
+                showBusyMessage("Ok, really busy…");
+                busyInterval = setInterval(() => {
+                    reallyCount++;
+                    showBusyMessage("Ok, " + "really ".repeat(reallyCount) + "busy…");
+                }, 30000);
+            }, 30000));
 
             const images = document.querySelectorAll('img');
             let imagesLoaded = 0;
@@ -98,6 +313,8 @@
             function checkAndHideLoader() {
                 if (actualLoadingComplete && minTimeElapsed && !loaderHidden) {
                     loaderHidden = true;
+                    clearBusyMessages();      // stop the escalating busy timers
+                    if (stopLoaderBg) stopLoaderBg(); // stop & detach the icon field
                     loader.style.opacity = '0';
                     setTimeout(() => {
                         loader.style.display = 'none';
@@ -206,7 +423,6 @@
                 minTimeElapsed = true;
                 checkAndHideLoader();
             }
-
 
             // Preload the hover images to prevent a flash on first hover
             const hoverImageBeanBag3 = new Image();

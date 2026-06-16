@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kanav here</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="CSS/indexstyle.css">
 </head>
 <body>
@@ -14,11 +15,13 @@
         
         <!-- Loader -->
         <div id="loader">
+            <canvas id="loader-bg"></canvas>
             <div class="loader-content">
                 <p class="loading-text pixel-font">Asking Kanav's Permission<span id="ellipsis">.</span></p>
                 <div class="progress-bar-container">
                     <div class="progress-bar-fill"></div>
                 </div>
+                <p id="busy-text" class="pixel-font"></p>
             </div>
         </div>
 
