@@ -7,6 +7,8 @@
     "start": "node api/server.js",
     "migrate": "node api/migrate.js",
     "export-hardcover": "node api/export-to-hardcover.js",
+    "clear-hardcover-dates": "node api/clear-hardcover-dates.js",
+    "import-watchlist": "node api/import-watchlist.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {

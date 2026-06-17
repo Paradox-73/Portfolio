@@ -12,6 +12,7 @@
             await initRecommendedList(); // Await this async function
             await loadDataFromAPI();     // Await this async function
             renderRecommendedRow();
+            loadWatchlist();             // Letterboxd watchlist row
         };
 
         window.toggleMobileMenu = () => {
@@ -459,10 +460,48 @@
             }
         }
 
+        // --- Letterboxd Watchlist ---
+        let watchlistItems = [];
+        async function loadWatchlist() {
+            const row = document.getElementById('watchlistRow');
+            const track = document.getElementById('watchlistTrack');
+            if (!row || !track) return;
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/movie-watchlist`);
+                if (!res.ok) throw new Error('watchlist fetch failed');
+                const rows = await res.json();
+
+                // CSV columns: Date, Name, Year, "Letterboxd URI". Map to the card item shape.
+                watchlistItems = rows
+                    .filter(r => r && (r.Name || r.name || r.title))
+                    .map((r, i) => ({
+                        title: r.Name || r.name || r.title,
+                        name: r.Name || r.name || r.title,
+                        id: `wl-${i}`,
+                        media_type: 'movie',
+                        poster_path: null,
+                        release_date: String(r.Year || r.year || ''),
+                        letterboxd_uri: r['Letterboxd URI'] || r.letterboxd_uri || ''
+                    }));
+
+                track.innerHTML = '';
+                if (!watchlistItems.length) { row.style.display = 'none'; return; }
+                row.style.display = 'block';
+                watchlistItems.forEach(item => createCard(item, track));
+
+                // Reuse the existing poster queue to look up covers from TMDB by title.
+                posterQueue.push(...watchlistItems);
+                processPosterQueue();
+            } catch (e) {
+                console.error('Watchlist load error:', e);
+                row.style.display = 'none';
+            }
+        }
+
         // Fill the home rows with grey placeholder cards so they don't look empty
         // before the API responds. renderHomeRows() clears these when real cards arrive.
         function injectSkeletons() {
-            ['recTrack', 'recommendedByYouTrack', 'moviesTrack', 'showsTrack', 'animeTrack'].forEach(id => {
+            ['recTrack', 'recommendedByYouTrack', 'watchlistTrack', 'moviesTrack', 'showsTrack', 'animeTrack'].forEach(id => {
                 const track = document.getElementById(id);
                 if (!track || track.children.length) return;
                 let html = '';
@@ -523,7 +562,7 @@
             const type = item.media_type || 'movie';
 
             // Fetch details
-            if (searchId && !String(searchId).startsWith('mov-') && !String(searchId).startsWith('show-')) { 
+            if (searchId && !String(searchId).startsWith('mov-') && !String(searchId).startsWith('show-') && !String(searchId).startsWith('wl-')) {
                 try {
                     apiData = await fetchTmdbData(`${type}/${searchId}`, { append_to_response: 'videos,credits,similar', title: item.title || item.name });
                 } catch(e) { console.error("Error fetching details:", e); }

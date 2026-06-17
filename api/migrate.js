@@ -10,6 +10,7 @@ const MAPPING = {
     'shows_data.csv': 'shows',
     'books_data.csv': 'books',
     'games_data.csv': 'games',
+    'watchlist.csv': 'movie_watchlist',
     'my_works.csv': 'works',
     'spotify_top_tracks.csv': 'music_tracks',
     'spotify_top_artists.csv': 'music_artists',

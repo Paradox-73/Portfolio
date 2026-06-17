@@ -388,59 +388,80 @@ lucide.createIcons();
                     });
             }
             
+            // Read collection is Hardcover-only. We cache the fetched books so the sort
+            // control can re-render without re-fetching.
+            let READ_BOOKS = [];
+            let READ_SORT = 'added';
+
+            function ensureSortControl() {
+                if (document.getElementById('read-sort')) return;
+                const shelf = document.getElementById('shelf-read');
+                if (!shelf) return;
+                const sel = document.createElement('select');
+                sel.id = 'read-sort';
+                sel.className = 'read-sort-select';
+                sel.innerHTML = `
+                    <option value="added">Recently Added</option>
+                    <option value="rating">Rating (high→low)</option>
+                    <option value="title">Title (A→Z)</option>
+                    <option value="author">Author (A→Z)</option>`;
+                sel.value = READ_SORT;
+                sel.onchange = () => { READ_SORT = sel.value; renderReadShelf(); };
+                shelf.appendChild(sel);
+            }
+
+            function renderReadShelf() {
+                const shelf = document.getElementById('shelf-read');
+                Array.from(shelf.children).forEach(c => {
+                    if(!c.classList.contains('shelf-plaque') && c.id !== 'loading-msg') c.remove();
+                });
+
+                const books = [...READ_BOOKS];
+                if (READ_SORT === 'rating') {
+                    books.sort((a, b) => (b.my_rating || 0) - (a.my_rating || 0));
+                } else if (READ_SORT === 'title') {
+                    books.sort((a, b) => normalizeTitle(a.title).localeCompare(normalizeTitle(b.title)));
+                } else if (READ_SORT === 'author') {
+                    books.sort((a, b) => (a.authors?.[0] || '').localeCompare(b.authors?.[0] || ''));
+                }
+                // 'added' keeps the API order (Hardcover returns date_added desc).
+
+                books.forEach(bookData => {
+                    const el = createBookEl(bookData, shelf, 'read');
+                    updateBookEl(el, bookData);
+                });
+            }
+
             async function loadLibrary() {
                 const shelf = document.getElementById('shelf-read');
-                Array.from(shelf.children).forEach(c => { 
-                    if(!c.classList.contains('shelf-plaque') && c.id !== 'loading-msg') c.remove(); 
+                Array.from(shelf.children).forEach(c => {
+                    if(!c.classList.contains('shelf-plaque') && c.id !== 'loading-msg') c.remove();
                 });
                 document.getElementById('loading-msg').style.display = 'none';
 
                 try {
-                    // Read collection comes from two sources: the curated MongoDB collection
-                    // (/api/books) and the live Hardcover "Read" shelf (/api/hardcover-books).
-                    // Either may fail independently (e.g. Hardcover token missing) — tolerate that
-                    // and render whatever loaded. Merge + de-dupe by normalized title.
-                    const [mongoRes, hcRes] = await Promise.allSettled([
-                        fetch(`${API_BASE_URL}/api/books`),
-                        fetch(`${API_BASE_URL}/api/hardcover-books`)
-                    ]);
-
-                    const readJson = async (settled) => {
-                        if (settled.status !== 'fulfilled' || !settled.value.ok) return [];
-                        try { return await settled.value.json(); } catch { return []; }
-                    };
-                    const mongoBooks = await readJson(mongoRes);
-                    const hcBooks = await readJson(hcRes);
-
-                    if (!mongoBooks.length && !hcBooks.length) throw new Error('No read books from either source');
-
-                    // Normalize both sources to the same shape, then merge preferring the
-                    // record that carries more detail (cover/description) on title collisions.
-                    const toBookData = (book) => ({
-                        title: book.title,
-                        authors: book.authors ? (Array.isArray(book.authors) ? book.authors : [book.authors]) : [],
-                        description: book.description || 'No description available.',
-                        imageLinks: { thumbnail: book.thumbnail || book.imageLinks?.thumbnail },
-                        my_rating: book.my_rating
-                    });
-                    const richness = (b) => (b.imageLinks.thumbnail ? 2 : 0) + (b.description && b.description !== 'No description available.' ? 1 : 0);
-
-                    const merged = new Map();
-                    [...mongoBooks, ...hcBooks].forEach(raw => {
-                        if (!raw.title) return;
-                        const bd = toBookData(raw);
-                        const key = normalizeTitle(bd.title);
-                        const ex = merged.get(key);
-                        if (!ex || richness(bd) > richness(ex)) merged.set(key, bd);
-                    });
+                    const response = await fetch(`${API_BASE_URL}/api/hardcover-books`);
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    const books = await response.json();
 
                     window.readTitles.clear();
-                    merged.forEach((bookData) => {
-                        window.readTitles.add(normalizeTitle(bookData.title));
-                        const el = createBookEl(bookData, shelf, 'read');
-                        updateBookEl(el, bookData);
-                    });
-                    console.log(`Fetched Read Collection: ${mongoBooks.length} from MongoDB + ${hcBooks.length} from Hardcover = ${merged.size} after de-dupe.`);
+                    READ_BOOKS = books
+                        .filter(book => book.title)
+                        .map(book => {
+                            const bookData = {
+                                title: book.title,
+                                authors: book.authors ? [book.authors] : [],
+                                description: book.description || 'No description available.',
+                                imageLinks: { thumbnail: book.thumbnail },
+                                my_rating: book.my_rating
+                            };
+                            window.readTitles.add(normalizeTitle(bookData.title));
+                            return bookData;
+                        });
+
+                    ensureSortControl();
+                    renderReadShelf();
+                    console.log(`Fetched Read Collection from Hardcover: ${READ_BOOKS.length} books.`);
                 } catch (error) {
                     console.error("Error fetching Read Collection:", error);
                     shelf.insertAdjacentHTML('beforeend', '<div class="w-full text-center text-red-400 italic mt-10 p-4">Could not load Read Collection from API. Using fallback books.</div>');
@@ -454,37 +475,69 @@ lucide.createIcons();
             }
 
             async function loadWishlist() {
+                const shelf = document.getElementById('shelf-wishlist');
                 try {
-                    const response = await fetch(`${API_BASE_URL}/api/wishlist`);
-                    if (!response.ok) throw new Error('Network response was not ok');
-                    const books = await response.json();
+                    // Merge for display: MongoDB recommendations + Hardcover "Want to Read".
+                    // Either source may fail independently — render whatever loaded.
+                    const [recRes, hcRes] = await Promise.allSettled([
+                        fetch(`${API_BASE_URL}/api/wishlist`),
+                        fetch(`${API_BASE_URL}/api/hardcover-wishlist`)
+                    ]);
+                    const readJson = async (settled) => {
+                        if (settled.status !== 'fulfilled' || !settled.value.ok) return [];
+                        try { return await settled.value.json(); } catch { return []; }
+                    };
+                    const recBooks = await readJson(recRes);
+                    const hcBooks = await readJson(hcRes);
+                    if (recRes.status !== 'fulfilled' && hcRes.status !== 'fulfilled') {
+                        throw new Error('Both wishlist sources failed');
+                    }
 
-                    const shelf = document.getElementById('shelf-wishlist');
-                    Array.from(shelf.children).forEach(c => { 
-                        if(!c.classList.contains('shelf-plaque') && c.id !== 'no-wishlist-books') c.remove(); 
+                    Array.from(shelf.children).forEach(c => {
+                        if(!c.classList.contains('shelf-plaque') && c.id !== 'no-wishlist-books') c.remove();
                     });
-                    
-                    window.wishlistTitles.clear();
-                    document.getElementById('no-wishlist-books').classList.toggle('hidden', books.length > 0);
 
-                    books.forEach(book => {
-                        const bookData = {
+                    window.wishlistTitles.clear();
+
+                    // De-dupe by title; MongoDB recommendations take precedence (they carry _id and
+                    // can be moved to the read shelf, Hardcover-sourced ones are display-only).
+                    const merged = new Map();
+                    recBooks.forEach(book => merged.set(normalizeTitle(book.title), {
+                        title: book.title,
+                        authors: book.authors || [],
+                        description: book.description || 'No description available.',
+                        imageLinks: book.imageLinks || {},
+                        recommendedBy: book.recommendedBy,
+                        _id: book._id,
+                        source: 'mongo'
+                    }));
+                    hcBooks.forEach(book => {
+                        const key = normalizeTitle(book.title);
+                        if (merged.has(key)) return;
+                        merged.set(key, {
                             title: book.title,
                             authors: book.authors || [],
                             description: book.description || 'No description available.',
                             imageLinks: book.imageLinks || {},
                             recommendedBy: book.recommendedBy,
-                            _id: book._id 
-                        };
+                            source: 'hardcover'
+                        });
+                    });
+
+                    document.getElementById('no-wishlist-books').classList.toggle('hidden', merged.size > 0);
+
+                    merged.forEach(bookData => {
                         window.wishlistTitles.add(normalizeTitle(bookData.title));
                         const el = createBookEl(bookData, shelf, 'wishlist');
                         applyBookAppearance(el, bookData);
-                        el.onclick = () => openDetailsModal(bookData, 'wishlist', bookData._id, bookData.recommendedBy);
+                        // Hardcover-sourced items are display-only (no _id → no move-to-read flow).
+                        const type = bookData.source === 'hardcover' ? 'read' : 'wishlist';
+                        el.onclick = () => openDetailsModal(bookData, type, bookData._id, bookData.recommendedBy);
                     });
-                    console.log("Fetched and processed Wishlist from API.");
+                    console.log(`Fetched Wishlist: ${recBooks.length} recommendations + ${hcBooks.length} from Hardcover = ${merged.size} after de-dupe.`);
                 } catch (error) {
                     console.error("Error fetching Wishlist:", error);
-                    document.getElementById('shelf-wishlist').insertAdjacentHTML('beforeend', '<div class="w-full text-center text-red-400 italic mt-10 p-4">Could not load Wishlist from API.</div>');
+                    shelf.insertAdjacentHTML('beforeend', '<div class="w-full text-center text-red-400 italic mt-10 p-4">Could not load Wishlist from API.</div>');
                 }
             }
 
@@ -535,20 +588,25 @@ lucide.createIcons();
                 if(mag.turn('is')) mag.turn('destroy'); 
                 mag.html(''); 
 
+                const readerClose = document.getElementById('reader-close');
+
                 if (isMobile) {
-                    mag.addClass('mobile-scroll-view'); 
+                    mag.addClass('mobile-scroll-view');
                     mag.css({
                         'width': '100%', 'height': '100%', 'overflow-y': 'auto', 'overflow-x': 'hidden',
                         'position': 'static', 'transform': 'none', 'max-width': '600px',
-                        'background-color': 'white', 
+                        'background-color': 'white',
                         'background-image': 'url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/937765/linedpaper.png)',
                         'border': 'solid 1px grey'
                     });
-                    mag.append(`<div class="hard mobile-hard-page"><div class="page-content-inner mobile-page-content-inner-h1"><h1>${d.title}</h1></div></div>`);
+                    // Black close button so it's visible against the white paper background on mobile.
+                    if (readerClose) { readerClose.classList.remove('text-white'); readerClose.classList.add('text-black'); }
+                    // No separate cover page on mobile — d.pages[0] already carries the title heading.
                     d.pages.forEach(html => {
                         mag.append(`<div class="page mobile-page"><div class="page-content-inner mobile-page-content-inner">${html}</div></div>`);
                     });
                 } else {
+                    if (readerClose) { readerClose.classList.remove('text-black'); readerClose.classList.add('text-white'); }
                     mag.removeClass('mobile-scroll-view'); 
                     mag.css({ 'position': '', 'transform': '', 'width': '', 'height': '', 'overflow-y': '', 'overflow-x': '', 'max-width': '', 'background-color': '', 'background-image': '', 'border': '' });
                     mag.append(`<div class="hard"><div class="page-content-inner" style="display:flex; justify-content:center; align-items:center; text-align:center;"><h1>${d.title}</h1></div></div>`);

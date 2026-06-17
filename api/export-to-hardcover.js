@@ -33,12 +33,33 @@ if (!process.env.MONGO_URI) { console.error('MONGO_URI missing in api/.env'); pr
 const authHeader = /^Bearer\s/i.test(TOKEN) ? TOKEN : `Bearer ${TOKEN}`;
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
-async function hc(query, variables) {
-    const res = await axios.post(HC_URL, { query, variables }, {
-        headers: { 'Content-Type': 'application/json', 'Authorization': authHeader }
-    });
-    if (res.data.errors) throw new Error(JSON.stringify(res.data.errors));
-    return res.data.data;
+async function hc(query, variables, attempt = 0) {
+    try {
+        const res = await axios.post(HC_URL, { query, variables }, {
+            headers: { 'Content-Type': 'application/json', 'Authorization': authHeader }
+        });
+        if (res.data.errors) throw new Error(JSON.stringify(res.data.errors));
+        return res.data.data;
+    } catch (e) {
+        // Hardcover rate-limits hard (HTTP 429). Back off and retry a few times,
+        // honoring Retry-After when the server provides it.
+        if (e.response && e.response.status === 429 && attempt < 5) {
+            const retryAfter = Number(e.response.headers['retry-after']);
+            const waitMs = !isNaN(retryAfter) && retryAfter > 0 ? retryAfter * 1000 : Math.min(2000 * Math.pow(2, attempt), 30000);
+            console.log(`   ...rate limited, waiting ${Math.round(waitMs / 1000)}s (retry ${attempt + 1}/5)`);
+            await sleep(waitMs);
+            return hc(query, variables, attempt + 1);
+        }
+        throw e;
+    }
+}
+
+// Hardcover only accepts ratings of 0.5–5 in 0.5 increments. Round/clamp; drop anything <=0.
+function normalizeRating(raw) {
+    const r = Number(raw);
+    if (isNaN(r) || r <= 0) return null;
+    const rounded = Math.round(r * 2) / 2;
+    return Math.min(5, Math.max(0.5, rounded));
 }
 
 function extractIsbn(infoLink) {
@@ -91,8 +112,8 @@ async function resolveBook(book) {
 async function addToShelf({ book_id, edition_id }, rating) {
     const obj = { book_id, status_id: READ_STATUS_ID };
     if (edition_id) obj.edition_id = edition_id;
-    const r = Number(rating);
-    if (!isNaN(r) && r > 0) obj.rating = r;
+    const r = normalizeRating(rating);
+    if (r !== null) obj.rating = r;
     const data = await hc(
         `mutation ($object: UserBookCreateInput!) {
             insert_user_book(object: $object) { error user_book { id } }
@@ -118,6 +139,10 @@ async function addToShelf({ book_id, edition_id }, rating) {
 
         for (const book of books) {
             const label = book.title || '(untitled)';
+            if (!book.title || !book.title.trim()) {
+                console.log(`SKIP  (no title)           ${label}`);
+                summary.skipped++; continue;
+            }
             if (shelf.titles.has(normTitle(book.title))) {
                 console.log(`SKIP  (already on shelf)   ${label}`);
                 summary.skipped++; continue;
@@ -126,11 +151,11 @@ async function addToShelf({ book_id, edition_id }, rating) {
                 const match = await resolveBook(book);
                 if (!match) {
                     console.log(`MISS  (not found)          ${label}`);
-                    summary.unresolved++; await sleep(350); continue;
+                    summary.unresolved++; await sleep(1500); continue;
                 }
                 if (shelf.ids.has(match.book_id)) {
                     console.log(`SKIP  (already on shelf)   ${label}`);
-                    summary.skipped++; await sleep(350); continue;
+                    summary.skipped++; await sleep(1500); continue;
                 }
                 if (COMMIT) {
                     await addToShelf(match, book.my_rating);
@@ -140,10 +165,10 @@ async function addToShelf({ book_id, edition_id }, rating) {
                     console.log(`WOULD-ADD [${match.via}]    ${label}  ->  "${match.matchedTitle}"${book.my_rating ? ` (rating ${book.my_rating})` : ''}`);
                 }
                 summary.added++;
-                await sleep(400); // be gentle with the Hardcover rate limit
+                await sleep(1500); // be gentle with the Hardcover rate limit
             } catch (e) {
                 console.log(`FAIL                       ${label}  ::  ${e.message}`);
-                summary.failed++; await sleep(400);
+                summary.failed++; await sleep(1500);
             }
         }
     } catch (err) {

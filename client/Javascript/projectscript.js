@@ -470,83 +470,81 @@
         event.stopPropagation();
     }
 
+    // Build a single desktop-icon element (icon + label) with the right click behavior.
+    function buildDesktopIcon(key, item, isMobile) {
+        const el = document.createElement('div');
+        el.className = 'desktop-icon';
+
+        let iconHtml = '';
+        let onClick = () => openFile('Desktop', key);
+
+        if (item.icon) {
+            if (item.icon.startsWith('assets/') || item.icon.startsWith('http')) {
+                iconHtml = `<img src="${item.icon}" alt="${key}" width="32" height="32">`;
+            } else {
+                iconHtml = `<i class="${item.icon}" style="color: ${item.color || 'white'};"></i>`;
+            }
+        } else if (typeof item === 'string' && key.endsWith('.txt')) {
+            iconHtml = `<img src="assets/projects/notepad.png" alt="Text File" width="32" height="32">`;
+        } else if (item.type === 'folder') {
+            iconHtml = `<img src="assets/projects/folder.png" alt="Folder" width="32" height="32">`;
+        } else if (item.type === 'app') {
+            iconHtml = `<i class="fas fa-cog" style="color: ${item.color || 'white'};"></i>`;
+        } else {
+            iconHtml = `<i class="fas fa-file" style="color: white;"></i>`;
+        }
+
+        if (item.type === 'system' && key === 'My Computer') {
+            onClick = () => openExplorer('My Computer');
+        } else if (key === 'Recycle Bin') {
+            onClick = () => alert('Recycle Bin is empty!');
+        } else if (item.type === 'external_link') {
+            onClick = () => window.open(item.url, '_blank');
+        } else if (item.type === 'folder') {
+            onClick = () => openExplorer('Desktop/' + key);
+        } else if (item.type === 'app') {
+            if (item.appId === 'pdfViewer') onClick = () => openExternalURLSafely(item.path);
+            else if (item.appId === 'emailClient') onClick = () => openExternalURLSafely('mailto:kanavbhardwaj5150@gmail.com');
+            else onClick = () => openApp(item.appId);
+        }
+
+        el.innerHTML = `${iconHtml}<div class="icon-text">${key}</div>`;
+
+        if (isMobile) {
+            el.onclick = onClick;
+        } else {
+            el.onclick = (e) => {
+                if (e.ctrlKey && (item.type === 'external_link' || item.type === 'url_redirect' || (item.type === 'app' && item.appId === 'pdfViewer'))) {
+                    window.open(item.url || item.path, '_blank');
+                    return;
+                }
+                document.querySelectorAll('.desktop-icon').forEach(i => i.style.background = 'transparent');
+                el.style.background = 'rgba(255,255,255,0.2)';
+            };
+            el.ondblclick = onClick;
+        }
+        return el;
+    }
+
     function renderDesktop() {
         const desktop = document.getElementById('desktop');
         desktop.innerHTML = "";
-        
-        // Detect mobile
+
         const isMobile = window.innerWidth <= 768;
-
-        const leftSide = document.createElement('div');
-        leftSide.id = 'desktop-left';
-        leftSide.style.cssText = "height: 100%; display: flex; flex-direction: column; flex-wrap: wrap; align-content: flex-start;";
-        
-        const rightSide = document.createElement('div');
-        rightSide.id = 'desktop-right';
-        rightSide.style.cssText = "height: 100%; position: absolute; right: 10px; top: 10px; display: flex; flex-direction: column; align-items: flex-end;";
-        
-        desktop.appendChild(leftSide);
-        desktop.appendChild(rightSide);
-
         const root = fileSystem["Desktop"];
-        Object.keys(root).forEach(key => {
-            const item = root[key];
-            const el = document.createElement('div');
-            el.className = 'desktop-icon';
-            
-            // Icon Selection Logic
-            let iconHtml = '';
-            let onClick = () => openFile('Desktop', key);
 
-            if (item.icon) {
-                if (item.icon.startsWith('assets/') || item.icon.startsWith('http')) {
-                    iconHtml = `<img src="${item.icon}" alt="${key}" width="32" height="32">`;
-                } else {
-                    iconHtml = `<i class="${item.icon}" style="color: ${item.color || 'white'};"></i>`;
-                }
-            } else if (typeof item === 'string' && key.endsWith('.txt')) {
-                iconHtml = `<img src="assets/projects/notepad.png" alt="Text File" width="32" height="32">`;
-            } else if (item.type === 'folder') {
-                iconHtml = `<img src="assets/projects/folder.png" alt="Folder" width="32" height="32">`;
-            } else if (item.type === 'app') {
-                iconHtml = `<i class="fas fa-cog" style="color: ${item.color || 'white'};"></i>`;
-            } else {
-                iconHtml = `<i class="fas fa-file" style="color: white;"></i>`;
-            }
+        // Icons are direct children of #desktop so the XP column-flow (desktop) and the
+        // grid layout (mobile CSS) both show every icon. No headings — icons are simply
+        // grouped by adjacency: Projects (folders) first, then Apps, then System/shortcuts.
+        const groupOf = (key, it) => {
+            if (it.type === 'folder' && key !== 'Menu') return 0; // Projects
+            if (it.type === 'app' || key === 'Internet Explorer') return 1; // Apps
+            return 2; // System / Menu / misc
+        };
+        // Stable sort keeps original order within each group.
+        const keys = Object.keys(root).sort((a, b) => groupOf(a, root[a]) - groupOf(b, root[b]));
 
-            if (item.type === 'system' && key === 'My Computer') {
-                onClick = () => openExplorer('My Computer');
-            } else if (key === 'Recycle Bin') {
-                onClick = () => alert('Recycle Bin is empty!');
-            } else if (item.type === 'external_link') {
-                onClick = () => window.open(item.url, '_blank');
-            } else if (item.type === 'folder') {
-                onClick = () => openExplorer('Desktop/' + key);
-            } else if (item.type === 'app') {
-                if (item.appId === 'pdfViewer') onClick = () => openExternalURLSafely(item.path);
-                else if (item.appId === 'emailClient') onClick = () => openExternalURLSafely('mailto:kanavbhardwaj5150@gmail.com');
-                else onClick = () => openApp(item.appId);
-            }
-
-            el.innerHTML = `${iconHtml}<div class="icon-text">${key}</div>`;
-            
-            if (isMobile) {
-                el.onclick = onClick;
-            } else {
-                el.onclick = (e) => {
-                    if (e.ctrlKey && (item.type === 'external_link' || item.type === 'url_redirect' || (item.type === 'app' && item.appId === 'pdfViewer'))) {
-                        window.open(item.url || item.path, '_blank');
-                        return;
-                    }
-                    document.querySelectorAll('.desktop-icon').forEach(i => i.style.background = 'transparent');
-                    el.style.background = 'rgba(255,255,255,0.2)';
-                };
-                el.ondblclick = onClick;
-            }
-
-            const targetContainer = (item.side === 'right') ? rightSide : leftSide;
-            targetContainer.appendChild(el);
-        });
+        keys.forEach(key => desktop.appendChild(buildDesktopIcon(key, root[key], isMobile)));
     }
             
             window.addEventListener('resize', renderDesktop); // Add this line
@@ -858,6 +856,9 @@
 
         const items = currentDirObject.content || currentDirObject; // Use content if it's a folder, otherwise the object itself
 
+        // On touch devices double-click is unreliable, so folders/files open on a single tap.
+        const isMobile = window.innerWidth <= 768;
+
         let itemsHtml = '';
         Object.keys(items).forEach(key => {
             if(key === 'type' || key === 'icon' || key === 'color' || key === 'path' || key === 'appId' || key === 'html') return; // Exclude metadata
@@ -931,13 +932,18 @@
             const isLink = item.type === 'url_redirect' || item.type === 'external_link' || (item.type === 'app' && item.appId === 'pdfViewer');
             const linkUrl = isLink ? (item.url || item.path) : '#';
 
+            // Mobile: single tap performs the action. Desktop: tap highlights, double-click opens.
+            const tapAttrs = isMobile
+                ? `onclick="${dblClick}"`
+                : `onclick="this.style.background='#CCE8FF'; this.style.border='1px solid #99D1FF'" ondblclick="${dblClick}"`;
+
             itemsHtml += isLink ? `
                 <a href="${linkUrl}" target="_blank" class="file-item" style="text-decoration: none; color: inherit;" onclick="this.style.background='#CCE8FF'; this.style.border='1px solid #99D1FF'">
                     ${iconRender}
                     <div style="font-size:11px; word-break: break-all;">${key}</div>
                 </a>
             ` : `
-                <div class="file-item" onclick="this.style.background='#CCE8FF'; this.style.border='1px solid #99D1FF'" ondblclick="${dblClick}">
+                <div class="file-item" ${tapAttrs}>
                     ${iconRender}
                     <div style="font-size:11px; word-break: break-all;">${key}</div>
                 </div>

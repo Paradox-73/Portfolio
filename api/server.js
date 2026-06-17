@@ -167,6 +167,65 @@ async function run() {
             }
         });
 
+        // Hardcover "Want to Read" shelf (status_id = 1), normalized to the wishlist shape so
+        // the Literature page can merge it with the MongoDB recommendations for display.
+        app.get('/api/hardcover-wishlist', async (req, res) => {
+            const token = process.env.HARDCOVER_API_KEY;
+            if (!token) return res.status(500).json({ message: 'HARDCOVER_API_KEY not configured on the server.' });
+
+            const query = `query {
+                me {
+                    user_books(where: {status_id: {_eq: 1}}, order_by: {date_added: desc}, limit: 500) {
+                        book {
+                            title
+                            description
+                            cached_image
+                            contributions { author { name } }
+                        }
+                    }
+                }
+            }`;
+
+            try {
+                const hc = await axios.post(
+                    'https://api.hardcover.app/v1/graphql',
+                    { query },
+                    { headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': /^Bearer\s/i.test(token) ? token : `Bearer ${token}`
+                    } }
+                );
+
+                const me = hc.data && hc.data.data ? hc.data.data.me : null;
+                const meObj = Array.isArray(me) ? me[0] : me;
+                const userBooks = (meObj && meObj.user_books) ? meObj.user_books : [];
+
+                const books = userBooks
+                    .filter(ub => ub.book && ub.book.title)
+                    .map(ub => {
+                        const b = ub.book;
+                        const authors = (b.contributions || [])
+                            .map(c => c.author && c.author.name)
+                            .filter(Boolean);
+                        const cover = b.cached_image && (b.cached_image.url || b.cached_image)
+                            ? (b.cached_image.url || b.cached_image) : '';
+                        return {
+                            title: b.title,
+                            authors,
+                            description: b.description || 'No description available.',
+                            imageLinks: { thumbnail: cover },
+                            recommendedBy: 'Kanav (Hardcover)',
+                            source: 'hardcover'
+                        };
+                    });
+
+                res.json(books);
+            } catch (error) {
+                console.error('Hardcover wishlist fetch failed:', error.response ? error.response.data : error.message);
+                res.status(500).json({ message: 'Hardcover wishlist fetch failed.', details: error.response ? error.response.data : error.message });
+            }
+        });
+
         // Hardcover book search (Typesense-backed) — used by the Literature recommend search
         // and as a description fallback. Returns books normalized with full descriptions.
         app.get('/api/hardcover-search', async (req, res) => {
@@ -223,6 +282,16 @@ async function run() {
         app.get('/api/works', async (req, res) => {
             const data = await db.collection('works').find({}).toArray();
             res.json(data);
+        });
+
+        // Letterboxd watchlist (imported from watchlist.csv: Date, Name, Year, Letterboxd URI).
+        app.get('/api/movie-watchlist', async (req, res) => {
+            try {
+                const data = await db.collection('movie_watchlist').find({}).toArray();
+                res.json(data);
+            } catch (error) {
+                res.status(500).json({ message: 'Failed to fetch watchlist.', details: error.message });
+            }
         });
 
         // New Spotify Music Endpoints
