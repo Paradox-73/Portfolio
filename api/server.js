@@ -115,7 +115,7 @@ async function run() {
 
             const query = `query {
                 me {
-                    user_books(where: {status_id: {_eq: 3}}, order_by: {date_added: desc}) {
+                    user_books(where: {status_id: {_eq: 3}}, order_by: {date_added: desc}, limit: 500) {
                         rating
                         book {
                             title

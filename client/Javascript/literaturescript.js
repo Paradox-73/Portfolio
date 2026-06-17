@@ -396,27 +396,51 @@ lucide.createIcons();
                 document.getElementById('loading-msg').style.display = 'none';
 
                 try {
-                    const response = await fetch(`${API_BASE_URL}/api/hardcover-books`);
-                    if (!response.ok) throw new Error('Network response was not ok');
-                    const books = await response.json();
-                    
-                    window.readTitles.clear();
-                    books.forEach(book => {
-                        if (book.title) {
-                            const bookData = {
-                                title: book.title,
-                                authors: book.authors ? [book.authors] : [],
-                                description: book.description || 'No description available.',
-                                imageLinks: { thumbnail: book.thumbnail },
-                                my_rating: book.my_rating
-                            };
-                            
-                            window.readTitles.add(normalizeTitle(bookData.title));
-                            const el = createBookEl(bookData, shelf, 'read');
-                            updateBookEl(el, bookData);
-                        }
+                    // Read collection comes from two sources: the curated MongoDB collection
+                    // (/api/books) and the live Hardcover "Read" shelf (/api/hardcover-books).
+                    // Either may fail independently (e.g. Hardcover token missing) — tolerate that
+                    // and render whatever loaded. Merge + de-dupe by normalized title.
+                    const [mongoRes, hcRes] = await Promise.allSettled([
+                        fetch(`${API_BASE_URL}/api/books`),
+                        fetch(`${API_BASE_URL}/api/hardcover-books`)
+                    ]);
+
+                    const readJson = async (settled) => {
+                        if (settled.status !== 'fulfilled' || !settled.value.ok) return [];
+                        try { return await settled.value.json(); } catch { return []; }
+                    };
+                    const mongoBooks = await readJson(mongoRes);
+                    const hcBooks = await readJson(hcRes);
+
+                    if (!mongoBooks.length && !hcBooks.length) throw new Error('No read books from either source');
+
+                    // Normalize both sources to the same shape, then merge preferring the
+                    // record that carries more detail (cover/description) on title collisions.
+                    const toBookData = (book) => ({
+                        title: book.title,
+                        authors: book.authors ? (Array.isArray(book.authors) ? book.authors : [book.authors]) : [],
+                        description: book.description || 'No description available.',
+                        imageLinks: { thumbnail: book.thumbnail || book.imageLinks?.thumbnail },
+                        my_rating: book.my_rating
                     });
-                    console.log("Fetched and processed Read Collection from API.");
+                    const richness = (b) => (b.imageLinks.thumbnail ? 2 : 0) + (b.description && b.description !== 'No description available.' ? 1 : 0);
+
+                    const merged = new Map();
+                    [...mongoBooks, ...hcBooks].forEach(raw => {
+                        if (!raw.title) return;
+                        const bd = toBookData(raw);
+                        const key = normalizeTitle(bd.title);
+                        const ex = merged.get(key);
+                        if (!ex || richness(bd) > richness(ex)) merged.set(key, bd);
+                    });
+
+                    window.readTitles.clear();
+                    merged.forEach((bookData) => {
+                        window.readTitles.add(normalizeTitle(bookData.title));
+                        const el = createBookEl(bookData, shelf, 'read');
+                        updateBookEl(el, bookData);
+                    });
+                    console.log(`Fetched Read Collection: ${mongoBooks.length} from MongoDB + ${hcBooks.length} from Hardcover = ${merged.size} after de-dupe.`);
                 } catch (error) {
                     console.error("Error fetching Read Collection:", error);
                     shelf.insertAdjacentHTML('beforeend', '<div class="w-full text-center text-red-400 italic mt-10 p-4">Could not load Read Collection from API. Using fallback books.</div>');
