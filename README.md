@@ -1,180 +1,433 @@
-# Kanav's Interactive Portfolio
+# Interactive Portfolio (V2)
+### A pixel-art "digital room" front-end backed by a Node/Express + MongoDB API and live media-API proxies
 
-## About My Project
+![Node.js](https://img.shields.io/badge/Node.js-Runtime-339933?style=flat-square&logo=node.js&logoColor=white)
+![Express](https://img.shields.io/badge/Express-4.22-000000?style=flat-square&logo=express&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB%20Atlas-Driver%206.21-47A248?style=flat-square&logo=mongodb&logoColor=white)
+![Vanilla JS](https://img.shields.io/badge/Frontend-HTML5%20%C2%B7%20CSS3%20%C2%B7%20ES6%2B-F7DF1E?style=flat-square&logo=javascript&logoColor=black)
+![Three.js](https://img.shields.io/badge/Three.js-r128-000000?style=flat-square&logo=three.js&logoColor=white)
+![Vercel](https://img.shields.io/badge/Deploy-Vercel-000000?style=flat-square&logo=vercel&logoColor=white)
 
-Welcome to my interactive portfolio! This project is a creative showcase of my work, interests, and skills, designed to be a unique and engaging experience. I've built the frontend as a pixelated digital room, where each interactive object invites you to explore a different facet of my personality and expertise. Behind this playful interface, a robust Node.js backend with MongoDB tirelessly serves dynamic content and intelligently proxies external APIs like TMDB, OMDB, and RAWG to keep everything rich and up-to-date.
+---
 
-## Key Features
+## Table of Contents
 
-*   **My Digital Room Experience**: I've crafted a pixel-art themed room that serves as the main navigation hub. Clicking on objects in the room transports you to different sections of my portfolio.
-*   **Dynamic Loading**: An engaging loader with a progress bar keeps you company while everything loads, followed by a personal welcome message from me.
-*   **Ambient Music**: I've integrated a background music player using the YouTube IFrame API to set the mood, complete with an autoplay fallback and toggle controls.
-*   **Detailed Portfolio Sections**: Each interactive item leads to a dedicated page:
-    *   **Music**: An immersive "Soundscape" experience featuring a virtual turntable, a scrollable record crate, and live-sorted artist and track archives.
-    *   **Movies & TV**: Explore my cinematic tastes with a Netflix-style interface, dynamic content from TMDB/OMDB, and an automated Letterboxd diary sync.
-    *   **Games**: A PlayStation-inspired arcade experience with dynamic backgrounds, game trailers, and RAWG API integration.
-    *   **Travel**: A digital scrapbook with a realistic page-flipping effect, sharing stories and photos from my journeys.
-    *   **Food**: A retro diner-themed menu featuring recipes, witty descriptions, and allergen information.
-    *   **Literature**: A cozy virtual library with interactive book covers, a search system, and an integrated reader for my own works.
-    *   **Art**: A navigable 3D gallery built with Three.js, showcasing a curated collection with dynamic lighting and environments.
-    *   **Sport**: An arcade-style hub featuring playable mini-games like basketball, golf, and a martial arts simulator.
-    *   **Projects**: A retro Windows XP desktop environment where you can explore my development work through simulated applications.
-*   **Holographic Contact Display**: Hover over the phone in my digital room to reveal a holographic display, providing quick access to my GitHub, LinkedIn, Email, and Resume.
-*   **Backend Services**: I've built a Node.js/Express.js API to manage data in MongoDB and to proxy external APIs securely.
-*   **Automated Movie Diary Sync**: A custom-built ETL pipeline automatically fetches my latest movie entries from my public Letterboxd RSS feed, enriches them with data from The Movie Database (TMDB), and saves them to MongoDB. This sync runs on a daily schedule, ensuring my movie list is always up-to-date without manual intervention.
-*   **Data Management**: I use a script to initially populate my MongoDB collections from CSV files, making data setup efficient.
-*   **Admin Wishlist**: For certain sections (like games), I've included protected endpoints to manage personal wishlists.
-*   **Responsive Design**: I've ensured that my portfolio is accessible and looks great across various screen sizes.
+1. [Project Overview](#1-project-overview)
+2. [Content & Data Sources](#2-content--data-sources)
+3. [Architecture](#3-architecture)
+   - [3.1 Component / Deployment Architecture](#31-component--deployment-architecture)
+   - [3.2 Build & Deploy Pipeline (Vercel)](#32-build--deploy-pipeline-vercel)
+   - [3.3 Request / Routing Map](#33-request--routing-map)
+   - [3.4 Letterboxd Sync Data Flow](#34-letterboxd-sync-data-flow)
+4. [Repository Structure](#4-repository-structure)
+5. [Libraries & Frameworks](#5-libraries--frameworks)
+6. [Methodology — The Render & Data Pipeline](#6-methodology--the-render--data-pipeline)
+7. [Setup & Installation](#7-setup--installation)
+8. [Environment Variables Reference](#8-environment-variables-reference)
+9. [Running the Project](#9-running-the-project)
+10. [Features](#10-features)
+11. [Roadmap & Future Work](#11-roadmap--future-work)
+12. [Appendix — Glossary & References](#12-appendix--glossary--references)
 
-## Technologies I Used
+---
 
-### Frontend
+## 1. Project Overview
 
-*   **HTML5, CSS3, JavaScript (ES6+)**: The core building blocks of my interactive web experience.
-*   **External Libraries**:
-    *   [Font Awesome](https://fontawesome.com/): For all the cool icons you see around.
-    *   [Swiper.js](https://swiperjs.com/): Powering the carousels in my Music section.
-    *   [YouTube IFrame API](https://developers.google.com/youtube/iframe_api_reference): For seamless background music integration.
-    *   [PapaParse](https://www.papaparse.com/): A utility for client-side CSV parsing, though my backend migration handles most data.
+**PortfolioV2** is an interactive portfolio website built as a playful pixel-art "digital room." Instead of a conventional scrolling résumé, the home page (`client/index.html`) renders a layered illustration of a room where each object (ukulele, movie posters, PS5, painting, bookshelf, etc.) is a clickable hotspot that navigates to a themed section page.
 
-### Backend
+It is a **two-tier full-stack application**, not a static site:
 
-*   **Node.js** & **Express.js**: I use Node.js as my JavaScript runtime, and **Express.js** is the web application framework built on top of Node.js that I chose for building my robust and scalable API. It allows me to handle requests, manage data in MongoDB, and act as a secure gateway to external APIs. This backend is crucial for dynamic content, and it's also where I can make recommendations for various items across my portfolio.
-*   [MongoDB Atlas](https://www.mongodb.com/atlas): Where all my dynamic data lives, hosted securely in the cloud.
-*   `dotenv`, `cors`, `axios`: Essential npm packages for environment variable management, cross-origin resource sharing, and making HTTP requests to external APIs.
-*   `node-cron` & `rss-parser`: For creating the automated, scheduled job that fetches and parses the Letterboxd RSS feed to keep my movie diary synced.
+- **Front-end** — hand-written **HTML5 + CSS3 + vanilla ES6+ JavaScript** (no build step, no framework). One HTML file per section, each with its own CSS and JS file. Several pages pull in CDN libraries (Three.js, GSAP, Turn.js, jQuery, Tailwind, Lucide, marked.js, PapaParse) and the YouTube IFrame API.
+- **Back-end** — a single **Node.js / Express** server (`api/server.js`) connected to **MongoDB Atlas**. It serves curated media data from MongoDB collections and acts as a **secure proxy** to external media APIs (TMDB, OMDb, RAWG, Spotify, Hardcover, YouTube) so that API keys never reach the browser. It also handles a **contact form** and an **art-recommendation form** via `nodemailer`.
+- **Automation** — a **Vercel Cron** job calls `/api/sync-letterboxd` on a schedule, which reads a public Letterboxd RSS feed, enriches each new film via TMDB, and upserts it into MongoDB — a small ETL pipeline that keeps the movie diary current with no manual work.
 
-### External APIs I Integrated
+The whole application is deployed on **Vercel**: the `client/` folder is served as static assets and `api/server.js` runs as a serverless Node function, wired together by `vercel.json`.
 
-*   **Letterboxd RSS Feed**: The source for my automated movie diary sync.
-*   [The Movie Database (TMDB)](https://www.themoviedb.org/documentation/api): For rich movie and TV show data.
-*   [Open Movie Database (OMDB)](http://www.omdbapi.com/): My reliable fallback for movie/TV data if TMDB isn't available.
-*   [RAWG Video Games Database API](https://rawg.io/apidocs): To showcase my gaming interests with detailed game information.
-*   **Spotify**: While not directly exposed, my music data structure and scripts imply integration with Spotify's data to curate my playlists and recommendations.
+> **In one sentence:** a game-like portfolio front-end whose dynamic sections (movies, TV, games, music, books) are fed by a thin Express/MongoDB backend that proxies public media APIs and auto-syncs a Letterboxd movie diary.
 
-## My Portfolio Sections in Detail
+---
 
-Here's a closer look at what each section of my portfolio offers:
+## 2. Content & Data Sources
 
-### My Digital Room (`index.html`)
+Page content comes from **three** distinct places — knowing which is which is the key to understanding the app.
 
-This is the central hub of my portfolio, designed as a cozy, pixel-art inspired room. It's the first thing you'll see. Key interactive elements include:
-*   **Ukulele**: Leads to my Music section.
-*   **Movie Posters**: Leads to my Movies & TV section.
-*   **PS5**: Leads to my Games section.
-*   **Painting**: Leads to my Art section.
-*   **Noodles**: Leads to my Food section.
-*   **Polaroids**: Leads to my Travel section.
-*   **Bookshelf**: Leads to my Literature section.
-*   **Dumbbell**: Leads to my Sport section.
-*   **Monitor**: Leads to my Projects section.
-*   **Phone**: Reveals my holographic contact display (GitHub, Resume, Email, LinkedIn).
-*   **Speaker**: Toggles ambient background music.
-*   **Dog**: Just a cute, sleeping dog!
+| Source | Used by | Mechanism | Examples |
+|---|---|---|---|
+| **MongoDB Atlas collections** | Movies, Shows, Books, Games, Music, Works, Watchlist, Recommendations | Express `GET /api/<collection>` → `db.collection(...).find(...)` | `movies`, `shows`, `books`, `games`, `music_tracks`, `music_artists`, `music_albums`, `works`, `movie_watchlist`, `recommendations` |
+| **Live external APIs (proxied through the server)** | Search & detail lookups, trailers, covers | Browser → `/api/tmdb/*`, `/api/rawg/*`, `/api/spotify/*`, `/api/hardcover-*`, `/api/youtube/search` → Express → upstream API | TMDB search/details, RAWG game search, Spotify search, Hardcover GraphQL, YouTube trailer fallback |
+| **Static data inside the JS files** | Food/recipes, Projects (XP desktop), the Art gallery layout, the Sport mini-games | Plain JS objects/arrays in the page script | `recipes.js` (~23 recipes), `projectscript.js` file-system tree, `artscript.js` artwork positions, game physics in `basketball.js` / `golf.js` / `martialarts.js` |
 
-### My Sonic World (Music) (`Music.html`)
+### The MongoDB collections are seeded from CSVs
 
-A high-fidelity audio archive with a focus on tactile interaction:
-*   **Interactive Vinyl Turntable**: Play selected records on a realistic turntable with animated tonearm and spinning vinyl.
-*   **Scrollable Record Crate**: A 3D-style crate (powered by GSAP) where you can "dig" through albums.
-*   **Top Artists & Tracks**: Explore favorite creators and top tracks with dynamic sorting and Spotify links.
-*   **The Archive**: A full-screen collection overlay for browsing and filtering the entire record library.
-*   **Integrated Display**: Track and artist info are displayed directly on the virtual turntable's screen.
-*   **Tracklist Navigation**: A unique disc-themed menu for quick access to other portfolio sections.
+The `data/` folder holds exported media history as CSV, and `api/migrate.js` loads them into MongoDB (drop-then-`insertMany` per collection). Representative row counts (header + data):
 
-### My Reel Life (Movies & TV) (`MoviesTV.html`)
+| CSV file | → Collection | Rows | Notable columns |
+|---|---|---|---|
+| `movies_data.csv` | `movies` | ~704 | tmdb_id, title, user_rating, director, actors, poster, metascore |
+| `shows_data.csv` | `shows` | ~134 | tvmaze_id, genres, my_rating, number_of_seasons |
+| `books_data.csv` | `books` | ~73 | title, my_rating, authors, thumbnail, infoLink |
+| `games_data.csv` | `games` | ~374 | name, my_rating, metacritic, platform_from_text, cover |
+| `my_works.csv` | `works` | ~522 | title, text (paginated for the in-site reader) |
+| `watchlist.csv` | `movie_watchlist` | ~399 | Letterboxd export: Date, Name, Year, Letterboxd URI |
+| `spotify_top_tracks.csv` | `music_tracks` | ~9938 | Track Name, Artist(s), Genre(s), Track URL |
+| `spotify_top_artists.csv` | `music_artists` | ~720 | Artist Name, Followers, Image_URL |
+| `spotify_saved_albums.csv` | `music_albums` | ~102 | Album Name, my_rating, Image_URL |
 
-This section offers a personalized, Netflix-style interface for exploring my favorite movies, TV shows, and anime.
-*   **Profile Selection**: Starts with a "Who's watching?" screen, allowing for a personalized entry (currently "Kanav").
-*   **Dynamic Billboard**: A prominent section showcasing a rotating selection of titles with trailers (via YouTube Iframe API), a brief description, and action buttons. I can navigate through these using arrow keys.
-*   **Content Rows**: Organized rows for "Recommended for Kanav," "Recommended By Others," "Movies," "Shows," and "Anime," all dynamically loaded.
-*   **Comprehensive Search**: A global search bar to find titles across movies, TV, and anime, with results displayed in a grid.
-*   **Detail Modals**: Clicking on any title opens a detailed modal view showing trailers, description, cast, genres, similar titles, and for TV shows, episode listings by season.
-*   **Recommendation System**: I've built a system where others can recommend titles to me, and I can mark them as "seen" (with admin password protection).
-*   **Grid View**: Dedicated full-page grids for Movies, Shows, and Anime, offering filtering by genre and sorting options.
-*   **Backend Integration**: All dynamic content and recommendations are fetched from my Node.js/Express.js backend, which proxies TMDB and OMDB for rich media metadata.
+> **Note:** `data/` is git-ignored. A fresh clone ships code only — supply your own CSV exports and run `npm run migrate` to populate Atlas.
 
-### My Gaming Universe (Games) (`Games.html`)
+---
 
-This page is a PlayStation-inspired arcade where I showcase my gaming interests.
-*   **Interactive Intro**: Features an animated intro with a "Press Spacebar or A on your gamepad" prompt, creating an immersive entry.
-*   **Dynamic Backgrounds**: Uses a `dynamic-bg-img` and a YouTube video background to set the mood for the currently selected game.
-*   **Carousel Navigation**: A horizontally scrolling carousel of game covers, allowing me to browse through my game library and wishlist.
-*   **Game Details**: Displays the title, tagline, and a play button for the currently selected game.
-*   **Recommendation & Wishlist**: Includes a "Wishlist" tab where I can manage games recommended by others, mark them as "played" (password protected), or add new game recommendations. It integrates with the RAWG API via my backend for game data.
-*   **Global Search**: A search bar allows me to look up games, showing both games I own/wishlist and external results from RAWG.
-*   **Detail Overlay**: Provides more in-depth information about a selected game, including description, genres, platforms, and release date.
-*   **Settings Menu**: A slide-out menu offering quick navigation to other portfolio sections.
-*   **Gamepad Support**: Designed with gamepad interaction in mind for a true console-like experience.
+## 3. Architecture
 
-### My Wanderlust (Travel) (`Travel.html`)
+### 3.1 Component / Deployment Architecture
 
-I've designed this section as an interactive scrapbook or travel magazine, utilizing the `Turn.js` library for a realistic page-flipping experience.
-*   **Scrapbook Design**: Each "page" is styled to look like a scrapbook entry, complete with handwritten-style fonts and skewed images.
-*   **Personal Travelogues**: Features stories and photos from my trips to places like Pondicherry, Coorg, and Shimla, sharing personal anecdotes and experiences.
-*   **Wishlist Destinations**: I've included a page for my travel wishlist (e.g., Singapore), humorously noting it's a work in progress.
-*   **Interactive Navigation**: The last page of the scrapbook includes a grid of icons, allowing direct navigation to other sections of my portfolio, enhanced with tooltips.
-*   **Responsive Page Turning**: The page-flipping mechanism adapts for mobile, offering a single-page scroll view on smaller screens and classic double-page turns on desktop, with both keyboard and touch swipe navigation.
+```mermaid
+graph TD
+    subgraph Browser["Browser (client/ — static, no build)"]
+        IDX["index.html<br/>pixel-room hub + canvas loader"]
+        PAGES["Section pages<br/>MoviesTV · Games · Music · Literature<br/>art · Sport · Travel · Food · Projects"]
+        CDN["CDN libs<br/>Three.js · GSAP · Turn.js · jQuery<br/>Tailwind · Lucide · marked · PapaParse"]
+        YT["YouTube IFrame API"]
+    end
 
-### My Culinary Journey (Food) (`Food.html`)
+    subgraph Vercel["Vercel platform"]
+        STATIC["@vercel/static<br/>serves client/**/*"]
+        FN["@vercel/node<br/>api/server.js (Express)"]
+        CRON["Vercel Cron<br/>scheduled → /api/sync-letterboxd"]
+    end
 
-This page is a delightful menu showcasing my culinary adventures, designed with a retro diner aesthetic.
-*   **Menu Categories**: Organizes my dishes into sections like "Suspicious But Delicious" (mains), "Frozen Gourmet" (sides), "Sugar Crash" (desserts), and "Udderly Delicious" (shakes/drinks).
-*   **Interactive Menu Items**: Each dish includes an image, name, a witty description, a star rating, and a "Recipe" button.
-*   **Recipe Modals**: Clicking the "Recipe" button (managed by `recipe.js` and `recipes.js`) pops up a modal displaying detailed ingredients and instructions for the dish.
-*   **Allergen Legend**: A clear legend indicates common allergens (Nuts, Eggs, Wheat, Dairy, Seafood) for each dish.
-*   **Music Toggle**: Includes a music toggle button to play background music (via YouTube Iframe API), enhancing the dining experience.
-*   **Playful Interactions**: Features sound effects on button hovers and clicks (though commented out in the JS), and an interactive "Bill" section that reveals a humorous message.
-*   **Footer Navigation**: Quick links to other portfolio sections are available in the footer.
+    subgraph Data["State & configuration"]
+        MONGO[("MongoDB Atlas<br/>db: portfolioData")]
+        ENV["Environment variables<br/>API keys, MONGO_URI (git-ignored)"]
+    end
 
-### My Literary Escape (Literature) (`Literature.html`)
+    subgraph Ext["External APIs (server-side only)"]
+        TMDB["TMDB"]
+        OMDB["OMDb (fallback)"]
+        RAWG["RAWG"]
+        SPOT["Spotify"]
+        HC["Hardcover (GraphQL)"]
+        OL["Open Library"]
+        LB["Letterboxd RSS"]
+        MAIL["Gmail SMTP (nodemailer)"]
+    end
 
-This section is my personal library, presented as a stylized bookshelf with interactive elements.
-*   **Categorized Shelves**: Books are organized into "My Works" (my own writings), "Read Collection" (books I've read), and "Wishlist" (books recommended by others or that I want to read).
-*   **Dynamic Book Covers**: Each book is represented by an interactive spine or cover, dynamically generated or fetched from Google Books API.
-*   **Search & Recommend**: A search bar allows me to look for books via the Google Books API. I can then recommend books for my wishlist, providing my name for the recommendation.
-*   **Recommendation System**: The backend allows me to manage my wishlist. I can mark books from my wishlist as "read" (with admin password protection), moving them to my "Read Collection."
-*   **Detail Modals**: Clicking on a book opens a modal with its title, author, description, and cover image.
-*   **Integrated Reader**: For items in "My Works," clicking on the book opens an immersive Turn.js-powered reader, displaying the content in a page-flipping format.
-*   **Navigation Menu**: A slide-out menu provides quick access to other portfolio sections.
-*   **Tailwind CSS**: The page styling utilizes Tailwind CSS for a modern and responsive design, while still maintaining an aesthetic fitting a library.
+    IDX --> STATIC
+    PAGES --> STATIC
+    PAGES -->|fetch /api/*| FN
+    CDN -.served from CDN.-> PAGES
+    YT -.embeds.-> PAGES
+    FN --> MONGO
+    FN --> ENV
+    FN --> TMDB
+    FN --> OMDB
+    FN --> RAWG
+    FN --> SPOT
+    FN --> HC
+    PAGES -.direct browser fetch.-> OL
+    CRON --> FN
+    FN --> LB
+    FN --> MAIL
+```
+*Figure 1 — Component & deployment architecture. The browser only ever talks to Vercel; all keyed external APIs are reached through the Express function so credentials stay server-side. The one exception is Open Library, which is keyless and called directly from the browser as a cover/metadata fallback.*
 
-### My Creative Canvas (Art) (`art.html`)
+### 3.2 Build & Deploy Pipeline (Vercel)
 
-This page transforms into an immersive 3D art gallery, where you can walk through a virtual space filled with my curated art collection.
-*   **3D Environment**: Built using Three.js, it features a navigable gallery with walls, floors, and dynamic lighting.
-*   **Interactive Artworks**: Various artworks are displayed on the walls, each with a generated description tag, offering details about the piece.
-*   **First-Person Navigation**: I can explore the gallery using WASD keys for movement and mouse for looking around (or virtual joystick/touch for mobile).
-*   **Ambient Music**: Background music plays to enhance the gallery experience, with a toggle to mute/unmute.
-*   **Dynamic Ceiling**: I can toggle the ceiling between a standard cloudy sky and a starry night texture.
-*   **Interactive Door/Menu**: A functional door allows entry/exit and serves as a gateway to a full navigation menu to other portfolio sections.
-*   **Speed Control**: I can double my movement speed for faster exploration.
-*   **Responsive Controls**: Includes virtual joysticks and buttons for mobile devices, ensuring accessibility across platforms.
+```mermaid
+flowchart LR
+    DEV["git push to repo"] --> VBUILD["Vercel build"]
+    VBUILD --> B1["Build 1: @vercel/static<br/>client/**/* (served as-is)"]
+    VBUILD --> B2["Build 2: @vercel/node<br/>api/server.js → serverless function"]
+    B1 --> DEPLOY["Deploy"]
+    B2 --> DEPLOY
+    DEPLOY --> ROUTES["Routes from vercel.json:<br/>/api/* → server.js<br/>/* → client/$1"]
+    DEPLOY --> CRONREG["Register cron:<br/>scheduled → /api/sync-letterboxd"]
+```
+*Figure 2 — Build & deploy pipeline. The static client is shipped verbatim and only the API is packaged as a Node serverless function. `vercel.json` declares the two builds, the route table, and the scheduled cron.*
 
-### My Sporting Arena (Sport) (`Sport.html`)
+### 3.3 Request / Routing Map
 
-This page is an arcade-style hub where I bring my passion for sports to life through interactive mini-games. It's designed to give a retro gaming experience.
-*   **Arcade Menu**: A central menu allows me to select and launch different sports-themed mini-games.
-*   **Playable Mini-Games**:
-    *   **Basketball ("Around the World")**: A first-person perspective game where I can aim and shoot hoops from different positions on a court, featuring basic physics and scoring.
-    *   **Golf ("Pro Links 9")**: A top-down golf simulation with 9 different holes, including various terrain types like grass, sand traps, and water hazards. I control power and aim to get the ball into the hole.
-    *   **Martial Arts ("Dojo Legends")**: A side-scrolling fighting game where I control a character to punch and kick a heavy bag, building combos and scoring hits.
-*   **Interactive Controls**: Games respond to keyboard/mouse input on desktop and virtual controls (directional pad, A/B buttons) on mobile devices.
-*   **Game HUD**: Each game features a heads-up display showing score and other relevant game information.
-*   **Responsive Design**: The interface adapts for mobile devices, including a landscape orientation blocker to ensure optimal gameplay.
+```mermaid
+flowchart TD
+    U["User action in a page"] --> API_BASE{"API_BASE_URL<br/>(per page script)"}
+    API_BASE -->|"hostname is localhost/127.0.0.1"| LOCAL["http://localhost:3000"]
+    API_BASE -->|"otherwise"| REL["'' (same-origin relative path)"]
 
-### My XP-Themed Workbench (Projects) (`Projects.html`)
+    LOCAL --> EP
+    REL --> EP
 
-This page is a fun, retro-inspired representation of my development projects, styled like a Windows XP desktop. Here, you'll find:
-*   **Desktop Icons**: Visual shortcuts to various applications and my project folders.
-*   **Start Menu**: A functional Start Menu with shortcuts to common applications (like Notepad, Calculator, Command Prompt, Paint, Minesweeper, Internet Explorer) and important links (My Projects, Resume, Contact Me).
-*   **Window Manager**: A custom windowing system that allows opening, minimizing, maximizing, and dragging application windows.
-*   **Simulated Applications**: Interactive versions of classic Windows XP apps:
-    *   **Command Prompt (CMD)**: A basic command-line interface.
-    *   **Notepad**: A simple text editor.
-    *   **Calculator**: A functional calculator.
-    *   **Paint**: A basic drawing application with various tools and color palette.
-    *   **Internet Explorer**: A simplified browser that can render HTML content or external URLs.
-    *   **Minesweeper**: A playable version of the classic game.
-*   **My Projects Folder**: Contains `.url` files that open detailed descriptions of my key development projects within the simulated Internet Explorer browser.
+    subgraph EP["Express endpoints (api/server.js)"]
+        direction TB
+        D1["MongoDB reads:<br/>/api/movies /shows /books /games<br/>/works /movie-watchlist<br/>/music/{tracks,artists,albums}<br/>/recommendations /wishlist"]
+        D2["Proxies:<br/>/api/tmdb/* /api/rawg/*<br/>/api/spotify/* /api/youtube/search<br/>/api/hardcover-{books,wishlist,search}"]
+        D3["Writes / actions:<br/>POST /api/recommendations /books /wishlist/games<br/>PUT /api/wishlist/games/:id/togglePlayed<br/>DELETE /api/wishlist/:id<br/>POST /api/contact /api/art-recommendation<br/>POST /api/admin/verify-password"]
+    end
 
+    D1 --> MONGO[("MongoDB Atlas")]
+    D2 --> EXT["TMDB / OMDb / RAWG / Spotify / Hardcover / YouTube"]
+    D3 --> MONGO
+    D3 --> MAIL["nodemailer → Gmail"]
+```
+*Figure 3 — Routing map. Each page script computes `API_BASE_URL` at runtime: it points to `http://localhost:3000` in local dev and to a relative same-origin path in production (so the deployed Vercel function answers). Endpoints split cleanly into MongoDB reads, keyed-API proxies, and write/action handlers.*
+
+### 3.4 Letterboxd Sync Data Flow
+
+```mermaid
+sequenceDiagram
+    participant Cron as Vercel Cron
+    participant Srv as Express /api/sync-letterboxd
+    participant LB as Letterboxd RSS
+    participant TMDB as TMDB
+    participant DB as MongoDB (movies)
+
+    Cron->>Srv: GET with Authorization: Bearer (cron secret)
+    Srv->>Srv: verify request
+    Srv->>LB: parseURL(rss) with browser User-Agent
+    loop each RSS item
+        Srv->>Srv: skip "letterboxd-list" guids
+        Srv->>DB: findOne({letterboxd_guid})
+        alt already synced
+            Srv->>Srv: continue
+        else new film
+            Srv->>TMDB: search/movie (title, year)
+            Srv->>TMDB: movie/{id}?append_to_response=credits
+            Srv->>TMDB: movie/{id}/release_dates (MPAA cert)
+            Srv->>Srv: parse ★/½ rating from RSS content
+            Srv->>DB: updateOne(upsert) full document
+        end
+    end
+```
+*Figure 4 — Letterboxd → MongoDB ETL. The endpoint is authenticated, filters out Letterboxd "list" activity (which otherwise matches incorrect TMDB results), and upserts by `letterboxd_guid` so the job is idempotent and resumable.*
+
+---
+
+## 4. Repository Structure
+
+```text
+PortfolioV2/
+├── README.md                      # This file
+├── package.json                   # Backend deps + npm scripts (start, migrate, import-watchlist, ...)
+├── package-lock.json
+├── vercel.json                    # Vercel builds, route table, cron definition
+├── update_spotify_data.py         # One-off Python: fills Image_URL columns in the Spotify CSVs
+├── .gitignore                     # Ignores node_modules, env files, data/, venv/
+│
+├── api/                           # ── BACKEND (Express serverless function) ──
+│   ├── server.js                  # The whole API: MongoDB reads, API proxies, contact/art mail, wishlist CRUD
+│   ├── letterboxd-sync.js         # Letterboxd RSS → TMDB enrich → MongoDB upsert
+│   ├── migrate.js                 # CSV → MongoDB loader (drop + insertMany per collection)
+│   ├── import-watchlist.js        # Loads ONLY watchlist.csv into movie_watchlist (re-runnable)
+│   ├── export-to-hardcover.js     # One-off: pushes MongoDB books onto the Hardcover "Read" shelf (dry-run by default)
+│   └── clear-hardcover-dates.js   # Maintenance script for Hardcover date fields
+│
+├── client/                        # ── FRONTEND (static, no build) ──
+│   ├── index.html                 # Pixel-room hub: clickable assets, canvas loader, YouTube ambient music
+│   ├── MoviesTV.html              # Netflix-style movies/TV/anime browser
+│   ├── Games.html                 # PlayStation-style game carousel + wishlist
+│   ├── Music.html                 # Turntable + record crate (GSAP)
+│   ├── Literature.html            # Bookshelf + Turn.js reader (Hardcover + Open Library)
+│   ├── art.html                   # Three.js first-person 3D art gallery
+│   ├── Sport.html                 # Arcade hub: basketball / golf / martial-arts mini-games
+│   ├── Travel.html                # Turn.js page-flip scrapbook
+│   ├── Food.html                  # Retro diner menu with recipe modals
+│   ├── Projects.html              # Windows-XP-style desktop with simulated apps
+│   ├── CSS/                       # One stylesheet per page (indexstyle, moviestvstyle, gamestyle, ...)
+│   ├── Javascript/                # One script per page + helpers (recipe.js, recipes.js, papaparse.min.js)
+│   └── assets/                    # Images, audio, video, Resume.pdf, project README files (md/pdf)
+│
+├── data/                          # CSV exports (git-ignored) — source for npm run migrate
+│   ├── movies_data.csv  shows_data.csv  books_data.csv  games_data.csv
+│   ├── my_works.csv  watchlist.csv
+│   └── spotify_top_tracks.csv  spotify_top_artists.csv  spotify_saved_albums.csv
+│
+└── files/                         # Standalone sport mini-game HTML (basketball/golf/martialarts/Sports)
+```
+
+`node_modules/` and `venv/` are present locally but git-ignored. The `venv/` exists only for the one-off `update_spotify_data.py` script (uses `requests`).
+
+---
+
+## 5. Libraries & Frameworks
+
+### Backend (npm — from `package.json`)
+
+| Package | Version | Role in this project |
+|---|---|---|
+| `express` | ^4.22.1 | HTTP server, routing, JSON middleware |
+| `mongodb` | ^6.21.0 | Official driver; connects to Atlas with `serverApi v1`, reads/writes `portfolioData` |
+| `axios` | ^1.6.8 | All server→external-API HTTP calls (TMDB, OMDb, RAWG, Spotify, Hardcover, YouTube) |
+| `cors` | ^2.8.5 | Allows the static front-end (and localhost) to call the API |
+| `dotenv` | ^16.6.1 | Loads environment variables in local development |
+| `nodemailer` | ^6.9.13 | Sends contact-form and art-recommendation emails via Gmail |
+| `node-cron` | ^4.2.1 | In-process scheduler utility |
+| `rss-parser` | ^3.13.0 | Parses the Letterboxd RSS feed |
+| `csv-parser` | ^3.2.0 | Streams CSVs in the migrate/import scripts |
+
+### Frontend (CDN-loaded, per page)
+
+| Library | Loaded on | Used for |
+|---|---|---|
+| **YouTube IFrame API** | index, MoviesTV, Games, Food | Ambient background music + trailer playback |
+| **Three.js r128** | art.html, Sport.html (basketball) | WebGL 3D gallery; 3D basketball court |
+| **GSAP 3.12** | Music.html | Record-crate / turntable animations |
+| **Turn.js + jQuery 3.3.1** | Literature.html, Travel.html | Page-flip book/scrapbook effect |
+| **Tailwind CSS** | Music, Literature, Sport | Utility-class styling on those pages |
+| **Lucide** | Music, Literature | Icon set |
+| **marked.js** | Projects.html | Renders project README markdown in the simulated browser |
+| **PapaParse** | Games, Literature | Client-side CSV parsing helper |
+| **Font Awesome 6** | most pages | Icons (also drawn onto the home-page loader canvas) |
+
+The core front-end is otherwise **plain HTML5 / CSS3 / ES6+** with the Canvas 2D API and the Gamepad API (games), no framework and no bundler.
+
+---
+
+## 6. Methodology — The Render & Data Pipeline
+
+The repeating lifecycle, end to end:
+
+1. **Seed (one-time / occasional).** Media history is exported to `data/*.csv`. `npm run migrate` (`api/migrate.js`) streams each CSV with `csv-parser`, drops the target collection, and `insertMany`s the rows into `portfolioData` on MongoDB Atlas.
+2. **Serve static.** Vercel serves `client/` verbatim. The browser loads an HTML page plus its single CSS and JS file and any CDN libraries.
+3. **Boot the page.** Each page script computes `API_BASE_URL` (`localhost:3000` in dev, relative in prod) and `fetch`es its data from the Express function.
+4. **Read or proxy.** For owned data the server returns a MongoDB collection. For search/detail/trailer lookups the server proxies the upstream API with the server-held key, applying fallbacks (e.g. TMDB → OMDb) and normalization (Hardcover → the same shape as `/api/books`).
+5. **Render.** The script builds DOM (Netflix rows, game carousel, record crate, bookshelf, XP desktop) or a Canvas/WebGL scene. Trailers and music embed via the YouTube IFrame API.
+6. **Write actions.** Visitor-driven writes (recommend a book/game, send a contact or art message) `POST` to the server, which validates, applies admin gating where applicable, then writes to MongoDB or emails via nodemailer.
+7. **Auto-refresh (scheduled).** Vercel Cron hits the authenticated `/api/sync-letterboxd`, which reads the Letterboxd RSS feed, enriches new films via TMDB, and upserts them into the `movies` collection.
+
+---
+
+## 7. Setup & Installation
+
+### Prerequisites
+
+| Dependency | Version | Notes |
+|---|---|---|
+| Node.js | 18+ (LTS) | Runs Express; matches Vercel's Node runtime |
+| npm | bundled with Node | Installs backend deps |
+| MongoDB Atlas | free tier ok | Cluster + connection string for `portfolioData` |
+| Python | 3.8+ | **Only** for the optional `update_spotify_data.py` script |
+| API keys | — | TMDB (required), RAWG (required), OMDb (optional fallback), Spotify, Hardcover, YouTube (optional) |
+
+### Steps
+
+```bash
+# 1. Clone and install backend dependencies
+git clone <your-repo-url> PortfolioV2
+cd PortfolioV2
+npm install
+
+# 2. Configure environment variables (see §8 for the full reference)
+#    At minimum: MONGO_URI, TMDB_API_KEY, RAWG_API_KEY
+
+# 3. Provide your CSV exports in data/ (git-ignored), then seed MongoDB
+npm run migrate            # loads all CSVs
+# or, for just the Letterboxd watchlist:
+npm run import-watchlist
+```
+
+> The server **fails fast** if required keys (`TMDB_API_KEY`, `RAWG_API_KEY`, and the admin gate) are missing. `OMDB_API_KEY` and `YOUTUBE_API_KEY` only warn — their features degrade gracefully.
+
+---
+
+## 8. Environment Variables Reference
+
+All configuration is supplied via environment variables — locally through a git-ignored env file, and in production through Vercel's project environment settings. No secrets are committed to the repository.
+
+| Variable | Required? | Description |
+|---|---|---|
+| `MONGO_URI` | ✅ | MongoDB Atlas connection string (db `portfolioData`) |
+| `TMDB_API_KEY` | ✅ | The Movie Database — movie/TV data (server exits without it) |
+| `RAWG_API_KEY` | ✅ | RAWG — game data (server exits without it) |
+| `WISHLIST_PASSWORD` | ✅ | Server-side gate for admin actions (toggle played, verify-password, add book) |
+| `OMDB_API_KEY` | ⚠️ optional | OMDb fallback when TMDB returns nothing / errors |
+| `SPOTIFY_CLIENT_ID` / `SPOTIFY_CLIENT_SECRET` | optional | Client-credentials token for Spotify search/artist/album proxies |
+| `HARDCOVER_API_KEY` | optional | Bearer token for the Hardcover GraphQL book endpoints |
+| `YOUTUBE_API_KEY` | optional | Trailer fallback search; returns `{videoId:null}` if absent |
+| `EMAIL_USER` / `EMAIL_PASS` / `EMAIL_TO` | optional | Gmail (app password) for contact + art-recommendation mail |
+| `CRON_SECRET` | optional | Shared secret Vercel Cron sends as `Authorization: Bearer ...` |
+| `PORT` | optional | Local port (default 3000) |
+
+> The env file is git-ignored by design; configure these values in your local environment and in the Vercel dashboard for production.
+
+---
+
+## 9. Running the Project
+
+### Local development
+
+```bash
+# Start the API (defaults to http://localhost:3000)
+npm start                  # node api/server.js
+```
+
+Then open `client/index.html` — either with a simple static server (e.g. VS Code Live Server / `npx serve client`) or directly. Because each page script detects `localhost`, it will call the API at `http://localhost:3000` automatically.
+
+### Data scripts
+
+```bash
+npm run migrate                 # CSV → MongoDB (all collections)
+npm run import-watchlist        # only watchlist.csv → movie_watchlist
+npm run export-hardcover        # dry-run export of books to Hardcover (add --commit to write)
+node api/letterboxd-sync.js     # (module) — sync is normally triggered via the API/cron
+python update_spotify_data.py   # optional: backfill Image_URL columns in the Spotify CSVs
+```
+
+### Deploy
+
+Push to the Git repo connected to Vercel. `vercel.json` builds `client/**/*` as static and `api/server.js` as a Node function, applies the route table, and registers the Letterboxd cron. Set all environment variables in the Vercel dashboard.
+
+---
+
+## 10. Features
+
+- **Interactive pixel-room hub** with a Canvas loader (mouse-reactive Font-Awesome icon field with DVD-style bouncing + elastic collisions), escalating "he's busy" wait messages, and a 3-message welcome sequence.
+- **Movies & TV** — Netflix-style billboard with YouTube trailers, dynamic content rows, global search (TMDB with OMDb fallback), detail modals with cast/seasons, and a visitor recommendation flow.
+- **Games** — PlayStation-style cover carousel with gamepad + keyboard + touch input, YouTube/RAWG trailer resolution, and a password-protected wishlist (toggle "played").
+- **Music** — GSAP record-crate "dig," turntable with animated tonearm, top tracks/artists from MongoDB (seeded from Spotify exports), live Spotify search proxy.
+- **Literature** — bookshelf rendering the Hardcover "Read" shelf, MongoDB + Hardcover "Want to Read" wishlist, Hardcover search to recommend, and a Turn.js reader for the owner's own `works`.
+- **Art** — first-person **Three.js** 3D gallery (WASD + pointer-lock, mobile joysticks), with an email-based art-recommendation form.
+- **Sport** — three from-scratch mini-games: 3D basketball (Three.js), 2D golf (9 holes, wind, swing meter), 2D martial-arts fighter (combos, Web Audio SFX).
+- **Travel** — Turn.js page-flip scrapbook (responsive single-page on mobile).
+- **Food** — retro diner menu with recipe modals.
+- **Projects** — a simulated Windows-XP desktop with a window manager and toy apps (CMD, Notepad, Calculator, Paint, IE, Minesweeper), rendering project READMEs via marked.js.
+- **Backend** — secure API-key proxying, contact + art mailers, idempotent Letterboxd ETL, CSV→Mongo migration.
+
+### Design characteristics
+
+- **Zero front-end build** — pages ship as authored, making the site fast to deploy and straightforward to debug.
+- **Secrets stay server-side** — every keyed API is proxied; the browser never sees a key (Open Library is the one keyless exception, called directly).
+- **Graceful degradation** — TMDB→OMDb fallback, optional keys, and the cron returning cleanly when unconfigured.
+- **Idempotent automation** — the Letterboxd sync upserts by GUID, so the scheduled job is safe to re-run.
+
+---
+
+## 11. Roadmap & Future Work
+
+Potential enhancements for future iterations:
+
+- **Front-end build pipeline** — introduce bundling/minification and shared modules to reduce duplicated boilerplate (e.g. the `API_BASE_URL` snippet repeated across page scripts).
+- **Automated testing** — add a unit/integration test suite for the API endpoints and data scripts.
+- **Expanded authentication** — extend the admin gate into a fuller session-based auth system for richer content-management workflows.
+- **Read caching** — add a caching layer for frequently requested MongoDB collections to reduce database round-trips.
+- **Accessibility & SEO** — broaden semantic markup, ARIA coverage, and metadata across the interactive pages.
+
+---
+
+## 12. Appendix — Glossary & References
+
+| Term | Meaning in this project |
+|---|---|
+| **Proxy endpoint** | An Express route that forwards a browser request to a keyed external API so the key stays on the server |
+| **`API_BASE_URL`** | Per-page constant: `http://localhost:3000` in dev, relative same-origin in prod |
+| **Upsert** | `updateOne(..., {upsert:true})` — insert if absent, update if present (used by the Letterboxd sync, keyed on `letterboxd_guid`) |
+| **Migration** | `npm run migrate` — drop + `insertMany` each collection from its CSV |
+| **Vercel Cron** | Platform-scheduled GET to `/api/sync-letterboxd` |
+| **Static build** | `@vercel/static` serving `client/` with no transpilation |
+| **Serverless function** | `@vercel/node` packaging `api/server.js` |
+
+**References:** [Express](https://expressjs.com/) · [MongoDB Node Driver](https://www.mongodb.com/docs/drivers/node/) · [Vercel config](https://vercel.com/docs/projects/project-configuration) · [TMDB API](https://developer.themoviedb.org/) · [OMDb](http://www.omdbapi.com/) · [RAWG](https://rawg.io/apidocs) · [Spotify Web API](https://developer.spotify.com/documentation/web-api) · [Hardcover GraphQL](https://hardcover.app/) · [Open Library](https://openlibrary.org/developers/api) · [Three.js](https://threejs.org/) · [GSAP](https://gsap.com/) · [Turn.js](http://www.turnjs.com/) · [YouTube IFrame API](https://developers.google.com/youtube/iframe_api_reference)
+
+---
+
+<div align="center">
+  <sub>PortfolioV2 — an interactive pixel-room portfolio · vanilla front-end + Express/MongoDB backend on Vercel</sub>
+</div>
