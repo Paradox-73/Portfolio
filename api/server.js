@@ -599,14 +599,24 @@ async function run() {
         // Proxy for TMDB Search
         app.get('/api/tmdb/search/:type', async (req, res) => {
             const { type } = req.params;
-            const { query } = req.query;
+            const { query, year, first_air_date_year, primary_release_year } = req.query;
             if (!query) return res.status(400).json({ message: 'Search query is required.' });
 
             let tmdbError = false;
             let tmdbResponse = null;
 
+            // Year disambiguates same-named titles (e.g. a remake vs. the original).
+            // TMDB uses different param names for movie vs. tv search.
+            let yearParam = '';
+            const yr = year || primary_release_year || first_air_date_year;
+            if (yr) {
+                yearParam = type === 'tv'
+                    ? `&first_air_date_year=${encodeURIComponent(yr)}`
+                    : `&year=${encodeURIComponent(yr)}`;
+            }
+
             try {
-                const url = `${TMDB_BASE_URL}/search/${type}?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}`;
+                const url = `${TMDB_BASE_URL}/search/${type}?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}${yearParam}`;
                 tmdbResponse = await axios.get(url);
                 if (tmdbResponse.data && tmdbResponse.data.results && tmdbResponse.data.results.length > 0) {
                     return res.json(tmdbResponse.data);

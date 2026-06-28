@@ -323,17 +323,18 @@
                 })).filter(m => m.title);
 
                 const mappedShows = showsFromAPI.map(s => ({
-                    title: s.title,
-                    name: s.title,
+                    // Shows CSV has no `title` column — the title lives in `name`.
+                    title: s.title || s.name,
+                    name: s.title || s.name,
                     tmdb_id: s.tmdb_id,
                     id: s.tmdb_id || `show-${Math.random()}`,
-                    poster_path: s.poster,
+                    poster_path: s.poster || s.poster_path,
                     media_type: 'tv',
                     lang: s.language,
                     country: s.country,
                     original_language: s.original_language || '',
                     category: (s.category || '').toLowerCase(), // manual override: "anime" | "movie" | "show"
-                    genre_str: s.genre,
+                    genre_str: s.genres || s.genre, // shows CSV uses the plural `genres` column
                     release_date: s.year,
                     my_rating: parseFloat(s.my_rating) || 0,
                     runtime: parseInt(s.runtime) || 0,
@@ -357,7 +358,15 @@
                     if (item.category === 'movie') { allMovies.push(item); return; }
                     if (item.category === 'show' || item.category === 'tv') { allShows.push(item); return; }
 
-                    // 2) Auto-detect: anime = strictly Japanese animation. Requires BOTH the
+                    // 2) Explicit "Anime" genre tag wins next. Present in the genre/genres
+                    //    column of both movies and shows (e.g. ['Animation','Thriller','Anime']).
+                    if (/(^|[^a-z])anime([^a-z]|$)/i.test(item.genre_str || '')) {
+                        item.is_anime = true;
+                        allAnime.push(item);
+                        return;
+                    }
+
+                    // 3) Auto-detect: anime = strictly Japanese animation. Requires BOTH the
                     //    Animation genre AND a Japanese origin, so Western animation
                     //    (Pixar/Disney) and Japanese live-action films are NOT clubbed here.
                     const isAnimation = /animation/i.test(item.genre_str || '');
@@ -409,7 +418,12 @@
             }
 
             try {
-                const data = await fetchTmdbData(`search/${item.media_type || 'movie'}`, { query: encodeURIComponent(item.title) });
+                const searchType = item.media_type || 'movie';
+                const searchParams = { query: encodeURIComponent(item.title) };
+                // Year disambiguates same-named titles (common in the watchlist).
+                const yr = String(item.release_date || '').substring(0, 4);
+                if (yr) searchParams[searchType === 'tv' ? 'first_air_date_year' : 'year'] = yr;
+                const data = await fetchTmdbData(`search/${searchType}`, searchParams);
                 if (data.results && data.results.length > 0) {
                     const hit = data.results[0];
                     if (hit.poster_path) {
@@ -570,7 +584,12 @@
             
             if (!apiData || !apiData.id) {
                 try {
-                    const sData = await fetchTmdbData(`search/${type==='tv'?'tv':'movie'}`, { query: encodeURIComponent(item.title||item.name) });
+                    const sType = type === 'tv' ? 'tv' : 'movie';
+                    const sParams = { query: encodeURIComponent(item.title||item.name) };
+                    // Pass the year so same-named titles resolve to the right entry.
+                    const sYr = String(item.release_date || '').substring(0, 4);
+                    if (sYr) sParams[sType === 'tv' ? 'first_air_date_year' : 'year'] = sYr;
+                    const sData = await fetchTmdbData(`search/${sType}`, sParams);
                     if (sData.results?.[0]) {
                         const hit = sData.results[0];
                         item.tmdb_id = hit.id; 
