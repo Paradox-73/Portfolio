@@ -156,9 +156,11 @@ let scene, camera, renderer, ceiling;
         ctx.fillText('Walk up and press  R', canvas.width / 2, 480);
 
         const tex = new THREE.CanvasTexture(canvas);
-        // Pre-mirror horizontally so the text reads correctly after the 180° Y rotation below.
+        // The 180° Y rotation below already presents the canvas the right way round to a
+        // viewer standing inside the gallery, so the texture is drawn without a flip.
+        // (Adding a horizontal mirror here makes the text read backwards.)
         tex.center.set(0.5, 0.5);
-        tex.repeat.x = -1;
+        tex.repeat.x = 1;
 
         const panel = new THREE.Mesh(
             new THREE.PlaneGeometry(frameW, frameH),

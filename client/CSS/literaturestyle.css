@@ -112,6 +112,30 @@
             .read-sort-select { top: 6px; right: 8px; font-size: 10px; padding: 3px 6px; }
         }
 
+        /* --- Series clubbing divider --- */
+        .series-divider {
+            align-self: stretch; flex-shrink: 0;
+            width: 18px; min-height: 120px; position: relative;
+            margin: 0 2px;
+            display: flex; align-items: flex-end; justify-content: center;
+        }
+        @media (min-width: 768px) { .series-divider { min-height: 150px; } }
+        .series-divider::before {
+            content: ''; position: absolute; top: 8px; bottom: 8px; left: 50%;
+            width: 2px; transform: translateX(-50%);
+            background: linear-gradient(to bottom, transparent, var(--gold), transparent);
+            opacity: 0.55;
+        }
+        .series-divider-label {
+            position: absolute; bottom: 0; left: 50%;
+            transform: translateX(-50%) rotate(180deg);
+            writing-mode: vertical-rl; text-orientation: mixed;
+            font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 0.1em;
+            text-transform: uppercase; color: var(--gold); opacity: 0.75;
+            white-space: nowrap; max-height: 140px; overflow: hidden;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.9); pointer-events: none;
+        }
+
         /* --- Book Items --- */
         .book-face {
             width: 80px; height: 120px; position: relative;

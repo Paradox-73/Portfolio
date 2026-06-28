@@ -15,6 +15,95 @@ lucide.createIcons();
             
             function normalizeTitle(t) { return t ? t.toLowerCase().split(':')[0].split('(')[0].trim() : ""; }
 
+            // --- Franchise / series clubbing ---------------------------------------
+            // The franchise can rarely be inferred from a title alone: "The Lost Hero"
+            // is Heroes of Olympus, "Immortals of Meluha" is the Shiva Trilogy, and
+            // every Goosebumps book has a unique name. So each series below lists the
+            // distinctive title of every entry IN READING ORDER — the array index
+            // doubles as the in-series sort key. `author` (optional) disambiguates
+            // identically named titles by different authors.
+            const SERIES = [
+                { name: "Percy Jackson & the Olympians", author: /riordan/i, titles: [
+                    /lightning thief/i, /sea of monsters/i, /titan'?s curse/i,
+                    /battle of the labyrinth/i, /last olympian/i, /greek gods/i,
+                    /greek heroes/i, /^percy jackson/i ] },
+                { name: "The Heroes of Olympus", author: /riordan/i, titles: [
+                    /lost hero/i, /son of neptune/i, /mark of athena/i,
+                    /house of hades/i, /blood of olympus/i, /^heroes of olympus/i ] },
+                { name: "The Trials of Apollo", author: /riordan/i, titles: [
+                    /hidden oracle/i, /dark prophecy/i, /burning maze/i,
+                    /tyrant'?s tomb/i, /tower of nero/i, /trials of apollo/i ] },
+                { name: "The Kane Chronicles", author: /riordan/i, titles: [
+                    /red pyramid/i, /throne of fire/i, /serpent'?s shadow/i,
+                    /kane chronicles/i, /brooklyn house/i ] },
+                { name: "Magnus Chase and the Gods of Asgard", author: /riordan/i, titles: [
+                    /sword of summer/i, /hammer of thor/i, /ship of the dead/i, /^magnus chase/i ] },
+                { name: "Shiva Trilogy", author: /tripathi/i, titles: [
+                    /immortals of meluha/i, /secret of the nagas/i, /oath of the vayuputras/i ] },
+                { name: "Ram Chandra Series", author: /tripathi/i, titles: [
+                    /scion of ikshvaku/i, /\bsita\b/i, /\braavan\b/i ] },
+                { name: "Harry Potter", author: /rowling/i, titles: [
+                    /philosopher'?s stone|sorcerer'?s stone/i, /chamber of secrets/i,
+                    /prisoner of azkaban/i, /goblet of fire/i, /order of the phoenix/i,
+                    /half-?blood prince/i, /deathly hallows/i ] },
+                { name: "Diary of a Wimpy Kid", author: /kinney/i, titles: [
+                    /^diary of a wimpy kid$/i, /rodrick rules/i, /last stra/i,
+                    /dog days/i, /ugly truth/i, /cabin fever/i, /hard luck/i,
+                    /wimpy kid/i ] },
+                // Every R. L. Stine title in this library belongs to Goosebumps.
+                { name: "Goosebumps", author: /stine/i, titles: [ /.*/ ] },
+            ];
+
+            // Returns { name, order } for a book's franchise, or null if standalone.
+            function detectFranchise(title, author) {
+                const t = (title || '').toLowerCase();
+                const a = author || '';
+                for (const s of SERIES) {
+                    if (s.author && !s.author.test(a)) continue;
+                    const idx = s.titles.findIndex(rx => rx.test(t));
+                    if (idx !== -1) return { name: s.name, order: idx };
+                }
+                // Generic fallback for series not curated above — read the series name
+                // and number straight out of common title conventions.
+                let m;
+                if ((m = title.match(/^(.*?),?\s+vol\.?\s*(\d+)/i)))      return { name: m[1].trim(), order: +m[2] };  // "Chainsaw Man, Vol. 1"
+                if ((m = title.match(/\(([^)#]+?)\bbook\s*(\d+)\)/i)))    return { name: m[1].replace(/\b(the)\b\s*$/i, '').trim(), order: +m[2] }; // "(the Trials of Apollo Book 3)"
+                if ((m = title.match(/\(([^)#]+?)#\s*(\d+)\)/)))          return { name: m[1].trim(), order: +m[2] };  // "(Geronimo Stilton #78)"
+                return null;
+            }
+
+            // Splits the read books into franchise clubs (2+ members) and standalones.
+            function groupBySeries(books) {
+                const groups = new Map();
+                const standalone = [];
+                books.forEach(b => {
+                    const f = detectFranchise(b.title, b.authors?.[0]);
+                    if (!f) { standalone.push(b); return; }
+                    if (!groups.has(f.name)) groups.set(f.name, []);
+                    groups.get(f.name).push({ b, order: f.order });
+                });
+                const realGroups = [];
+                groups.forEach((items, name) => {
+                    if (items.length >= 2) {           // a "club" needs at least two books
+                        items.sort((x, y) => x.order - y.order);
+                        realGroups.push({ name, items: items.map(i => i.b) });
+                    } else {
+                        standalone.push(items[0].b);   // a lone series book is just a standalone
+                    }
+                });
+                realGroups.sort((a, b) => a.name.localeCompare(b.name));
+                standalone.sort((a, b) => normalizeTitle(a.title).localeCompare(normalizeTitle(b.title)));
+                return { realGroups, standalone };
+            }
+
+            function addSeriesDivider(shelf, label) {
+                const d = document.createElement('div');
+                d.className = 'series-divider';
+                d.title = label;
+                d.innerHTML = `<span class="series-divider-label">${label}</span>`;
+                shelf.appendChild(d);
+            }
+
             // --- DATA Loading ---
             document.addEventListener('DOMContentLoaded', () => {
                 loadLibrary();
@@ -391,7 +480,7 @@ lucide.createIcons();
             // Read collection is Hardcover-only. We cache the fetched books so the sort
             // control can re-render without re-fetching.
             let READ_BOOKS = [];
-            let READ_SORT = 'added';
+            let READ_SORT = 'series';
 
             function ensureSortControl() {
                 if (document.getElementById('read-sort')) return;
@@ -401,6 +490,7 @@ lucide.createIcons();
                 sel.id = 'read-sort';
                 sel.className = 'read-sort-select';
                 sel.innerHTML = `
+                    <option value="series">By Series</option>
                     <option value="added">Recently Added</option>
                     <option value="rating">Rating (high→low)</option>
                     <option value="title">Title (A→Z)</option>
@@ -415,6 +505,30 @@ lucide.createIcons();
                 Array.from(shelf.children).forEach(c => {
                     if(!c.classList.contains('shelf-plaque') && c.id !== 'loading-msg') c.remove();
                 });
+
+                // Club the shelf by franchise: each series' books sit together in
+                // reading order, separated by a labelled divider; standalones follow.
+                if (READ_SORT === 'series') {
+                    const { realGroups, standalone } = groupBySeries(READ_BOOKS);
+                    let first = true;
+                    realGroups.forEach(g => {
+                        if (!first) addSeriesDivider(shelf, g.name);
+                        first = false;
+                        g.items.forEach(bookData => {
+                            const el = createBookEl(bookData, shelf, 'read');
+                            el.title = g.name;
+                            updateBookEl(el, bookData);
+                        });
+                    });
+                    if (standalone.length) {
+                        if (!first) addSeriesDivider(shelf, 'Standalone');
+                        standalone.forEach(bookData => {
+                            const el = createBookEl(bookData, shelf, 'read');
+                            updateBookEl(el, bookData);
+                        });
+                    }
+                    return;
+                }
 
                 const books = [...READ_BOOKS];
                 if (READ_SORT === 'rating') {

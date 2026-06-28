@@ -299,9 +299,10 @@
                 }
 
                 // Map raw data from API, using lowercase properties based on original CSV headers
-                const mappedMovies = moviesFromAPI.map(m => ({
+                const mappedMovies = moviesFromAPI.map((m, idx) => ({
                     title: m.title,
                     name: m.title,
+                    csvIndex: idx, // CSV row order = recency (top of file = most recently watched)
                     tmdb_id: m.tmdb_id,
                     id: m.tmdb_id || `mov-${Math.random()}`,
                     poster_path: m.poster,
@@ -322,10 +323,11 @@
                     overview: m.overview || m.description || m.plot || "No description available."
                 })).filter(m => m.title);
 
-                const mappedShows = showsFromAPI.map(s => ({
+                const mappedShows = showsFromAPI.map((s, idx) => ({
                     // Shows CSV has no `title` column — the title lives in `name`.
                     title: s.title || s.name,
                     name: s.title || s.name,
+                    csvIndex: idx, // CSV row order = recency (top of file = most recently watched)
                     tmdb_id: s.tmdb_id,
                     id: s.tmdb_id || `show-${Math.random()}`,
                     poster_path: s.poster || s.poster_path,
@@ -367,13 +369,16 @@
                     }
 
                     // 3) Auto-detect: anime = strictly Japanese animation. Requires BOTH the
-                    //    Animation genre AND a Japanese origin, so Western animation
+                    //    Animation genre AND a Japanese *language* origin, so Western animation
                     //    (Pixar/Disney) and Japanese live-action films are NOT clubbed here.
+                    //    NOTE: origin is read from `language` only — NOT `country`. The country
+                    //    list routinely includes Japan for Western films (co-production /
+                    //    financing), which previously leaked Tangled, Finding Nemo, Frozen II,
+                    //    Kung Fu Panda, etc. into anime. The CSV `language` column holds either
+                    //    an ISO code ("ja") or the full word ("Japanese").
                     const isAnimation = /animation/i.test(item.genre_str || '');
-                    const isJapanese =
-                        (item.original_language && item.original_language.toLowerCase() === 'ja') ||
-                        (item.lang && /japanese/i.test(item.lang)) ||
-                        (item.country && /japan/i.test(item.country));
+                    const langStr = (item.lang || item.original_language || '').toLowerCase();
+                    const isJapanese = langStr === 'ja' || /japanese/.test(langStr);
                     const isAnime = isAnimation && isJapanese;
 
                     if (isAnime) {
@@ -834,21 +839,19 @@
             let res = [...currentGridItems];
             if (sGenre !== 'all') res = res.filter(i => i.genre_str && i.genre_str.includes(sGenre));
             
-            // Helpers — release_date is stored as a year (number or string); watched_date may be a Date or null.
+            // Helpers — release_date is stored as a year (number or string).
             const yearOf = x => parseInt(String(x.release_date || '').substring(0, 4)) || 0;
             const ratingOf = x => Number(x.user_rating) || Number(x.my_rating) || 0;
-            const watchedTime = (x, missing) => {
-                const d = x.watched_date;
-                const t = d instanceof Date ? d.getTime() : (d ? new Date(d).getTime() : NaN);
-                return isNaN(t) ? missing : t; // unwatched items pushed to the bottom in both directions
-            };
+            // There is no watched_date in the source CSVs, so recency is derived from CSV
+            // row order: the export lists titles most-recently-watched first (csvIndex 0 = top).
+            const orderOf = x => (typeof x.csvIndex === 'number' ? x.csvIndex : Number.MAX_SAFE_INTEGER);
 
             if(sSort === 'az') res.sort((a,b)=>(a.title||a.name).localeCompare(b.title||b.name));
             else if(sSort === 'za') res.sort((a,b)=>(b.title||b.name).localeCompare(a.title||a.name));
             else if(sSort === 'year_desc') res.sort((a,b)=> yearOf(b) - yearOf(a));
             else if(sSort === 'year_asc') res.sort((a,b)=> yearOf(a) - yearOf(b));
-            else if(sSort === 'watched_desc') res.sort((a,b)=> watchedTime(b, -Infinity) - watchedTime(a, -Infinity));
-            else if(sSort === 'watched_asc') res.sort((a,b)=> watchedTime(a, Infinity) - watchedTime(b, Infinity));
+            else if(sSort === 'watched_desc') res.sort((a,b)=> orderOf(a) - orderOf(b)); // CSV order: top = most recent
+            else if(sSort === 'watched_asc') res.sort((a,b)=> orderOf(b) - orderOf(a)); // reverse: earliest first
             else if(sSort === 'rating_desc') res.sort((a,b)=> ratingOf(b) - ratingOf(a));
             else if(sSort === 'rating_asc') res.sort((a,b)=> ratingOf(a) - ratingOf(b));
             else if(sSort === 'runtime_desc') res.sort((a,b)=> (parseInt(b.runtime)||0) - (parseInt(a.runtime)||0));
