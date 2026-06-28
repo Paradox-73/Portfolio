@@ -52,6 +52,11 @@ lucide.createIcons();
                     /wimpy kid/i ] },
                 // Every R. L. Stine title in this library belongs to Goosebumps.
                 { name: "Goosebumps", author: /stine/i, titles: [ /.*/ ] },
+                // Geronimo Stilton books are credited to the character, so club them all
+                // by author regardless of title format; the "#N" tail (when present, e.g.
+                // "... (Geronimo Stilton #78)") gives reading order.
+                { name: "Geronimo Stilton", author: /geronimo stilton/i, titles: [ /.*/ ],
+                  orderFn: t => { const m = t.match(/#\s*(\d+)/); return m ? +m[1] : 0; } },
             ];
 
             // Returns { name, order } for a book's franchise, or null if standalone.
@@ -61,7 +66,7 @@ lucide.createIcons();
                 for (const s of SERIES) {
                     if (s.author && !s.author.test(a)) continue;
                     const idx = s.titles.findIndex(rx => rx.test(t));
-                    if (idx !== -1) return { name: s.name, order: idx };
+                    if (idx !== -1) return { name: s.name, order: s.orderFn ? s.orderFn(title) : idx };
                 }
                 // Generic fallback for series not curated above — read the series name
                 // and number straight out of common title conventions.
@@ -94,14 +99,6 @@ lucide.createIcons();
                 realGroups.sort((a, b) => a.name.localeCompare(b.name));
                 standalone.sort((a, b) => normalizeTitle(a.title).localeCompare(normalizeTitle(b.title)));
                 return { realGroups, standalone };
-            }
-
-            function addSeriesDivider(shelf, label) {
-                const d = document.createElement('div');
-                d.className = 'series-divider';
-                d.title = label;
-                d.innerHTML = `<span class="series-divider-label">${label}</span>`;
-                shelf.appendChild(d);
             }
 
             // --- DATA Loading ---
@@ -429,6 +426,32 @@ lucide.createIcons();
             }
 
             // --- LIBRARY LOGIC ---
+            // Each of my own pieces is either a short story or a poem. The works API only
+            // returns { title, text }, so the type is resolved here: an explicit map for the
+            // known pieces, falling back to a line-length heuristic (poems have short,
+            // verse-like lines) so any newly added work still gets a sensible label.
+            const WORK_TYPES = {
+                'the victim': 'Short Story',
+                'mr. bakshi': 'Short Story',
+                'the last ride': 'Short Story',
+                'the town that forgot how to sleep': 'Short Story',
+                'orange juice jones': 'Short Story',
+                'bittersweet': 'Poem',
+                'four season of us': 'Poem',
+                'cannot not do it': 'Poem',
+                'eternal sunshine of fading pages': 'Poem',
+                'defiance': 'Poem',
+                'grew up too fast': 'Poem',
+                'promised infinite': 'Poem',
+            };
+            function classifyWork(title, text) {
+                const known = WORK_TYPES[normalizeTitle(title)];
+                if (known) return known;
+                const lines = (text || '').replace(/\r/g, '').split('\n').filter(l => l.trim());
+                const avgLen = lines.reduce((s, l) => s + l.trim().length, 0) / Math.max(lines.length, 1);
+                return avgLen < 70 ? 'Poem' : 'Short Story';
+            }
+
             function loadMyWorks() {
                 const shelf = document.getElementById('shelf-works');
                 Array.from(shelf.children).forEach(c => { 
@@ -467,6 +490,9 @@ lucide.createIcons();
                                 };
 
                                 const el = createBookEl({ title: work.title, authors: ['My Work'], imageLinks: { thumbnail: null } }, shelf, 'work');
+                                // Replace the generic "work" tag with the piece's type (Short Story / Poem).
+                                const typeLabel = el.querySelector('span');
+                                if (typeLabel) typeLabel.textContent = classifyWork(work.title, work.text);
                                 el.onclick = () => window.openMagazine(work.title, key);
                             }
                         });
@@ -509,24 +535,14 @@ lucide.createIcons();
                 // Club the shelf by franchise: each series' books sit together in
                 // reading order, separated by a labelled divider; standalones follow.
                 if (READ_SORT === 'series') {
+                    // Club the shelf by franchise — books from the same series sit together
+                    // in reading order, then standalones — but without any visible labels.
                     const { realGroups, standalone } = groupBySeries(READ_BOOKS);
-                    let first = true;
-                    realGroups.forEach(g => {
-                        if (!first) addSeriesDivider(shelf, g.name);
-                        first = false;
-                        g.items.forEach(bookData => {
-                            const el = createBookEl(bookData, shelf, 'read');
-                            el.title = g.name;
-                            updateBookEl(el, bookData);
-                        });
+                    const ordered = [...realGroups.flatMap(g => g.items), ...standalone];
+                    ordered.forEach(bookData => {
+                        const el = createBookEl(bookData, shelf, 'read');
+                        updateBookEl(el, bookData);
                     });
-                    if (standalone.length) {
-                        if (!first) addSeriesDivider(shelf, 'Standalone');
-                        standalone.forEach(bookData => {
-                            const el = createBookEl(bookData, shelf, 'read');
-                            updateBookEl(el, bookData);
-                        });
-                    }
                     return;
                 }
 

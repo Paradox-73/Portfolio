@@ -843,15 +843,15 @@
             const yearOf = x => parseInt(String(x.release_date || '').substring(0, 4)) || 0;
             const ratingOf = x => Number(x.user_rating) || Number(x.my_rating) || 0;
             // There is no watched_date in the source CSVs, so recency is derived from CSV
-            // row order: the export lists titles most-recently-watched first (csvIndex 0 = top).
+            // row order: the export lists titles earliest-watched first (csvIndex 0 = top = oldest).
             const orderOf = x => (typeof x.csvIndex === 'number' ? x.csvIndex : Number.MAX_SAFE_INTEGER);
 
             if(sSort === 'az') res.sort((a,b)=>(a.title||a.name).localeCompare(b.title||b.name));
             else if(sSort === 'za') res.sort((a,b)=>(b.title||b.name).localeCompare(a.title||a.name));
             else if(sSort === 'year_desc') res.sort((a,b)=> yearOf(b) - yearOf(a));
             else if(sSort === 'year_asc') res.sort((a,b)=> yearOf(a) - yearOf(b));
-            else if(sSort === 'watched_desc') res.sort((a,b)=> orderOf(a) - orderOf(b)); // CSV order: top = most recent
-            else if(sSort === 'watched_asc') res.sort((a,b)=> orderOf(b) - orderOf(a)); // reverse: earliest first
+            else if(sSort === 'watched_desc') res.sort((a,b)=> orderOf(b) - orderOf(a)); // Recently Watched: bottom of CSV (newest) first
+            else if(sSort === 'watched_asc') res.sort((a,b)=> orderOf(a) - orderOf(b)); // Earliest Watched: top of CSV (oldest) first
             else if(sSort === 'rating_desc') res.sort((a,b)=> ratingOf(b) - ratingOf(a));
             else if(sSort === 'rating_asc') res.sort((a,b)=> ratingOf(a) - ratingOf(b));
             else if(sSort === 'runtime_desc') res.sort((a,b)=> (parseInt(b.runtime)||0) - (parseInt(a.runtime)||0));
