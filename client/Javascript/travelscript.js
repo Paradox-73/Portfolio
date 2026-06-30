@@ -23,7 +23,12 @@ $(document).ready(function() {
   // Tap / click either side of the book to turn pages (works alongside Turn.js swipe).
   // Guard against double-turns right after a swipe/drag already flipped the page.
   var lastTurn = 0;
-  $('#magazine').bind('turning', function () { lastTurn = Date.now(); });
+  $('#magazine').bind('turning', function () {
+    lastTurn = Date.now();
+    // The book is being opened -> retire the handwritten navigation hint.
+    var hint = document.getElementById('nav-hint');
+    if (hint) hint.classList.add('nav-hint-hidden');
+  });
   $('#magazine').on('click', function (e) {
     if (Date.now() - lastTurn < 500) return;     // a swipe/drag just turned it
     if ($(e.target).closest('a').length) return; // don't hijack real links

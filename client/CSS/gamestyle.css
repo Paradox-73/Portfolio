@@ -501,7 +501,14 @@
 #library-grid {
     display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 22px; overflow-y: auto; padding: 6px 4px 50px; align-content: start;
+    /* Keep scrolling, hide the visible scrollbar */
+    scrollbar-width: none;        /* Firefox */
+    -ms-overflow-style: none;     /* old Edge/IE */
 }
+#library-grid::-webkit-scrollbar { width: 0; height: 0; display: none; } /* WebKit */
+/* Same treatment for the search results dropdown */
+#search-results { scrollbar-width: none; -ms-overflow-style: none; }
+#search-results::-webkit-scrollbar { width: 0; height: 0; display: none; }
 .lib-card {
     cursor: pointer; display: flex; flex-direction: column; gap: 8px;
     transition: transform 0.2s ease; outline: none;

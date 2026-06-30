@@ -479,6 +479,30 @@
         mainContainer.style.opacity = '1';
         setTimeout(() => { document.getElementById('intro-container').style.display = 'none'; }, 1500);
                     loadGamesFromAPI();
+        peekSearchHint();
+    }
+
+    // One-time attention nudge: briefly slide the search bar open (showing a
+    // "Recommend me..." prompt) for 10s once the dashboard appears, then close it
+    // again — unless the user starts using it first.
+    let searchHintShown = false;
+    function peekSearchHint() {
+        if (searchHintShown) return;
+        searchHintShown = true;
+        setTimeout(() => {
+            if (searchWrapper.classList.contains('expanded')) return; // user already opened it
+            const orig = searchInput.placeholder;
+            searchInput.placeholder = 'Recommend me a game...';
+            searchWrapper.classList.add('expanded');
+            showUI();
+            const autoClose = setTimeout(() => {
+                if (document.activeElement !== searchInput && !searchInput.value) collapseSearch();
+                searchInput.placeholder = orig;
+            }, 10000);
+            const cancel = () => { clearTimeout(autoClose); searchInput.placeholder = orig; };
+            searchInput.addEventListener('focus', cancel, { once: true });
+            searchWrapper.addEventListener('click', cancel, { once: true });
+        }, 1400);
     }
 
     // placeholder for gamepad input processing

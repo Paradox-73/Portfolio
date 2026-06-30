@@ -120,4 +120,36 @@
         </div>
     </div>
 <script  src="Javascript/literaturescript.js"></script>
-    
+<script>
+  // One-time nudge: slide the search bar open with a "Recommend me..." prompt for
+  // ~10s after load, then close it again (unless the visitor starts using it).
+  // The control panel is rebuilt while data loads, so we re-assert the open state
+  // on the *live* nodes for the duration instead of holding a stale reference.
+  window.addEventListener('load', function () {
+    setTimeout(function () {
+      var orig = null, engaged = false, start = Date.now();
+      var markEngaged = function () { engaged = true; };
+      document.addEventListener('pointerdown', markEngaged, { once: true });
+      document.addEventListener('keydown', markEngaged, { once: true });
+      var iv = setInterval(function () {
+        var w = document.getElementById('search-wrapper');
+        var i = document.getElementById('search-bar');
+        if (!w || !i) return;
+        if (orig === null) orig = i.placeholder;
+        if (document.activeElement === i || i.value) engaged = true;
+        if (engaged || Date.now() - start > 10000) {
+          clearInterval(iv);
+          if (!engaged) {
+            w.classList.remove('active');
+            if (i.placeholder.indexOf('Recommend me') === 0) i.placeholder = orig;
+          }
+          return;
+        }
+        w.classList.add('active');
+        if (i.placeholder.indexOf('Recommend me') !== 0) i.placeholder = 'Recommend me a book...';
+      }, 200);
+    }, 1500);
+  });
+</script>
+</body>
+</html>

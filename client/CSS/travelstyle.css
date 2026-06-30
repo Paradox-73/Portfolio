@@ -1,5 +1,6 @@
 @import url("https://fonts.googleapis.com/css?family=Indie+Flower");
 @import url("https://fonts.googleapis.com/css?family=Zilla+Slab+Highlight");
+@import url("https://fonts.googleapis.com/css?family=Permanent+Marker");
 body {
   font-family: "Indie Flower", cursive;
   background-image: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/937765/seamless_paper_texture.png);
@@ -7,6 +8,18 @@ body {
   justify-content: center;
   align-items: center;
   height: 100vh;
+}
+/* Faint film grain over the whole scrapbook for an aged, scanned-in feel */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9998;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 140px 140px;
+  opacity: 0.06;
+  mix-blend-mode: multiply;
 }
 
 .scrapbook {
@@ -225,15 +238,79 @@ h3 a{
 }
 
 /* --- Reusable scrapbook photo + caption (added for new trip entries) --- */
+/* Polaroid: white frame holding a real <img> + a handwritten caption inside it.
+   The photo keeps its own aspect ratio, so the frame wraps it exactly —
+   no crop, no empty space. Outer width is set per-photo inline. */
 .tphoto {
+  position: relative;
   display: inline-block;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  border: solid 12px white;
+  background: #fff;
+  padding: 12px 12px 4px;
   box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 18px 0 rgba(0, 0, 0, 0.19);
   margin: 8px;
   vertical-align: top;
+  max-width: 100%;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.tphoto img {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* Faded, grainy old-polaroid colour grade */
+  filter: saturate(0.85) contrast(1.06) sepia(0.12) brightness(0.98);
+}
+.tphoto figcaption {
+  text-align: center;
+  color: #2c2723;
+  font-family: "Permanent Marker", "Indie Flower", cursive;
+  font-size: 0.98rem;
+  line-height: 1.2;
+  padding: 9px 2px 7px;
+}
+/* Float a polaroid so the diary text wraps around it -> far less dead space.
+   Skewed polaroids get a slightly fatter margin so text doesn't kiss the corner. */
+.tphoto.float-l { float: left;  margin: 4px 22px 14px 2px; }
+.tphoto.float-r { float: right; margin: 4px 2px 14px 22px; }
+.clear { clear: both; height: 0; }
+/* Little handwritten margin notes / arrows for that scrappy feel */
+.scrap-note {
+  font-family: "Indie Flower", cursive;
+  color: #555;
+  display: inline-block;
+}
+/* Washi tape across the two top corners of every polaroid */
+.tphoto::before,
+.tphoto::after {
+  content: "";
+  position: absolute;
+  top: -9px;
+  width: 62px;
+  height: 22px;
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(214, 184, 140, 0.62) 0 7px,
+    rgba(190, 158, 116, 0.62) 7px 14px
+  );
+  border-left: 1px solid rgba(255, 255, 255, 0.35);
+  border-right: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+  z-index: 2;
+}
+.tphoto::before { left: -10px; transform: rotate(-40deg); }
+.tphoto::after  { right: -10px; transform: rotate(40deg); }
+
+/* Hand-placed look: each polaroid tilted a little differently.
+   The id prefix outranks the global .skew-l/.skew-r so these win for photos. */
+#magazine .scrapbook .tphoto                 { transform: rotate(-2deg); }
+#magazine .scrapbook .tphoto:nth-of-type(2n)   { transform: rotate(2.4deg); }
+#magazine .scrapbook .tphoto:nth-of-type(3n)   { transform: rotate(-3.3deg); }
+#magazine .scrapbook .tphoto:nth-of-type(3n+1) { transform: rotate(1.7deg); }
+#magazine .scrapbook .tphoto:nth-of-type(5n)   { transform: rotate(3.1deg); }
+/* Straighten and lift on hover */
+#magazine .scrapbook .tphoto:hover {
+  transform: rotate(0deg) scale(1.04);
+  box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.3);
+  z-index: 5;
 }
 .tcap {
   color: #555;
@@ -252,6 +329,87 @@ h3 a{
 }
 .skew-l { transform: skew(4deg, -4deg); }
 .skew-r { transform: skew(-4deg, 4deg); }
+
+/* --- Transient handwritten navigation hint -------------------------------
+   Lives in the empty desk space to the LEFT of the closed book (negative
+   space, never on the cover). Writes in, holds, then wipes away as if erased.
+   Also force-hidden by travelscript.js the moment the book is opened. --- */
+#nav-hint {
+  position: fixed;
+  left: 4vw;
+  top: 50%;
+  transform: translateY(-50%) rotate(-4deg);
+  width: 20vw;
+  max-width: 240px;
+  text-align: center;
+  font-family: "Indie Flower", cursive;
+  font-size: 1.55rem;
+  line-height: 1.25;
+  color: #4a3b2a;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.55);
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0;
+  animation: navHintErase 9s ease-in-out 1s forwards;
+}
+/* Set by travelscript.js on the first page-turn, so it vanishes once opened. */
+#nav-hint.nav-hint-hidden {
+  animation: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+@keyframes navHintErase {
+  0%   { opacity: 0; clip-path: inset(0 0 0 0); }
+  12%  { opacity: 1; clip-path: inset(0 0 0 0); }
+  72%  { opacity: 1; clip-path: inset(0 0 0 0); }
+  92%  { opacity: 1; clip-path: inset(0 100% 0 0); } /* erase: wipe away right-to-left */
+  100% { opacity: 0; visibility: hidden; clip-path: inset(0 100% 0 0); }
+}
+@media (max-width: 768px) {
+  /* On phones the book fills the width, so drop the note into the bottom margin. */
+  #nav-hint {
+    left: 50%; top: auto; bottom: 3vh;
+    transform: translateX(-50%) rotate(-3deg);
+    width: 80vw; max-width: 330px; font-size: 1.2rem;
+  }
+}
+
+/* Centered, bold trip heading flanked by transport icons:
+   left = how I got there, right = how I came back. */
+.trip-head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin: 2px 8px 0;
+}
+.trip-name {
+  font-family: "Permanent Marker", "Indie Flower", cursive;
+  font-weight: 700;
+  font-size: 1.7rem;
+  color: #2c2723;
+  letter-spacing: 0.5px;
+  text-align: center;
+}
+.trip-ico {
+  color: #6b513a;
+  font-size: 1.2rem;
+  opacity: 0.85;
+}
+
+/* Highlighter swipe over a key word or two */
+.hl {
+  background: linear-gradient(transparent 55%, rgba(255, 214, 64, 0.5) 55%);
+  padding: 0 2px;
+}
+
+/* Little hand-drawn doodle arrows pointing at photos */
+.doodle-arrow {
+  display: inline-block;
+  vertical-align: middle;
+  color: #7a3b2e;
+  margin: 0 4px;
+}
 
 .red-marker {
   color: #990000;
@@ -374,9 +532,9 @@ h3 a{
     overflow: hidden; /* the book is centred by the flex body -> even margins all around */
   }
 
-  /* Show the whole cover (it's ~square) instead of cropping it to the tall page */
+  /* Stretch the cover to fully fill the tall mobile page (distortion is fine) */
   #magazine .hard {
-    background-size: contain !important;
+    background-size: 100% 100% !important;
     background-position: center !important;
     background-color: #ece4d4;
   }
@@ -423,8 +581,7 @@ h3 a{
   #magazine .scrapbook .shimla2,
   #magazine .scrapbook .shimla3,
   #magazine .scrapbook .singapore,
-  #magazine .scrapbook .image-one,
-  #magazine .scrapbook .tphoto {
+  #magazine .scrapbook .image-one {
     position: relative !important;
     display: block !important;
     left: auto !important; right: auto !important; top: auto !important; bottom: auto !important;
@@ -434,9 +591,23 @@ h3 a{
     aspect-ratio: 4 / 3;
     margin: 8px auto !important;
     transform: none !important;
-    background-size: cover !important;
+    background-size: contain !important;
     border-width: 6px !important;
   }
+  /* tphoto polaroid: keep the photo's natural ratio, just scale the frame down */
+  #magazine .scrapbook .tphoto {
+    position: relative !important;
+    display: block !important;
+    float: none !important;
+    left: auto !important; right: auto !important; top: auto !important; bottom: auto !important;
+    width: 72% !important;
+    max-width: 230px !important;
+    height: auto !important;
+    margin: 10px auto !important;
+    transform: none !important;
+    padding: 8px 8px 3px !important;
+  }
+  #magazine .scrapbook .tphoto figcaption { font-size: 0.95rem !important; }
   #magazine .scrapbook .pondi2,
   #magazine .scrapbook .grouppicpondi,
   #magazine .scrapbook .shimla1 { aspect-ratio: 3 / 4; }

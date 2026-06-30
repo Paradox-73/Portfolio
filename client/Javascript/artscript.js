@@ -1,4 +1,4 @@
-let scene, camera, renderer, ceiling;
+let scene, camera, renderer, ceiling, chandelierLights = [], chandeliersOn = true;
     let moveSpeedBase = 0.05; // Slower base speed as requested
     let speedMultiplier = 1;
     let isMusicPlaying = false;
@@ -169,7 +169,7 @@ let scene, camera, renderer, ceiling;
         panel.position.z = 0.07;
         group.add(panel);
 
-        group.position.set(2, 2, 15.75); // entrance wall, right of the door
+        group.position.set(2.6, 2, 15.75); // entrance wall, clear to the right of the door (door spans x -1..1)
         group.rotation.y = Math.PI;       // face into the gallery
         scene.add(group);
 
@@ -337,8 +337,8 @@ let scene, camera, renderer, ceiling;
         });
 
 
-        // --- Ceilings ---
-        const ceilingMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, map: loadCloudySkyTexture() });
+        // --- Ceilings (warm brown, Overlook Hotel style) ---
+        const ceilingMaterial = new THREE.MeshStandardMaterial({ color: 0x3a2616, roughness: 0.92, metalness: 0.05, emissive: 0x140d06, side: THREE.DoubleSide });
         ceiling = new THREE.Group();
         
         const mainCeiling = new THREE.Mesh(new THREE.PlaneGeometry(8, 48), ceilingMaterial);
@@ -356,6 +356,30 @@ let scene, camera, renderer, ceiling;
         ceiling.add(mainCeiling, leftCeiling, rightCeiling);
         ceiling.position.y = 5;
         scene.add(ceiling);
+
+        // --- Chandeliers hanging down the main hall (The Shining vibe) ---
+        const chandGold = new THREE.MeshStandardMaterial({ color: 0xd4af37, roughness: 0.35, metalness: 0.9, emissive: 0x2a1d00, emissiveIntensity: 0.4 });
+        const chandBulb = new THREE.MeshBasicMaterial({ color: 0xfff1c4 });
+        [12, 5, -2, -9, -16, -24].forEach(z => {
+            const ch = new THREE.Group();
+            const chain = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 1.3, 6), chandGold);
+            chain.position.y = 0.65; ch.add(chain);
+            const ring = new THREE.Mesh(new THREE.TorusGeometry(0.5, 0.06, 8, 24), chandGold);
+            ring.rotation.x = Math.PI / 2; ch.add(ring);
+            for (let i = 0; i < 6; i++) {
+                const a = (i / 6) * Math.PI * 2;
+                const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.32, 6), chandGold);
+                arm.position.set(Math.cos(a) * 0.5, 0.18, Math.sin(a) * 0.5); ch.add(arm);
+                const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.09, 8, 8), chandBulb);
+                bulb.position.set(Math.cos(a) * 0.5, 0.04, Math.sin(a) * 0.5); ch.add(bulb);
+            }
+            ch.add(new THREE.Mesh(new THREE.SphereGeometry(0.13, 10, 10), chandBulb));
+            const light = new THREE.PointLight(0xffd49a, 1.1, 16, 2);
+            light.position.y = -0.1; ch.add(light);
+            chandelierLights.push(light);
+            ch.position.set(0, 4.0, z);
+            scene.add(ch);
+        });
 
         // --- Artworks & Hollow Frames ---
         const loader = new THREE.TextureLoader();
@@ -538,9 +562,9 @@ let scene, camera, renderer, ceiling;
     }
 
     function toggleCeiling() {
-        isStarryNight = !isStarryNight;
-        const newTexture = isStarryNight ? loadStarryNightTexture() : loadCloudySkyTexture();
-        ceiling.children.forEach(c => { c.material.map = newTexture; c.material.needsUpdate = true; });
+        // Switch the chandeliers on/off (the Overlook glow), instead of the old day/night sky.
+        chandeliersOn = !chandeliersOn;
+        chandelierLights.forEach(l => { l.intensity = chandeliersOn ? 1.1 : 0; });
     }
 
     function toggleHints() {
