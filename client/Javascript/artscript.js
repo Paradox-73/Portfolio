@@ -357,10 +357,10 @@ let scene, camera, renderer, ceiling, chandelierLights = [], chandeliersOn = tru
         ceiling.position.y = 5;
         scene.add(ceiling);
 
-        // --- Chandeliers hanging down the main hall (The Shining vibe) ---
+        // --- Chandeliers (The Shining vibe) — main hall + both side corridors ---
         const chandGold = new THREE.MeshStandardMaterial({ color: 0xd4af37, roughness: 0.35, metalness: 0.9, emissive: 0x2a1d00, emissiveIntensity: 0.4 });
         const chandBulb = new THREE.MeshBasicMaterial({ color: 0xfff1c4 });
-        [12, 5, -2, -9, -16, -24].forEach(z => {
+        function makeChandelier(x, z) {
             const ch = new THREE.Group();
             const chain = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 1.3, 6), chandGold);
             chain.position.y = 0.65; ch.add(chain);
@@ -377,9 +377,15 @@ let scene, camera, renderer, ceiling, chandelierLights = [], chandeliersOn = tru
             const light = new THREE.PointLight(0xffd49a, 1.1, 16, 2);
             light.position.y = -0.1; ch.add(light);
             chandelierLights.push(light);
-            ch.position.set(0, 4.0, z);
+            ch.position.set(x, 4.0, z);
             scene.add(ch);
-        });
+        }
+        // Main hall, down the Z axis — wider spacing (8 units apart) than before.
+        [13, 5, -3, -11, -19, -27].forEach(z => makeChandelier(0, z));
+        // Left corridor, along the X axis at z = 0.
+        [-10, -20, -30].forEach(x => makeChandelier(x, 0));
+        // Right corridor.
+        [10, 20, 30].forEach(x => makeChandelier(x, 0));
 
         // --- Artworks & Hollow Frames ---
         const loader = new THREE.TextureLoader();

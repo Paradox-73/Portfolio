@@ -181,6 +181,24 @@
             </div>
         </div>
 
+        <!-- RECENTLY SCROBBLED (Last.fm) — hidden until LASTFM config is filled in musicscript.js -->
+        <div id="lastfm-section" class="w-full max-w-4xl mx-auto mt-24 px-4 pointer-events-auto hidden">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-8 border-b border-white/10 pb-6 gap-4">
+                <div>
+                    <h2 class="text-3xl font-bold tracking-tight text-[#f4ebd8] uppercase">Recently Scrobbled</h2>
+                    <p class="typewriter text-[#a89f91] text-[10px] mt-2 opacity-60">
+                        Live from <a id="lastfm-profile" href="#" target="_blank" class="text-[#d51007] hover:underline">Last.fm</a>
+                    </p>
+                </div>
+                <span class="flex items-center gap-2 text-[10px] typewriter tracking-widest text-[#a89f91]">
+                    <span class="w-1.5 h-1.5 rounded-full bg-[#d51007] animate-pulse"></span> SCROBBLING
+                </span>
+            </div>
+            <div id="lastfm-tracks" class="flex flex-col gap-2 mb-24">
+                <!-- Recent tracks injected via JS -->
+            </div>
+        </div>
+
     </div>
 
     <!-- LOWER SECTION -->

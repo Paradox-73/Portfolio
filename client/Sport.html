@@ -121,6 +121,8 @@
 
         /* Compact the arcade menu + game overlays on short screens (landscape phones) */
         @media (max-height: 500px) {
+            /* Let the menu scroll instead of clipping when it's taller than the viewport */
+            #mainMenu { justify-content: flex-start !important; overflow-y: auto !important; padding: 14px 0 !important; }
             #mainMenu h1 { font-size: 1.5rem !important; margin-bottom: 0.75rem !important; }
             #mainMenu button { padding: 0.75rem !important; }
             #mainMenu button h3 { font-size: 1rem !important; margin-bottom: 0.2rem !important; }

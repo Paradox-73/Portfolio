@@ -69,9 +69,15 @@ body::after {
 }
  .grid-container {
   display: grid;
-  grid-template-columns: repeat(2, 2fr); /* Two equal columns */
-  gap: 20px; /* Gap between grid items */
+  grid-template-columns: repeat(2, auto); /* Two equal columns */
+  gap: 14px 28px; /* Gap between grid items */
+  justify-content: center;   /* centre the whole grid on the page */
+  justify-items: center;
+  max-width: 300px;
+  margin: 14px auto 0;       /* pull it away from the flip corners */
 }
+/* The last "other pages" scrapbook page: keep everything centred */
+.own-size.scrapbook.r { text-align: center; }
 
  h3 {
   margin: 0; /* Remove default margin */

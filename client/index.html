@@ -11,6 +11,14 @@
 </head>
 <body>
 
+    <!-- Shown only on touch devices held in portrait: the room is a 16:9 scene and
+         only reads well in landscape, so we ask the user to rotate. -->
+    <div id="rotate-overlay">
+        <i class="fas fa-mobile-screen-button" id="rotate-icon"></i>
+        <p class="pixel-font">Please rotate your device</p>
+        <p class="pixel-font rotate-sub">This room is best explored in landscape</p>
+    </div>
+
     <div id="room-container">
         
         <!-- Loader -->

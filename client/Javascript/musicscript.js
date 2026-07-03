@@ -5,8 +5,17 @@ const API_BASE_URL = window.location.hostname === 'localhost' || window.location
     ? 'http://localhost:3000'
     : '';
 
+// --- Last.fm config ---------------------------------------------------------
+// Fill both fields to light up the "Recently Scrobbled" section. Get a free API
+// key at https://www.last.fm/api/account/create . While left as the placeholders
+// below, the section stays hidden (no network calls, no errors).
+const LASTFM = {
+    apiKey: 'YOUR_LASTFM_API_KEY',
+    username: 'YOUR_LASTFM_USERNAME'
+};
+
 let topTracksData = [];
-let rawTracksData = []; 
+let rawTracksData = [];
 let topArtistsData = [];
 let rawArtistsData = []; 
 let myCollection = [];
@@ -436,5 +445,79 @@ function renderAlbumGrid() {
     });
 }
 
-function init() { loadMusicData(); }
+// --- Last.fm: recently scrobbled tracks -------------------------------------
+function lastFmConfigured() {
+    return LASTFM.apiKey && LASTFM.username &&
+           !LASTFM.apiKey.startsWith('YOUR_') && !LASTFM.username.startsWith('YOUR_');
+}
+
+function timeAgo(uts) {
+    if (!uts) return 'scrobbling now';
+    const secs = Math.floor(Date.now() / 1000) - Number(uts);
+    if (secs < 60) return 'just now';
+    const mins = Math.floor(secs / 60);
+    if (mins < 60) return `${mins}m ago`;
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return `${hrs}h ago`;
+    const days = Math.floor(hrs / 24);
+    return `${days}d ago`;
+}
+
+async function loadLastFmRecent() {
+    const section = document.getElementById('lastfm-section');
+    if (!section) return;
+    if (!lastFmConfigured()) { section.classList.add('hidden'); return; }
+
+    const profile = document.getElementById('lastfm-profile');
+    if (profile) {
+        profile.textContent = '@' + LASTFM.username;
+        profile.href = `https://www.last.fm/user/${encodeURIComponent(LASTFM.username)}`;
+    }
+
+    try {
+        const url = `https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks` +
+            `&user=${encodeURIComponent(LASTFM.username)}` +
+            `&api_key=${encodeURIComponent(LASTFM.apiKey)}&format=json&limit=12`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('Last.fm HTTP ' + res.status);
+        const data = await res.json();
+        const tracks = data?.recenttracks?.track || [];
+        if (!tracks.length) { section.classList.add('hidden'); return; }
+
+        const container = document.getElementById('lastfm-tracks');
+        container.innerHTML = '';
+        tracks.forEach((t, i) => {
+            const nowPlaying = t['@attr'] && t['@attr'].nowplaying === 'true';
+            const img = (t.image && (t.image[2] || t.image[1] || t.image[0]) || {})['#text'] || '';
+            const artist = (t.artist && (t.artist['#text'] || t.artist.name)) || '';
+            const when = nowPlaying ? 'scrobbling now' : timeAgo(t.date && t.date.uts);
+
+            const row = document.createElement('a');
+            row.href = t.url || '#';
+            row.target = '_blank';
+            row.className = 'flex items-center gap-4 p-3 bg-white/[0.03] hover:bg-white/[0.07] border border-white/5 rounded transition-colors';
+            row.innerHTML = `
+                <span class="text-[10px] typewriter opacity-40 w-5 text-center">${String(i + 1).padStart(2, '0')}</span>
+                <div class="w-12 h-12 flex-shrink-0 rounded overflow-hidden bg-black/40">
+                    ${img ? `<img src="${img}" alt="" class="w-full h-full object-cover">` : ''}
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="text-sm text-[#f4ebd8] truncate">${t.name || ''}</div>
+                    <div class="text-xs text-[#a89f91] opacity-70 truncate">${artist}</div>
+                </div>
+                <span class="text-[10px] typewriter ${nowPlaying ? 'text-[#1DB954]' : 'text-[#a89f91] opacity-60'} whitespace-nowrap flex items-center gap-1">
+                    ${nowPlaying ? '<span class="w-1.5 h-1.5 rounded-full bg-[#1DB954] animate-pulse"></span>' : ''}${when}
+                </span>
+            `;
+            container.appendChild(row);
+        });
+
+        section.classList.remove('hidden');
+    } catch (e) {
+        console.warn('Last.fm load failed:', e);
+        section.classList.add('hidden');
+    }
+}
+
+function init() { loadMusicData(); loadLastFmRecent(); }
 init();

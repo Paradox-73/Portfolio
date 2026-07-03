@@ -31,7 +31,9 @@ $(document).ready(function() {
   });
   $('#magazine').on('click', function (e) {
     if (Date.now() - lastTurn < 500) return;     // a swipe/drag just turned it
-    if ($(e.target).closest('a').length) return; // don't hijack real links
+    // Don't hijack real links, and treat the whole "other pages" nav grid as a
+    // dead-zone so taps between/around the icons never flip the page underneath.
+    if ($(e.target).closest('a, .grid-container').length) return;
     var x = e.pageX - $(this).offset().left;
     $('#magazine').turn(x < $(this).width() / 2 ? 'previous' : 'next');
   });

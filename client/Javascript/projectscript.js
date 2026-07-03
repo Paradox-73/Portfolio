@@ -282,23 +282,7 @@
             "Command Prompt": { type: "app", appId: "cmd", icon: "fas fa-terminal", color: "#333", side: "right" },
             "Minesweeper": { type: "app", appId: "minesweeper", icon: "fas fa-bomb", color: "black", side: "right" },
             "Calculator": { type: "app", appId: "calc", icon: "fas fa-calculator", color: "#27AE60", side: "right" },
-            "Internet Explorer": { type: "app", appId: "ie", icon: "assets/projects/Internet Explorer 6.png" },
-            "Menu": {
-                type: "folder",
-                icon: "assets/projects/folder.png",
-                content: {
-                    "Home.html": { type: "external_link", url: "index.html", icon: "fas fa-home" },
-                    "Music.html": { type: "external_link", url: "Music.html", icon: "fas fa-music" },
-                    "MoviesTV.html": { type: "external_link", url: "MoviesTV.html", icon: "fas fa-film" },
-                    "Games.html": { type: "external_link", url: "Games.html", icon: "fas fa-gamepad" },
-                    "Art.html": { type: "external_link", url: "art.html", icon: "fas fa-palette" },
-                    "Food.html": { type: "external_link", url: "Food.html", icon: "fas fa-utensils" },
-                    "Travel.html": { type: "external_link", url: "Travel.html", icon: "fas fa-plane" },
-                    "Literature.html": { type: "external_link", url: "Literature.html", icon: "fas fa-book" },
-                    "Sport.html": { type: "external_link", url: "Sport.html", icon: "fas fa-running" },
-                    "Projects.html": { type: "external_link", url: "Projects.html", icon: "fas fa-code" }
-                }
-            }
+            "Internet Explorer": { type: "app", appId: "ie", icon: "assets/projects/Internet Explorer 6.png" }
         },
         "My Documents": {
             "Notes": { "todo.txt": "1. Buy milk\n2. Code XP clone" },
@@ -414,22 +398,11 @@
     }
 
     function toggleAllProgramsMenu() {
+        // Position is handled entirely by the stylesheet (anchored above the taskbar on
+        // desktop, full-screen overlay on mobile), so we only toggle visibility here —
+        // the old inline positioning math shoved the lower items behind the taskbar.
         const allProgramsMenu = document.getElementById('all-programs-menu');
-        const allProgramsBtn = document.getElementById('all-programs-btn');
-        
-        if (allProgramsMenu.style.display === 'flex') {
-            allProgramsMenu.style.display = 'none';
-        } else {
-            allProgramsMenu.style.display = 'flex';
-            
-            const btnRect = allProgramsBtn.getBoundingClientRect();
-            const startMenuRect = document.getElementById('start-menu').getBoundingClientRect();
-
-            // Position it to the right of the button
-            allProgramsMenu.style.left = (btnRect.width - 5) + 'px';
-            // Align bottom with the button's bottom
-            allProgramsMenu.style.bottom = (startMenuRect.height - (btnRect.top - startMenuRect.top) - btnRect.height) + 'px';
-        }
+        allProgramsMenu.style.display = (allProgramsMenu.style.display === 'flex') ? 'none' : 'flex';
         if (typeof event !== 'undefined') event.stopPropagation();
     }
 
@@ -856,6 +829,10 @@
 
         const items = currentDirObject.content || currentDirObject; // Use content if it's a folder, otherwise the object itself
 
+        // Parent path for the Back button (empty when already at a root location).
+        const hasParent = path.includes('/');
+        const parentPath = hasParent ? path.substring(0, path.lastIndexOf('/')) : '';
+
         // On touch devices double-click is unreliable, so folders/files open on a single tap.
         const isMobile = window.innerWidth <= 768;
 
@@ -952,7 +929,7 @@
 
         container.innerHTML = `
             <div class="explorer-toolbar">
-                <div class="control-btn" style="color:black; border:1px solid #ccc; width:60px;">Back</div>
+                <div class="control-btn" style="color:black; border:1px solid #ccc; width:60px; ${hasParent ? '' : 'opacity:0.5; pointer-events:none;'}" ${hasParent ? `onclick="openExplorer('${parentPath.replace(/'/g, "\\'")}')"` : ''}>&larr; Back</div>
                 <div class="explorer-address">
                     <span>Address</span>
                     <input type="text" class="address-bar" value="${path}" onkeydown="if(event.key==='Enter') openExplorer(this.value)">

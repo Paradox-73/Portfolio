@@ -696,15 +696,20 @@ button:active {
 }
 
 .modal-content ul, .modal-content ol {
-  list-style-position: inside;
-  padding-left: 20px;
+  /* The global Meyer reset strips list markers, so restore them here */
+  list-style-position: outside;
+  padding-left: 24px;
   margin-bottom: 15px;
 }
+.modal-content ul { list-style-type: disc; }
+.modal-content ol { list-style-type: decimal; }
 
 .modal-content ul li, .modal-content ol li {
   font-size: 1.1em;
   line-height: 1.6;
   color: #333;
+  margin-bottom: 6px;
+  padding-left: 4px;
 }
 @media (max-width: 549px) {
   .item {

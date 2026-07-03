@@ -452,6 +452,28 @@ lucide.createIcons();
                 return avgLen < 70 ? 'Poem' : 'Short Story';
             }
 
+            // When each self-written piece was written. Fill in the values (any format,
+            // e.g. 'March 2022', '2021', 'Jul 2023') and they'll show on the shelf label
+            // and the story's title page. A `date` field from the /api/works response
+            // takes precedence if present. Blank entries simply don't render a date.
+            const WORK_DATES = {
+                'the victim': '',
+                'mr. bakshi': '',
+                'the last ride': '',
+                'the town that forgot how to sleep': '',
+                'orange juice jones': '',
+                'bittersweet': '',
+                'four season of us': '',
+                'cannot not do it': '',
+                'eternal sunshine of fading pages': '',
+                'defiance': '',
+                'grew up too fast': '',
+                'promised infinite': '',
+            };
+            function workDate(title, work) {
+                return (work && (work.date || work.written_date)) || WORK_DATES[normalizeTitle(title)] || '';
+            }
+
             function loadMyWorks() {
                 const shelf = document.getElementById('shelf-works');
                 Array.from(shelf.children).forEach(c => { 
@@ -483,16 +505,22 @@ lucide.createIcons();
                                 const key = normalizeTitle(work.title);
                                 const CHARS_PER_PAGE = 750;
                                 const htmlPages = chunkTextByParagraph(work.text, CHARS_PER_PAGE);
+                                const date = workDate(work.title, work);
 
                                 WORKS_CONTENT[key] = {
                                     title: work.title,
-                                    pages: [`<h1>${work.title}</h1>`, ...htmlPages]
+                                    // Title page carries the date as a byline when we have one.
+                                    pages: [
+                                        `<h1>${work.title}</h1>${date ? `<p class="work-date">${date}</p>` : ''}`,
+                                        ...htmlPages
+                                    ]
                                 };
 
                                 const el = createBookEl({ title: work.title, authors: ['My Work'], imageLinks: { thumbnail: null } }, shelf, 'work');
-                                // Replace the generic "work" tag with the piece's type (Short Story / Poem).
+                                // Replace the generic "work" tag with the piece's type (Short Story / Poem),
+                                // and append the date when available.
                                 const typeLabel = el.querySelector('span');
-                                if (typeLabel) typeLabel.textContent = classifyWork(work.title, work.text);
+                                if (typeLabel) typeLabel.textContent = classifyWork(work.title, work.text) + (date ? ` · ${date}` : '');
                                 el.onclick = () => window.openMagazine(work.title, key);
                             }
                         });

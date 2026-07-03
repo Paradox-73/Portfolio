@@ -431,11 +431,14 @@
                 const data = await fetchTmdbData(`search/${searchType}`, searchParams);
                 if (data.results && data.results.length > 0) {
                     const hit = data.results[0];
+                    // Capture popularity so rows like the watchlist can order by it.
+                    if (typeof hit.popularity === 'number') item.popularity = hit.popularity;
                     if (hit.poster_path) {
                         localStorage.setItem(cacheKey, hit.poster_path);
                         updateItemPoster(item, hit.poster_path);
                         item.tmdb_id = hit.id;
                     }
+                    if (item.isWatchlist) resortWatchlistSoon();
                 }
             } catch (e) { console.warn("Poster fetch failed", item.title); }
 
@@ -499,6 +502,8 @@
                         id: `wl-${i}`,
                         media_type: 'movie',
                         poster_path: null,
+                        popularity: 0,
+                        isWatchlist: true, // lets the poster lookup re-sort this row by popularity
                         release_date: String(r.Year || r.year || ''),
                         letterboxd_uri: r['Letterboxd URI'] || r.letterboxd_uri || ''
                     }));
@@ -506,7 +511,7 @@
                 track.innerHTML = '';
                 if (!watchlistItems.length) { row.style.display = 'none'; return; }
                 row.style.display = 'block';
-                watchlistItems.forEach(item => createCard(item, track));
+                renderWatchlistRow();
 
                 // Reuse the existing poster queue to look up covers from TMDB by title.
                 posterQueue.push(...watchlistItems);
@@ -515,6 +520,22 @@
                 console.error('Watchlist load error:', e);
                 row.style.display = 'none';
             }
+        }
+
+        // Render the watchlist row sorted by TMDB popularity (highest first). Popularity is
+        // filled in asynchronously by the poster lookup, so this is called again (debounced)
+        // as those values arrive.
+        function renderWatchlistRow() {
+            const track = document.getElementById('watchlistTrack');
+            if (!track) return;
+            watchlistItems.sort((a, b) => (Number(b.popularity) || 0) - (Number(a.popularity) || 0));
+            track.innerHTML = '';
+            watchlistItems.forEach(item => createCard(item, track));
+        }
+        let watchlistResortTimer = null;
+        function resortWatchlistSoon() {
+            clearTimeout(watchlistResortTimer);
+            watchlistResortTimer = setTimeout(renderWatchlistRow, 800);
         }
 
         // Fill the home rows with grey placeholder cards so they don't look empty
@@ -529,15 +550,27 @@
             });
         }
 
+        // Most-recently-watched first: prefer a real watched_date, otherwise fall back to
+        // CSV order (bottom of the export = newest, matching the grid's "Recently Watched").
+        function byRecencyDesc(a, b) {
+            const ta = (a.watched_date instanceof Date && !isNaN(a.watched_date)) ? a.watched_date.getTime() : null;
+            const tb = (b.watched_date instanceof Date && !isNaN(b.watched_date)) ? b.watched_date.getTime() : null;
+            if (ta !== null && tb !== null) { if (ta !== tb) return tb - ta; }
+            else if (ta !== null) return -1;
+            else if (tb !== null) return 1;
+            return (b.csvIndex || 0) - (a.csvIndex || 0);
+        }
+
         function renderHomeRows() {
             const moviesTrack = document.getElementById('moviesTrack');
             const showsTrack = document.getElementById('showsTrack');
             const animeTrack = document.getElementById('animeTrack');
             moviesTrack.innerHTML = ''; showsTrack.innerHTML = ''; animeTrack.innerHTML = '';
-            
-            allMovies.forEach(m => createCard(m, moviesTrack));
-            allShows.forEach(s => createCard(s, showsTrack));
-            allAnime.forEach(a => createCard(a, animeTrack));
+
+            // Sort copies so the underlying arrays (used by the grid/filters) keep their order.
+            [...allMovies].sort(byRecencyDesc).forEach(m => createCard(m, moviesTrack));
+            [...allShows].sort(byRecencyDesc).forEach(s => createCard(s, showsTrack));
+            [...allAnime].sort(byRecencyDesc).forEach(a => createCard(a, animeTrack));
         }
 
         function createCard(item, track, isRec = false, recommender = '') {

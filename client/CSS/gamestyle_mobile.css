@@ -1,65 +1,102 @@
 @media (max-width: 768px) {
     :root {
-        --icon-size: 60px; /* Smaller icons for mobile */
+        --icon-size: 56px;   /* Smaller icons for mobile */
         --icon-gap: 10px;
-        --item-width: 70px; /* 60px + 10px */
+        --item-width: 66px;  /* icon-size + gap */
     }
 
+    /* Header: hug the edges, allow the two clusters to sit tight */
     header {
-        top: 20px;
-        left: 20px;
-        right: 20px;
+        top: 12px;
+        left: 12px;
+        right: 12px;
+        gap: 8px;
     }
-
     .nav-left {
-        gap: 15px;
-        font-size: 0.85rem;
+        gap: 12px;
+        font-size: 0.8rem;
     }
-
     .status-bar {
-        gap: 10px;
+        gap: 8px;
     }
     .profile-pic {
-        width: 30px;
-        height: 30px;
+        width: 28px;
+        height: 28px;
     }
+    #clock { display: none; } /* saves horizontal room on narrow phones */
     #search-input-wrapper.expanded {
-        width: 200px; /* Smaller search bar */
+        width: 160px; /* Smaller search bar */
     }
+
+    /* Carousel: use the full available width and sit just under the header */
     #carousel-section {
-        top: 80px;
-        left: 20px;
-        width: calc(var(--item-width) * 4); /* Display fewer items for mobile */
+        top: 64px;
+        left: 12px;
+        right: 12px;
+        width: auto; /* was a fixed multiple of item-width -> could overflow */
     }
+    #carousel-container { padding: 12px 0; }
+
+    /* Game info: span the width, never collide with the carousel */
     #game-info {
-        bottom: 8%;
-        left: 20px;
-        max-width: 90%;
+        bottom: 10%;
+        left: 12px;
+        right: 12px;
+        max-width: none;
     }
-    #game-logo {
-        font-size: 2rem;
-    }
-    #game-tagline {
-        font-size: 0.9rem;
-    }
+    #game-logo { font-size: 1.8rem; margin-bottom: 4px; }
+    #game-tagline { font-size: 0.85rem; margin-bottom: 14px; }
     .play-btn {
-        padding: 10px 30px;
-        font-size: 1rem;
+        padding: 9px 26px;
+        font-size: 0.95rem;
     }
+
+    /* Slide-in menu */
     #settings-menu {
-        width: 85%; /* Take more width on mobile */
-        padding: 30px 20px;
+        width: min(85%, 340px);
+        padding: 50px 22px;
+    }
+    .menu-item,
+    #settings-menu .menu-list li a { padding: 12px 16px; font-size: 1rem; }
+
+    /* Detail overlay: stack, centre, and scroll if content is tall */
+    #detail-overlay {
+        padding: 16px;
+        align-items: center;
+        justify-content: center;
     }
     .detail-content {
         flex-direction: column;
-        padding: 20px;
-        gap: 20px;
+        padding: 18px;
+        gap: 16px;
+        max-height: 90vh;
+        overflow-y: auto;
+        text-align: center;
     }
     #detail-img {
-        width: 200px;
+        width: 160px;
         border-radius: 10px;
     }
-    #detail-overlay {
-        padding: 20px;
-    }
+    #detail-title { font-size: 1.4rem; }
+    .detail-text > div { justify-content: center; }
+
+    /* Library grid already handled in gamestyle.css @media block */
+}
+
+/* Very small phones */
+@media (max-width: 480px) {
+    #game-logo { font-size: 1.5rem; }
+    .nav-left { font-size: 0.72rem; gap: 9px; }
+    .nav-tab.active::after { bottom: -4px; }
+}
+
+/* Short landscape phones: the scene is short, so tuck things in vertically */
+@media (max-height: 480px) and (orientation: landscape) {
+    header { top: 8px; }
+    #carousel-section { top: 52px; }
+    #carousel-container { padding: 8px 0; }
+    #game-info { bottom: 5%; }
+    #game-logo { font-size: 1.5rem; margin-bottom: 2px; }
+    #game-tagline { margin-bottom: 8px; }
+    .play-btn { padding: 7px 22px; }
 }

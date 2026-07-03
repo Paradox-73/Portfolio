@@ -216,10 +216,20 @@
             padding-top: 50px;
         }
         
-        .page-content-inner p { 
-            margin-bottom: 15px; 
-            line-height: 1.6; 
+        .page-content-inner p {
+            margin-bottom: 15px;
+            line-height: 1.6;
             text-align: justify; /* Add this to justify text */
+        }
+
+        /* Date byline under a self-written piece's title */
+        .page-content-inner p.work-date {
+            text-align: center;
+            font-style: italic;
+            color: #888;
+            font-size: 1rem;
+            margin-top: -10px;
+            margin-bottom: 24px;
         }
 
         /* Ensure mobile text is left-aligned and full width */

@@ -121,8 +121,13 @@
         .all-programs-container {
             display: none;
             position: absolute;
-            bottom: 30px;
+            /* Anchor to the start menu's bottom edge (which sits on the taskbar) and open
+               to the right of the menu. max-height + scroll keeps every item on-screen
+               and above the taskbar regardless of how tall the start menu's left column is. */
+            bottom: 0;
             left: 100%;
+            max-height: 100%;
+            overflow-y: auto;
             background: white;
             border: 1px solid #808080;
             box-shadow: 2px 2px 2px rgba(0,0,0,0.3);
@@ -252,8 +257,12 @@
             color: white; font-weight: bold; font-size: 16px; text-shadow: 1px 1px 1px #000;
         }
         .user-avatar { width: 40px; height: 40px; border: 2px solid white; border-radius: 3px; margin-right: 10px; background: #FFD27D; overflow: hidden; }
-        .start-body { flex: 1; display: flex; border-top: 2px solid #E57D23; }
-        .start-left { width: 50%; background: white; padding: 5px; display: flex; flex-direction: column; gap: 5px; }
+        /* min-height:0 lets the body shrink to the menu instead of growing with its
+           content, so the left column scrolls internally and the footer/taskbar stay put. */
+        .start-body { flex: 1; min-height: 0; display: flex; border-top: 2px solid #E57D23; }
+        .start-left { width: 50%; min-height: 0; background: white; padding: 5px; display: flex; flex-direction: column; gap: 5px; overflow-y: auto; }
+        .start-portfolio-nav { display: flex; flex-direction: column; gap: 2px; }
+        .start-portfolio-nav .start-item { height: 30px; text-decoration: none; color: #333; }
         .start-right { width: 50%; background: #D3E5FA; padding: 5px; border-left: 1px solid #99BBEE; display: flex; flex-direction: column; gap: 5px; }
         .start-footer {
             height: 35px; background: linear-gradient(#3F8CF3, #245EDB);
@@ -476,11 +485,27 @@
                 width: 100%;
                 height: auto;
             }
-            .desktop-icon i, .desktop-icon img {
-                width: 48px; height: 48px; /* Bigger icons */
-                font-size: 40px;
+            #desktop {
+                grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+                grid-template-rows: repeat(auto-fill, 80px);
             }
-            .icon-text { font-size: 13px; text-shadow: 2px 2px 4px black; }
+            .desktop-icon i, .desktop-icon img {
+                width: 34px; height: 34px; /* Compact icons */
+                font-size: 30px;
+            }
+            .icon-text { font-size: 11px; text-shadow: 2px 2px 4px black; }
+
+            /* All Programs flyout: full start-menu overlay (right-side flyout would be off-screen) */
+            .all-programs-container {
+                left: 0 !important;
+                right: 0;
+                bottom: 0 !important;
+                top: 0;
+                width: 100% !important;
+                max-height: 100%;
+                overflow-y: auto;
+                z-index: 10002;
+            }
 
             /* 3. Windows: Force Full Screen Mode */
             .window {

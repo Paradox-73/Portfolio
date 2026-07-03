@@ -139,7 +139,9 @@ body { margin: 0; overflow: hidden; background-color: #000; }
                 bottom: 20px;
                 right: 20px;
                 display: flex;
-                flex-direction: column;
+                /* column-reverse keeps H (first in the DOM) pinned to the bottom while
+                   the extra buttons expand UP above it, instead of shoving H upward. */
+                flex-direction: column-reverse;
                 align-items: flex-end;
                 gap: 10px;
             }
@@ -167,14 +169,25 @@ body { margin: 0; overflow: hidden; background-color: #000; }
             }
 
             #hidden-virtual-btns {
-                display: none; /* Hidden by default, toggled by JS */
+                /* Always laid out; we animate it open/closed so H can stay put.
+                   Collapsed to zero height with the buttons clipped until revealed. */
+                display: flex;
                 flex-direction: column;
                 gap: 10px;
                 align-items: flex-end;
+                max-height: 0;
+                opacity: 0;
+                overflow: hidden;
+                pointer-events: none;
+                transform: translateY(8px);
+                transition: max-height 0.32s ease, opacity 0.28s ease, transform 0.32s ease;
             }
 
             #hidden-virtual-btns.visible {
-                display: flex;
+                max-height: 320px;
+                opacity: 1;
+                pointer-events: auto;
+                transform: translateY(0);
             }
         }
 
