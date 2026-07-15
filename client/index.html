@@ -3,21 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <link rel="icon" type="image/x-icon" href="assets/profile.jpg">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#2c2c2c">
     <title>Kanav here</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="CSS/indexstyle.css">
 </head>
 <body>
-
-    <!-- Shown only on touch devices held in portrait: the room is a 16:9 scene and
-         only reads well in landscape, so we ask the user to rotate. -->
-    <div id="rotate-overlay">
-        <i class="fas fa-mobile-screen-button" id="rotate-icon"></i>
-        <p class="pixel-font">Please rotate your device</p>
-        <p class="pixel-font rotate-sub">This room is best explored in landscape</p>
-    </div>
 
     <div id="room-container">
         
@@ -88,5 +84,20 @@
     <script src="https://www.youtube.com/iframe_api"></script>
 
     <script src="Javascript/indexscript.js"></script>
+
+    <!-- Mobile only: browsers won't let a page hide the address bar on its own,
+         but entering fullscreen on the user's first tap does. Desktop is untouched. -->
+    <script>
+        (function () {
+            if (!window.matchMedia('(pointer: coarse)').matches) return;
+            function goFullscreen() {
+                var el = document.documentElement;
+                var req = el.requestFullscreen || el.webkitRequestFullscreen
+                        || el.mozRequestFullScreen || el.msRequestFullscreen;
+                if (req) { try { req.call(el); } catch (e) {} }
+            }
+            window.addEventListener('pointerdown', goFullscreen, { once: true });
+        })();
+    </script>
 </body>
 </html>
