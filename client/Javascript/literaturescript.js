@@ -754,7 +754,7 @@ lucide.createIcons();
                         'width': '100%', 'height': '100%', 'overflow-y': 'auto', 'overflow-x': 'hidden',
                         'position': 'static', 'transform': 'none', 'max-width': '600px',
                         'background-color': 'white',
-                        'background-image': 'url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/937765/linedpaper.png)',
+                        'background-image': 'url(assets/textures/linedpaper.png)',
                         'border': 'solid 1px grey'
                     });
                     // Black close button so it's visible against the white paper background on mobile.

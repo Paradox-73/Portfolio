@@ -533,3 +533,22 @@
     #library-view { top: 72px; padding: 8px 18px 0; }
     #library-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 14px; }
 }
+
+        /* ------------------------------------------------------------------
+           Motion layer hand-off (see Javascript/motion-games.js)
+
+           gamescript.js runs inside an IIFE and exposes nothing globally, so
+           the motion layer works entirely from the DOM: it watches for the
+           .active class, for #dynamic-bg-img's src changing, and for the
+           library grid being rebuilt.
+
+           The selected tile's scale moves from CSS to GSAP so it can overshoot
+           slightly on selection, the way a console UI snaps onto a tile. The
+           `transition: all` below would otherwise re-tween every frame GSAP
+           writes. Scoped to html.mt-js, so with JS off the CSS scale still
+           applies and the carousel still shows its selection.
+        ------------------------------------------------------------------ */
+        html.mt-js .game-item {
+            transition: opacity 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
+        }
+        html.mt-js .game-item.active { transform: none; }

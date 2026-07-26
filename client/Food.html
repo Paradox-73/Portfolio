@@ -6,6 +6,7 @@
   <title>Kanav's Kitchen</title>
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300i|McLaren|Syncopate:400,700&display=swap" rel="stylesheet"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
 <link rel="stylesheet" href="CSS/foodstyle.css"><link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css'>
+<link rel="stylesheet" href="CSS/motion.css">
 <link rel="icon" type="image/x-icon" href="assets/profile.jpg">
 </head>
 <body>
@@ -413,5 +414,11 @@
   <script src="Javascript/recipes.js"></script>
   <script src="Javascript/recipe.js"></script>
   <script src="https://www.youtube.com/iframe_api"></script>
+  <!-- Motion layer. Loaded last so its DOMContentLoaded handler runs after
+       recipe.js has wired up the modal. -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="Javascript/motion.js"></script>
+  <script src="Javascript/motion-food.js"></script>
 </body>
 </html>

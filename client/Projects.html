@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Kanav's Projects</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
- <link rel="stylesheet" href="CSS/projectstyle.css">
+ <link rel="stylesheet" href="CSS/projectstyle.css?v=motion1">
+    <link rel="stylesheet" href="CSS/motion.css">
     <!-- Markdown renderer for project README.md files -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
@@ -120,7 +121,11 @@
             <span id="clock" onclick="launchDateTimeProperties()">12:00 PM</span>
         </div>
     </div>
-<script src="Javascript/projectscript.js"></script>
+<script src="Javascript/projectscript.js?v=20260715"></script>
+<!-- Motion layer. Loaded after projectscript.js so it can wrap its globals. -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="Javascript/motion.js"></script>
+<script src="Javascript/motion-projects.js"></script>
 
 </body>
 </html>

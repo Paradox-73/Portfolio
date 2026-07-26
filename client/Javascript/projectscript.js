@@ -790,6 +790,11 @@
             launchWMP(fileObj.path || "Video Demo"); // Pass the path for the WMP
         } else if (fileObj.type === 'app' && fileObj.appId === 'pdfViewer') {
             window.open(fileObj.path, '_blank');
+        } else if (fileObj.type === 'app' && fileObj.appId) {
+            // Generic desktop apps (minesweeper, paint, calc, cmd, ie, contactForm, ...)
+            // reached through the file explorer route here the same way the desktop
+            // icons do, instead of falling through to "no default application".
+            openApp(fileObj.appId);
         } else {
             alert(`No default application for ${filename}.`);
         }

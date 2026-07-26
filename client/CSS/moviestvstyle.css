@@ -548,3 +548,30 @@
         .profile-img { width: 150px; height: 150px; background-size: cover; border-radius: 4px; margin-bottom: 15px; border: 3px solid transparent; background-color: #333; }
         .profile-card:hover .profile-img { border-color: white; }
         #passwordDialog { z-index: 10000; }
+        /* ------------------------------------------------------------------
+           Motion layer hand-off (see Javascript/motion-movies.js)
+
+           The CSS hover state scaled a card the instant the pointer touched it
+           and left its neighbours where they were, so cards overlapped each
+           other. Netflix instead waits ~350ms, then grows the card while the
+           rest of the row slides out of its way. That needs coordination across
+           siblings, which only JS can do — so when JS is running, these rules
+           surrender the hover transform to GSAP.
+
+           Everything is scoped to html.mt-js. With JS off the original CSS
+           hover still applies, so the page never loses its hover state.
+        ------------------------------------------------------------------ */
+        html.mt-js .movie-box, html.mt-js .grid-card { transition: box-shadow 0.3s ease; }
+        html.mt-js .movie-box:hover, html.mt-js .grid-card:hover { transform: none; box-shadow: none; }
+        html.mt-js .movie-box.mt-lifted, html.mt-js .grid-card.mt-lifted {
+            box-shadow: 0 12px 34px rgba(0,0,0,0.75);
+        }
+        /* The hover caption is driven by the same JS timing as the scale, so it
+           can no longer key off :hover alone. */
+        html.mt-js .movie-box:hover .hover-details,
+        html.mt-js .grid-card:hover .hover-details { opacity: 0; }
+        html.mt-js .movie-box.mt-lifted .hover-details,
+        html.mt-js .grid-card.mt-lifted .hover-details { opacity: 1; }
+        /* GSAP drives scrollLeft frame by frame for the row arrows; the CSS
+           smooth-scroll would re-smooth every one of those steps and fight it. */
+        html.mt-js .slider-track { scroll-behavior: auto; }

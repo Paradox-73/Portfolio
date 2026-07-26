@@ -10,6 +10,16 @@ $(document).ready(function() {
     $('#magazine').find('.cover-front-inside, .cover-back-inside').remove();
   }
 
+  // Wrap every scrapbook page's content in an inner element BEFORE Turn.js builds the
+  // book. Turn.js applies its own transforms (page folds/peels) directly to the
+  // .own-size page element, so the auto-fit scale must live on this inner wrapper to
+  // avoid fighting — and being wiped by — those fold transforms.
+  $('#magazine .own-size.scrapbook').each(function () {
+    if (!this.querySelector(':scope > .fit-inner')) {
+      $(this).wrapInner('<div class="fit-inner"></div>');
+    }
+  });
+
   // Desktop = two-page spread, mobile = single page. Both keep the page-flip animation.
   $('#magazine').turn({
     display: mobile ? 'single' : 'double',
@@ -41,10 +51,27 @@ $(document).ready(function() {
   // Turn.js needs explicit pixel dimensions; sizing it to the viewport (with a margin
   // left over on every side via the centred flex body) fixes the squished-strip bug.
   sizeBook();
+  fitPages();
   // Reveal the book only once Turn.js has built it (CSS hides #magazine until now),
   // so the unstyled inside pages never flash before the cover.
   $('#magazine').addClass('turn-ready');
-  $(window).on('resize orientationchange', function () { setTimeout(sizeBook, 120); });
+  $(window).on('resize orientationchange', function () {
+    setTimeout(function () { sizeBook(); fitPages(); }, 120);
+  });
+  // Turn.js swaps pages in/out of the DOM as you flip, and photos finish loading
+  // late, so re-fit whenever a turn lands (a few times, to catch images that are
+  // still decoding) and whenever any image anywhere in the book reports its size.
+  // A capturing listener is used because `load` doesn't bubble, but it does fire on
+  // ancestors in the capture phase, so this one handler covers pages Turn.js adds later.
+  $('#magazine').bind('turning turned', scheduleFit);
+  var magEl = document.getElementById('magazine');
+  if (magEl) magEl.addEventListener('load', fitPages, true);
+
+  function scheduleFit() {
+    fitPages();
+    setTimeout(fitPages, 200);
+    setTimeout(fitPages, 600);
+  }
 
   function sizeBook() {
     var w = window.innerWidth, h = window.innerHeight;
@@ -52,6 +79,29 @@ $(document).ready(function() {
     var W = Math.floor(w * (isMobile ? 0.92 : 0.95));
     var H = Math.floor(h * (isMobile ? 0.90 : 0.95));
     try { $('#magazine').turn('size', W, H); } catch (e) {}
+  }
+
+  // Keep every scrapbook page's content inside its fixed page box, at any screen
+  // size, so nothing (especially the photos near the bottom) is ever clipped.
+  // Turn.js pages can't grow, so when the content is taller than the page we scale
+  // it down uniformly; on tall screens the scale is 1 and nothing changes.
+  // Mobile keeps its own internal scroll (see travelstyle.css), so skip it there.
+  function fitPages() {
+    if (window.innerWidth <= 768) return;
+    $('#magazine .own-size.scrapbook').each(function () {
+      var page = this;
+      var inner = page.querySelector(':scope > .fit-inner');
+      if (!inner) return;
+      // Measure at natural scale first, then decide how much to shrink.
+      inner.style.transform = '';
+      inner.style.transformOrigin = 'top center';
+      var avail = page.clientHeight;       // the fixed 90vh page box
+      var content = inner.scrollHeight;    // full natural content height
+      if (!avail || !content) return;      // page not currently laid out by Turn.js
+      if (content > avail + 1) {
+        inner.style.transform = 'scale(' + (avail / content) + ')';
+      }
+    });
   }
 
   // Keyboard navigation (desktop)

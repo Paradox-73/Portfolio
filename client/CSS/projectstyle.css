@@ -579,3 +579,27 @@
             .calc-grid { gap: 10px; }
             .calc-btn { font-size: 18px; padding: 15px; }
         }
+        /* ------------------------------------------------------------------
+           Shutdown sequence (see Javascript/motion-projects.js)
+
+           "Turn Off Computer" used to call window.close(), which browsers
+           refuse for pages they did not open — so the button did nothing at
+           all. It now plays XP's shutdown instead. Fonts and colours match the
+           original screen rather than the rest of the site.
+        ------------------------------------------------------------------ */
+        .xp-shutdown {
+            position: fixed; inset: 0; z-index: 99999;
+            background: #3A6EA5;
+            display: flex; align-items: center; justify-content: center;
+            text-align: center; color: #fff;
+            font-family: Tahoma, 'Trebuchet MS', sans-serif;
+            cursor: default;
+        }
+        .xp-shutdown-msg { font-size: 46px; font-weight: 700; line-height: 1.15; }
+        .xp-shutdown-msg span { font-size: 22px; font-weight: 400; }
+        .xp-shutdown-safe { font-size: 26px; display: flex; flex-direction: column; gap: 26px; }
+        .xp-shutdown-safe span { font-size: 13px; color: #9aa6b5; }
+
+        /* GSAP animates this filter across the desktop, taskbar and any open
+           windows; the transition here would double up on that. */
+        html.mt-js #desktop, html.mt-js #taskbar { transition: none; }

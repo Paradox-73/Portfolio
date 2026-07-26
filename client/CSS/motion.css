@@ -1,0 +1,55 @@
+/* ---------------------------------------------------------------------------
+   motion.css — shared motion primitives for every themed page.
+
+   Two jobs only:
+   1. Cross-document page transitions, so moving between the ten very different
+      worlds (XP desktop -> Netflix -> scrapbook) is a fade instead of a hard cut.
+   2. The "not yet revealed" starting state for Motion.reveal(). It lives in CSS
+      rather than JS so content never flashes at full opacity before GSAP boots.
+
+   Anything page-specific belongs in that page's own stylesheet.
+--------------------------------------------------------------------------- */
+
+/* Cross-document view transitions (Chrome 126+). Progressive enhancement:
+   browsers without support simply navigate as they always did. Both the old and
+   the new document must opt in, which is why this file is loaded site-wide. */
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root) {
+  animation: mt-fade-out 0.22s cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+::view-transition-new(root) {
+  animation: mt-fade-in 0.32s cubic-bezier(0, 0, 0.2, 1) both;
+}
+
+@keyframes mt-fade-out {
+  to { opacity: 0; }
+}
+
+@keyframes mt-fade-in {
+  from { opacity: 0; }
+}
+
+/* Pre-reveal state. Motion.reveal() clears this by animating the element and
+   then stripping the class. The `html.mt-js` guard means that if JavaScript
+   never runs, nothing is ever hidden. */
+html.mt-js .mt-reveal {
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+/* Respect the OS setting everywhere at once. JS checks the same query and skips
+   tweening entirely; this covers the CSS-only pieces above. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
+
+  html.mt-js .mt-reveal {
+    opacity: 1;
+  }
+}

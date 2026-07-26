@@ -3,7 +3,7 @@
             --wood-medium: #3d2817;
             --wood-light: #5c4033;
             --gold: #ffd700;
-            --paper-texture-url: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/937765/seamless_paper_texture.png');
+            --paper-texture-url: url('../assets/textures/seamless_paper_texture.png');
         }
 
         body {
@@ -181,7 +181,7 @@
         /* Specific styles for turn.js pages to match scrapbook feel */
         #magazine .page {
             background-color: white;
-            background-image: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/937765/linedpaper.png);
+            background-image: url(../assets/textures/linedpaper.png);
             border: solid 1px grey;
             overflow: hidden;
         }
@@ -248,7 +248,7 @@
             overflow-y: auto;
             overflow-x: hidden;
             background-color: white; 
-            background-image: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/937765/linedpaper.png);
+            background-image: url(../assets/textures/linedpaper.png);
             border: solid 1px grey;
             max-width: 600px; */
             padding-bottom: 20px; /* Add some space at the bottom */

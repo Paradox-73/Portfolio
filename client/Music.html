@@ -8,13 +8,16 @@
     <!-- Dependencies -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <!-- 3.12.5 to match the other pages; musicscript.js only uses core tweens. -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
     
     <!-- Icons & Fonts -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     
     <!-- Custom Styles -->
     <link rel="stylesheet" href="CSS/musicstyle.css">
+    <link rel="stylesheet" href="CSS/motion.css">
 </head>
 <body class="flex flex-col min-h-screen w-full antialiased overflow-x-hidden">
     <div class="ambient-dust"></div>
@@ -233,5 +236,8 @@
     </div>
 
     <script src="Javascript/musicscript.js"></script>
+    <!-- Motion layer. Loaded after musicscript.js so its containers exist. -->
+    <script src="Javascript/motion.js"></script>
+    <script src="Javascript/motion-music.js"></script>
 </body>
 </html>

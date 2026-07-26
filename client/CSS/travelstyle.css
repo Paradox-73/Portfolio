@@ -3,7 +3,7 @@
 @import url("https://fonts.googleapis.com/css?family=Permanent+Marker");
 body {
   font-family: "Indie Flower", cursive;
-  background-image: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/937765/seamless_paper_texture.png);
+  background-image: url(../assets/textures/seamless_paper_texture.png);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -94,12 +94,12 @@ h3 a{
 
 #magazine {
   margin: auto;
-  background-image: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/937765/seamless_paper_texture.png) !important;
+  background-image: url(../assets/textures/seamless_paper_texture.png) !important;
 }
 #magazine .page {
   z-index: 1000 !important;
   background-color: grey;
-  background-image: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/937765/linedpaper.png);
+  background-image: url(../assets/textures/linedpaper.png);
   border: solid 1px grey;
 }
 #magazine .page .top-margin {
@@ -620,4 +620,34 @@ h3 a{
   #magazine .scrapbook .coorg:before,
   #magazine .scrapbook .coorg:after,
   #magazine .scrapbook .grouppicpondi:after { display: none !important; }
+}
+
+/* ---------------------------------------------------------------------------
+   Motion layer (see Javascript/motion-travel.js)
+
+   Rough Notation was the obvious library for animating these hand-drawn marks,
+   but it positions its SVG from the element's page offset, and Turn.js keeps
+   every page under a transform (plus the .fit-inner scale this page applies).
+   Measured on this page: a .hl at x=521 had its annotation drawn at x=438, with
+   the wrong width. It cannot be made reliable here.
+
+   The marks are therefore swept using each element's own background, which is
+   painted inside the element's own box and so is immune to any ancestor
+   transform. --mt-hl runs 0% -> 100% to wipe the marker across the words.
+--------------------------------------------------------------------------- */
+html.mt-js .hl,
+html.mt-js .red-marker {
+  background-repeat: no-repeat;
+  background-size: var(--mt-hl, 100%) 100%;
+}
+
+/* .red-marker was colour-only; give it a marker underline to sweep. */
+html.mt-js .red-marker {
+  background-image: linear-gradient(transparent 86%, rgba(153, 0, 0, 0.45) 86%);
+  padding: 0 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.mt-js .hl,
+  html.mt-js .red-marker { background-size: 100% 100%; }
 }
