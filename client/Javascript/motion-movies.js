@@ -310,10 +310,22 @@
         animateIn();
       } else if (display === 'none' && isOpen) {
         setDisplay('flex');
-        animateOut(function () {
+
+        var finished = false;
+        function finish() {
+          if (finished) return;
+          finished = true;
+          gsap.killTweensOf([modal, panel]);
+          gsap.set([modal, panel], { clearProps: 'opacity,transform' });
           setDisplay('none');
           isOpen = false;
-        });
+        }
+
+        // Watchdog — see motion-food.js. Closing is intercepted so it can
+        // animate, so a stalled rAF ticker would otherwise leave the modal open
+        // with no way to dismiss it. This timer does not depend on rAF.
+        setTimeout(finish, 600);
+        animateOut(finish);
       }
     }).observe(modal, { attributes: true, attributeFilter: ['style'] });
   });

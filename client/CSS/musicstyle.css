@@ -345,8 +345,7 @@ body {
 #artists-grid img { filter: grayscale(0.4); }
 #artists-grid .group:hover img { filter: grayscale(0); }
 
-/* --- Scrollbar --- */
-::-webkit-scrollbar { width: 10px; }
-::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.8); }
-::-webkit-scrollbar-thumb { background: rgba(244, 235, 216, 0.15); border-radius: 8px; border: 2px solid rgba(0, 0, 0, 0.8); }
-::-webkit-scrollbar-thumb:hover { background: rgba(244, 235, 216, 0.3); }
+/* --- Scrollbar ---
+   This page used to draw a styled 10px scrollbar. Scrollbars are now hidden
+   site-wide from CSS/motion.css, so these rules are removed rather than left
+   here to be silently overridden. */

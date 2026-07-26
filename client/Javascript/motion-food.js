@@ -185,10 +185,25 @@
       } else if (display === 'none' && isOpen) {
         // Put it back for the length of the out-tween, then hide for real.
         setDisplay('block');
-        animateOut(function () {
+
+        var finished = false;
+        function finish() {
+          if (finished) return;
+          finished = true;
+          gsap.killTweensOf([modal, panel]);
+          gsap.set([modal, panel], { clearProps: 'opacity,transform' });
           setDisplay('none');
           isOpen = false;
-        });
+        }
+
+        // Watchdog. Closing is intercepted so it can animate, which means the
+        // modal is only really dismissed when the tween ends — and GSAP's ticker
+        // is rAF-driven. If rAF stalls (background tab, power saving, a blocked
+        // main thread) the tween never completes and the modal stays open with
+        // no way to dismiss it. This timer is not rAF-driven, so it always
+        // fires; an animation that already finished makes it a no-op.
+        setTimeout(finish, 600);
+        animateOut(finish);
       }
     }).observe(modal, { attributes: true, attributeFilter: ['style'] });
   });

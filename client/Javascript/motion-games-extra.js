@@ -70,8 +70,18 @@
         handedOff = true;
 
         gsap.to(intro, { scale: 1.06, duration: 1.1, ease: 'power2.in' });
-        gsap.fromTo(main, { opacity: 0, scale: 1.03 },
-          { opacity: 1, scale: 1, duration: 1, ease: 'power2.out', clearProps: 'transform,opacity' });
+
+        // Opacity is deliberately left alone here.
+        //
+        // #main-container is opacity:0 in the stylesheet with its own 2s
+        // transition, and gamescript.js reveals it by writing an inline
+        // opacity:1. Tweening opacity as well meant GSAP and that transition
+        // fought over the same property every frame — and clearProps:'opacity'
+        // at the end deleted the inline 1 outright, dropping the container back
+        // to the CSS 0 and leaving the whole dashboard black. The existing fade
+        // already works, so this only adds the scale.
+        gsap.fromTo(main, { scale: 1.03 },
+          { scale: 1, duration: 1.2, ease: 'power2.out', clearProps: 'transform' });
       }).observe(intro, { attributes: true, attributeFilter: ['style'] });
     }
 

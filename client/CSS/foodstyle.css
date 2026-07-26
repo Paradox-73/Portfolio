@@ -660,18 +660,42 @@ button:active {
   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
 }
 
+/* The close control was a bare floated glyph: its clickable area was only the
+   "×" itself, a few pixels wide, and it sat inline with the recipe title so a
+   near-miss hit the heading instead. It is now a proper 44x44 target (the
+   minimum comfortable touch size), pinned to the panel corner and out of the
+   text flow, with the glyph centred inside it. */
 .close-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: #aaa;
-  float: right;
-  font-size: 28px;
+  font-size: 30px;
+  line-height: 1;
   font-weight: bold;
+  border-radius: 50%;
+  cursor: pointer;
+  user-select: none;
+  z-index: 2;
+  transition: color 0.2s ease, background-color 0.2s ease;
 }
 
 .close-button:hover,
 .close-button:focus {
-  color: black;
+  color: #000;
+  background: rgba(0, 0, 0, 0.08);
   text-decoration: none;
   cursor: pointer;
+}
+
+/* Keep the heading clear of the button now that it overlaps the corner. */
+.modal-content h2 {
+  padding-right: 48px;
 }
 
 .modal-content h2 {

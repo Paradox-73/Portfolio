@@ -33,6 +33,28 @@
   from { opacity: 0; }
 }
 
+/* ---------------------------------------------------------------------------
+   Scrollbars: invisible everywhere, scrolling untouched.
+
+   Several pages already hid their own (the Games library, the Movies rows, the
+   Food bill), so the site was inconsistent — and Music actively drew a styled
+   one. Hiding the indicator has no effect on scrolling: wheel, trackpad, touch,
+   keyboard, and programmatic scrolling all behave exactly as before.
+
+   This file is loaded on all ten pages, and after each page's own stylesheet,
+   so it settles the question in one place.
+--------------------------------------------------------------------------- */
+* {
+  scrollbar-width: none;        /* Firefox */
+  -ms-overflow-style: none;     /* legacy Edge / IE */
+}
+
+*::-webkit-scrollbar {          /* Chrome, Safari, current Edge */
+  width: 0;
+  height: 0;
+  display: none;
+}
+
 /* Pre-reveal state. Motion.reveal() clears this by animating the element and
    then stripping the class. The `html.mt-js` guard means that if JavaScript
    never runs, nothing is ever hidden. */

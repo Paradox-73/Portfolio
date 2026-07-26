@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <link rel="icon" type="image/x-icon" href="assets/profile.jpg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MoviesTV</title>
+    <title>Kanav's Cinema</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="CSS/moviestvstyle.css?v=motion1">
@@ -174,17 +174,12 @@
                     </div>
                 </div>
                 
-                <div class="row-container" id="recommendedByYouRow" style="display:none">
-                    <h2 class="row-header">Recommended By Others</h2>
-                    <div class="row-content">
-                        <div class="slider-handle left-handle" onclick="scrollRow('recommendedByYouTrack', -1)">&#8249;</div>
-                        <div class="slider-track" id="recommendedByYouTrack"></div>
-                        <div class="slider-handle right-handle" onclick="scrollRow('recommendedByYouTrack', 1)">&#8250;</div>
-                    </div>
-                </div>
-
+                <!-- Watchlist and "Recommended By Others" share one row: both are
+                     "things Kanav has not watched yet", and split across two rows
+                     they were usually short and half-empty. Recommendations are
+                     rendered first, then the watchlist by popularity. -->
                 <div class="row-container" id="watchlistRow" style="display:none">
-                    <h2 class="row-header">My Watchlist</h2>
+                    <h2 class="row-header">My Watchlist &amp; Recommendations</h2>
                     <div class="row-content">
                         <div class="slider-handle left-handle" onclick="scrollRow('watchlistTrack', -1)">&#8249;</div>
                         <div class="slider-track" id="watchlistTrack"></div>

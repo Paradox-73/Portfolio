@@ -276,28 +276,76 @@
             return data;
         }
 
+        // How many cards to fetch for the first paint. Only about five are
+        // visible per row on arrival; the rest are behind a horizontal scroll.
+        const PREVIEW_COUNT = 8;
+
+        function apiBase() {
+            return (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+                ? 'http://localhost:3000'
+                : '';
+        }
+
+        async function getCollection(path, query) {
+            try {
+                const res = await fetch(`${apiBase()}${path}${query || ''}`);
+                if (!res || !res.ok) return [];
+                return await res.json();
+            } catch (e) {
+                return [];
+            }
+        }
+
+        // Progressive load, in two passes.
+        //
+        // This used to issue one request per collection and wait for the entire
+        // catalogue before drawing anything, so the home rows sat as grey
+        // skeletons for as long as the slower of the two queries took — even
+        // though only a handful of cards per row are on screen to begin with.
+        //
+        // Pass 1 asks for just the newest PREVIEW_COUNT of each and draws them
+        // immediately. Pass 2 fetches everything and supersedes it. Both go
+        // through ingest(), so the finished state is exactly what the single
+        // pass produced before.
         async function loadDataFromAPI() {
             try {
                 console.log("Starting to load data from API...");
-                const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-        ? 'http://localhost:3000'
-        : '';
-                const [moviesRes, showsRes] = await Promise.all([
-                    fetch(`${API_BASE_URL}/api/movies`).catch(() => null),
-                    fetch(`${API_BASE_URL}/api/shows`).catch(() => null)
+
+                const previewQuery = `?limit=${PREVIEW_COUNT}&order=recent`;
+                const [previewMovies, previewShows] = await Promise.all([
+                    getCollection('/api/movies', previewQuery),
+                    getCollection('/api/shows', previewQuery)
                 ]);
 
-                const moviesFromAPI = moviesRes ? await moviesRes.json() : [];
-                const showsFromAPI = showsRes ? await showsRes.json() : [];
+                if (previewMovies.length || previewShows.length) {
+                    ingest(previewMovies, previewShows, true);
+                    console.log(`Preview painted: ${previewMovies.length} movies, ${previewShows.length} shows.`);
+                }
 
-                console.log("Raw Movies from API (first 5):", moviesFromAPI.slice(0, 5));
-                console.log("Raw Shows from API (first 5):", showsFromAPI.slice(0, 5));
+                const [moviesFromAPI, showsFromAPI] = await Promise.all([
+                    getCollection('/api/movies'),
+                    getCollection('/api/shows')
+                ]);
 
                 if (moviesFromAPI.length === 0 && showsFromAPI.length === 0) {
                     console.error("Both movie and show APIs returned no data.");
                     return;
                 }
 
+                ingest(moviesFromAPI, showsFromAPI, false);
+                console.log("Render functions called successfully.");
+            } catch (e) {
+                console.error("API Data Load Error:", e);
+            }
+        }
+
+        // Maps, categorises and renders one payload.
+        //
+        // `preview` marks the fast first pass: those documents came back
+        // newest-first and are only a slice of the collection, so their row order
+        // is already correct and csvIndex — which is a position within the whole
+        // import — is not yet meaningful.
+        function ingest(moviesFromAPI, showsFromAPI, preview) {
                 // Map raw data from API, using lowercase properties based on original CSV headers
                 const mappedMovies = moviesFromAPI.map((m, idx) => ({
                     title: m.title,
@@ -399,15 +447,16 @@
                 // Mark loaded items as seen initially
                 [...allMovies, ...allShows, ...allAnime].forEach(markItemSeen);
 
-                const missingPosters = [...allMovies, ...allShows, ...allAnime].filter(i => !i.poster_path);
-                posterQueue.push(...missingPosters);
-                processPosterQueue();
+                // Poster lookups are queued on the full pass only. Queuing them
+                // during the preview too would just re-request the same titles a
+                // moment later, competing with the full catalogue fetch.
+                if (!preview) {
+                    const missingPosters = [...allMovies, ...allShows, ...allAnime].filter(i => !i.poster_path);
+                    posterQueue.push(...missingPosters);
+                    processPosterQueue();
+                }
 
-                renderHomeRows();
-                console.log("Render functions called successfully.");
-            } catch (e) {
-                console.error("API Data Load Error:", e);
-            }
+                renderHomeRows(preview);
         }
 
         async function processPosterQueue() {
@@ -460,14 +509,9 @@
         }
 
         // --- Rendering ---
+        // Recommendations and the watchlist share one row (see MoviesTV.html).
+        // This only enriches the recommendation data; the combined renderer draws.
         async function renderRecommendedRow() {
-            const row = document.getElementById('recommendedByYouRow');
-            const track = document.getElementById('recommendedByYouTrack');
-            track.innerHTML = ''; 
-
-            if (recommendedList.length === 0) { row.style.display = 'none'; return; }
-            row.style.display = 'block';
-
             for (const rec of recommendedList) {
                 let item = rec.itemDetails;
                 if (!item || !item.overview) {
@@ -478,8 +522,8 @@
                         item = rec.itemDetails;
                     } catch (e) { continue; }
                 }
-                createCard(rec, track, true, rec.recommender);
             }
+            renderCombinedRow();
         }
 
         // --- Letterboxd Watchlist ---
@@ -508,40 +552,54 @@
                         letterboxd_uri: r['Letterboxd URI'] || r.letterboxd_uri || ''
                     }));
 
-                track.innerHTML = '';
-                if (!watchlistItems.length) { row.style.display = 'none'; return; }
-                row.style.display = 'block';
-                renderWatchlistRow();
+                renderCombinedRow();
 
                 // Reuse the existing poster queue to look up covers from TMDB by title.
                 posterQueue.push(...watchlistItems);
                 processPosterQueue();
             } catch (e) {
                 console.error('Watchlist load error:', e);
-                row.style.display = 'none';
+                renderCombinedRow();
             }
         }
 
-        // Render the watchlist row sorted by TMDB popularity (highest first). Popularity is
-        // filled in asynchronously by the poster lookup, so this is called again (debounced)
-        // as those values arrive.
-        function renderWatchlistRow() {
+        // Draws the shared "My Watchlist & Recommendations" row.
+        //
+        // Both lists arrive independently and asynchronously — recommendations
+        // from /api/recommendations, the watchlist from /api/movie-watchlist —
+        // and each calls this when it changes, so the row is rebuilt from
+        // whatever is currently known rather than either side clobbering the
+        // other's cards.
+        //
+        // Recommendations come first: someone addressed them to Kanav, so they
+        // should not be buried behind a long watchlist. The watchlist follows,
+        // most popular first. Popularity is filled in asynchronously by the
+        // poster lookup, which re-calls this (debounced) as values arrive.
+        function renderCombinedRow() {
+            const row = document.getElementById('watchlistRow');
             const track = document.getElementById('watchlistTrack');
-            if (!track) return;
-            watchlistItems.sort((a, b) => (Number(b.popularity) || 0) - (Number(a.popularity) || 0));
+            if (!row || !track) return;
+
             track.innerHTML = '';
+
+            recommendedList.forEach(rec => createCard(rec, track, true, rec.recommender));
+
+            watchlistItems.sort((a, b) => (Number(b.popularity) || 0) - (Number(a.popularity) || 0));
             watchlistItems.forEach(item => createCard(item, track));
+
+            row.style.display = (recommendedList.length || watchlistItems.length) ? 'block' : 'none';
         }
+
         let watchlistResortTimer = null;
         function resortWatchlistSoon() {
             clearTimeout(watchlistResortTimer);
-            watchlistResortTimer = setTimeout(renderWatchlistRow, 800);
+            watchlistResortTimer = setTimeout(renderCombinedRow, 800);
         }
 
         // Fill the home rows with grey placeholder cards so they don't look empty
         // before the API responds. renderHomeRows() clears these when real cards arrive.
         function injectSkeletons() {
-            ['recTrack', 'recommendedByYouTrack', 'watchlistTrack', 'moviesTrack', 'showsTrack', 'animeTrack'].forEach(id => {
+            ['recTrack', 'watchlistTrack', 'moviesTrack', 'showsTrack', 'animeTrack'].forEach(id => {
                 const track = document.getElementById(id);
                 if (!track || track.children.length) return;
                 let html = '';
@@ -561,16 +619,22 @@
             return (b.csvIndex || 0) - (a.csvIndex || 0);
         }
 
-        function renderHomeRows() {
+        function renderHomeRows(preview) {
             const moviesTrack = document.getElementById('moviesTrack');
             const showsTrack = document.getElementById('showsTrack');
             const animeTrack = document.getElementById('animeTrack');
             moviesTrack.innerHTML = ''; showsTrack.innerHTML = ''; animeTrack.innerHTML = '';
 
+            // The preview slice already came back newest-first from the API.
+            // byRecencyDesc falls back to csvIndex, which is a position within the
+            // full import — meaningless for a slice — so sorting here would
+            // scramble the very cards being shown first.
             // Sort copies so the underlying arrays (used by the grid/filters) keep their order.
-            [...allMovies].sort(byRecencyDesc).forEach(m => createCard(m, moviesTrack));
-            [...allShows].sort(byRecencyDesc).forEach(s => createCard(s, showsTrack));
-            [...allAnime].sort(byRecencyDesc).forEach(a => createCard(a, animeTrack));
+            const order = list => preview ? list : [...list].sort(byRecencyDesc);
+
+            order(allMovies).forEach(m => createCard(m, moviesTrack));
+            order(allShows).forEach(s => createCard(s, showsTrack));
+            order(allAnime).forEach(a => createCard(a, animeTrack));
         }
 
         function createCard(item, track, isRec = false, recommender = '') {

@@ -8,7 +8,6 @@
      - the profile picker handing off to the app
      - the search overlay opening, and its results dealing in
      - "More Like This" / "Episodes" crossfading instead of snapping
-     - an "Explore All ›" chevron sliding out of a row title on hover
      - press feedback on the billboard buttons
 
    Self-contained on purpose. It injects its own stylesheet rather than
@@ -22,18 +21,7 @@
 (function () {
   'use strict';
 
-  var CSS = [
-    /* Netflix puts a chevron on any row title that leads somewhere. Only rows
-       whose header is actually clickable get one. */
-    '.mt-explore{',
-    '  display:inline-flex;align-items:center;gap:.25rem;',
-    '  font-size:.85rem;color:#54b9c5;vertical-align:middle;',
-    '  margin-left:.6rem;opacity:0;transform:translateX(-8px);',
-    '  transition:opacity .28s ease,transform .28s ease;',
-    '  pointer-events:none;white-space:nowrap;font-weight:500;',
-    '}',
-    '.row-container:hover .mt-explore{opacity:1;transform:translateX(0);}'
-  ].join('\n');
+  var CSS = '';
 
   /* GSAP drives the overlay; the stylesheet's own fade would double up. Applied
      only when this file is actually animating, so reduced-motion visitors keep
@@ -160,20 +148,6 @@
               stagger: { amount: 0.35 }, clearProps: 'transform,opacity' });
         }, 20);
       }).observe(grid, { childList: true });
-    });
-
-    /* --- row titles --------------------------------------------------------- */
-
-    // Only rows whose title navigates somewhere get the chevron — the
-    // recommendation rows are not clickable and would be lying about it.
-    M.toArray('.row-header').forEach(function (header) {
-      if (!header.getAttribute('onclick')) return;
-      if (header.querySelector('.mt-explore')) return;
-
-      var tag = document.createElement('span');
-      tag.className = 'mt-explore';
-      tag.textContent = 'Explore All ›';
-      header.appendChild(tag);
     });
 
     /* --- button feedback ----------------------------------------------------- */

@@ -32,9 +32,18 @@
 
     /* --- books being shelved ------------------------------------------------ */
 
-    // Books are fetched and appended per shelf, in bursts. Each burst is
-    // coalesced into one stagger so a shelf fills left to right, like someone
-    // sliding books into place, instead of popping in as replies land.
+    // Books are fetched and appended per shelf, in bursts, each burst coalesced
+    // into one stagger so a shelf fills like someone sliding books into place.
+    //
+    // The reveal is tied to scroll position, not to when the data lands. An
+    // earlier version played the moment each fetch resolved, which meant every
+    // shelf animated at once shortly after load — including the ones far below
+    // the fold, so by the time you scrolled to them they had long since
+    // finished. Now a shelf only fills as you come down to it, once.
+    //
+    // Books that are already on screen when they arrive are left alone entirely:
+    // hiding them just to animate them back in is the "on page load" burst the
+    // scroll trigger exists to avoid.
     M.toArray('.shelf').forEach(function (shelf) {
       var pending = null;
       var seen = new WeakSet();
@@ -49,15 +58,18 @@
           });
           if (!fresh.length) return;
 
-          gsap.from(fresh, {
+          // Already in view -> it is part of the page you are looking at.
+          if (shelf.getBoundingClientRect().top < window.innerHeight * 0.85) return;
+
+          // Below the fold -> falls into place when you scroll down to it.
+          // M.reveal carries the scroll-jump catch-up and the stalled-ticker
+          // watchdog, so a book can never be left permanently invisible.
+          M.reveal(fresh, {
             y: -34,
-            opacity: 0,
-            rotateZ: function (i) { return i % 2 ? 4 : -4; },
             duration: 0.5,
             ease: 'power3.out',
             stagger: { amount: 0.6 },
-            // Hand the transform back to CSS so the hover tilt still works.
-            clearProps: 'transform,opacity'
+            start: 'top 85%'
           });
         }, 40);
       }).observe(shelf, { childList: true });
@@ -142,36 +154,38 @@
         isOpen = true;
         animateIn();
       } else if (display === 'none' && isOpen) {
-        var restore = display === 'block' ? 'block' : 'flex';
-        setDisplay(restore);
-        animateOut(function () {
+        setDisplay('flex');
+
+        var finished = false;
+        function finish() {
+          if (finished) return;
+          finished = true;
+          gsap.killTweensOf([modal, panel]);
+          gsap.set([modal, panel], { clearProps: 'opacity,transform' });
           setDisplay('none');
           isOpen = false;
-        });
+        }
+
+        // Watchdog — see motion-food.js. Closing is intercepted so it can
+        // animate, so a stalled rAF ticker would otherwise leave the modal open
+        // with no way to dismiss it. This timer does not depend on rAF.
+        setTimeout(finish, 600);
+        animateOut(finish);
       }
     }).observe(modal, { attributes: true, attributeFilter: ['style'] });
 
     /* --- reader overlay -------------------------------------------------------- */
 
-    // The Turn.js reader for "My Works". Scaling it up from slightly small makes
-    // it feel like a book being opened out of the shelf.
-    var reader = document.getElementById('reader-overlay');
-    if (reader) {
-      var readerOpen = false;
-      new MutationObserver(function () {
-        var showing = window.getComputedStyle(reader).display !== 'none' &&
-                      window.getComputedStyle(reader).opacity !== '0';
-        if (showing === readerOpen) return;
-        readerOpen = showing;
-        if (!showing) return;
-
-        gsap.fromTo(reader, { opacity: 0 }, { opacity: 1, duration: 0.35, ease: 'power2.out' });
-        var mag = document.getElementById('magazine');
-        if (mag) {
-          gsap.fromTo(mag, { scale: 0.9, opacity: 0 },
-            { scale: 1, opacity: 1, duration: 0.5, ease: 'power3.out', clearProps: 'transform,opacity' });
-        }
-      }).observe(reader, { attributes: true, attributeFilter: ['style', 'class'] });
-    }
+    // Deliberately not animated.
+    //
+    // An earlier version scaled #magazine up from 0.9 as the reader opened. That
+    // broke opening a work: Turn.js owns #magazine's geometry and writes its own
+    // inline position/width/height/margin there, so adding a GSAP transform on
+    // top fought it — and because the tween started the overlay and the book at
+    // opacity 0, anything that stopped it mid-flight (a background tab, a
+    // stalled ticker) left the reader open but completely invisible.
+    //
+    // Turn.js already animates the page flip. The container it manages is left
+    // alone.
   });
 })();

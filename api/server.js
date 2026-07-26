@@ -81,15 +81,39 @@ async function run() {
         app.get('/api/sync-letterboxd', handleLetterboxdSync);
         app.post('/api/sync-letterboxd', handleLetterboxdSync);
 
-        app.get('/api/movies', async (req, res) => {
-            const data = await db.collection('movies').find({}).toArray();
-            res.json(data);
-        });
+        // Catalogue endpoints support slicing so the client can paint the visible
+        // handful of cards before the whole collection has been read.
+        //
+        //   ?limit=N        return at most N documents
+        //   ?skip=N         skip the first N
+        //   ?order=recent   newest first (the end of the import), instead of oldest first
+        //
+        // With no query params the response is identical to before, so any
+        // existing caller is unaffected.
+        //
+        // The explicit sort matters: skip/limit only partition a collection
+        // deterministically against a defined order. _id is monotonically
+        // increasing, so ascending _id reproduces the import order the client
+        // treats as CSV order, and descending gives the most recently added.
+        const sendCollection = async (name, req, res) => {
+            try {
+                const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 0, 0), 1000);
+                const skip = Math.max(parseInt(req.query.skip, 10) || 0, 0);
+                const newestFirst = req.query.order === 'recent';
 
-        app.get('/api/shows', async (req, res) => {
-            const data = await db.collection('shows').find({}).toArray();
-            res.json(data);
-        });
+                let cursor = db.collection(name).find({}).sort({ _id: newestFirst ? -1 : 1 });
+                if (skip) cursor = cursor.skip(skip);
+                if (limit) cursor = cursor.limit(limit);
+
+                res.json(await cursor.toArray());
+            } catch (error) {
+                console.error(`Failed to read ${name}:`, error);
+                res.status(500).json({ message: `Failed to load ${name}.`, details: error.message });
+            }
+        };
+
+        app.get('/api/movies', (req, res) => sendCollection('movies', req, res));
+        app.get('/api/shows', (req, res) => sendCollection('shows', req, res));
 
         app.get('/api/books', async (req, res) => {
             const data = await db.collection('books').find({}).toArray();
