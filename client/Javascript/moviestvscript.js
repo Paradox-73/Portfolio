@@ -512,6 +512,7 @@
         // Recommendations and the watchlist share one row (see MoviesTV.html).
         // This only enriches the recommendation data; the combined renderer draws.
         async function renderRecommendedRow() {
+            recsLoaded = true;
             for (const rec of recommendedList) {
                 let item = rec.itemDetails;
                 if (!item || !item.overview) {
@@ -552,6 +553,7 @@
                         letterboxd_uri: r['Letterboxd URI'] || r.letterboxd_uri || ''
                     }));
 
+                watchlistLoaded = true;
                 renderCombinedRow();
 
                 // Reuse the existing poster queue to look up covers from TMDB by title.
@@ -559,9 +561,15 @@
                 processPosterQueue();
             } catch (e) {
                 console.error('Watchlist load error:', e);
+                watchlistLoaded = true;
                 renderCombinedRow();
             }
         }
+
+        // Has each source reported yet? Both must answer before the row is
+        // allowed to conclude it is empty and hide itself.
+        let recsLoaded = false;
+        let watchlistLoaded = false;
 
         // Draws the shared "My Watchlist & Recommendations" row.
         //
@@ -580,6 +588,23 @@
             const track = document.getElementById('watchlistTrack');
             if (!row || !track) return;
 
+            const total = recommendedList.length + watchlistItems.length;
+
+            // Still waiting on at least one source with nothing to show yet.
+            // Keep the grey placeholders up and stay visible, exactly like the
+            // Movies/Shows/Anime rows do while they load — this row used to
+            // collapse the moment the first (empty) source reported, so it
+            // vanished during loading and only reappeared if data turned up.
+            if (!total && !(recsLoaded && watchlistLoaded)) {
+                if (!track.children.length) {
+                    let html = '';
+                    for (let i = 0; i < 10; i++) html += '<div class="movie-box skeleton"></div>';
+                    track.innerHTML = html;
+                }
+                row.style.display = 'block';
+                return;
+            }
+
             track.innerHTML = '';
 
             recommendedList.forEach(rec => createCard(rec, track, true, rec.recommender));
@@ -587,7 +612,7 @@
             watchlistItems.sort((a, b) => (Number(b.popularity) || 0) - (Number(a.popularity) || 0));
             watchlistItems.forEach(item => createCard(item, track));
 
-            row.style.display = (recommendedList.length || watchlistItems.length) ? 'block' : 'none';
+            row.style.display = total ? 'block' : 'none';
         }
 
         let watchlistResortTimer = null;

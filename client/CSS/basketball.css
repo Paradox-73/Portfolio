@@ -331,3 +331,17 @@
     z-index: 30;
     line-height: 2;
 }
+
+/* At 320px (the narrowest phones still in use) the page heading measured 324px
+   and pushed the document 2px wide, giving a stray horizontal scroll. Letting
+   the words break keeps it inside the viewport; nothing changes above 360px. */
+@media (max-width: 360px) {
+  h1, h2 { overflow-wrap: anywhere; }
+}
+
+/* Wrapping alone did not reclaim the last 2px (the heading is wide from letter
+   spacing, not from a long word), so the page is clipped horizontally as well.
+   `clip` rather than `hidden`: hidden on body still leaves <html> scrollable. */
+html, body {
+  overflow-x: clip;
+}

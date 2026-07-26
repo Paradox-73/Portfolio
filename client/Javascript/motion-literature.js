@@ -32,18 +32,41 @@
 
     /* --- books being shelved ------------------------------------------------ */
 
-    // Books are fetched and appended per shelf, in bursts, each burst coalesced
-    // into one stagger so a shelf fills like someone sliding books into place.
+    // Books drop onto their shelf a shelf at a time, as you scroll down past
+    // each one — never on load, and never all at once.
     //
-    // The reveal is tied to scroll position, not to when the data lands. An
-    // earlier version played the moment each fetch resolved, which meant every
-    // shelf animated at once shortly after load — including the ones far below
-    // the fold, so by the time you scrolled to them they had long since
-    // finished. Now a shelf only fills as you come down to it, once.
+    // Two rules drive this:
+    //   1. Nothing animates until the visitor has actually scrolled down. The
+    //      first shelf is on screen at load, so triggering on visibility alone
+    //      would fire it immediately, which is the load-time burst this exists
+    //      to avoid.
+    //   2. Each shelf plays once, when it is reached. Going back up leaves the
+    //      shelves already filled, the way a real shelf stays filled.
     //
-    // Books that are already on screen when they arrive are left alone entirely:
-    // hiding them just to animate them back in is the "on page load" burst the
-    // scroll trigger exists to avoid.
+    // Books are hidden the moment they are appended, so nothing is ever seen in
+    // place and then re-animated.
+
+    var scrolledDown = false;
+    var lastY = window.scrollY;
+    var queued = [];   // shelves waiting for the first downward scroll
+
+    window.addEventListener('scroll', function () {
+      var y = window.scrollY;
+      if (!scrolledDown && y > lastY + 4) {
+        scrolledDown = true;
+        queued.splice(0).forEach(function (play) { play(); });
+      }
+      lastY = y;
+    }, { passive: true });
+
+    // Safety net: if the visitor never scrolls, the books must not sit hidden
+    // forever. After a few seconds, release whatever is still waiting.
+    setTimeout(function () {
+      if (scrolledDown) return;
+      scrolledDown = true;
+      queued.splice(0).forEach(function (play) { play(); });
+    }, 6000);
+
     M.toArray('.shelf').forEach(function (shelf) {
       var pending = null;
       var seen = new WeakSet();
@@ -58,19 +81,24 @@
           });
           if (!fresh.length) return;
 
-          // Already in view -> it is part of the page you are looking at.
-          if (shelf.getBoundingClientRect().top < window.innerHeight * 0.85) return;
+          // Hide straight away so this shelf never flashes in at full opacity
+          // while it waits its turn.
+          gsap.set(fresh, { opacity: 0 });
 
-          // Below the fold -> falls into place when you scroll down to it.
           // M.reveal carries the scroll-jump catch-up and the stalled-ticker
           // watchdog, so a book can never be left permanently invisible.
-          M.reveal(fresh, {
-            y: -34,
-            duration: 0.5,
-            ease: 'power3.out',
-            stagger: { amount: 0.6 },
-            start: 'top 85%'
-          });
+          var play = function () {
+            M.reveal(fresh, {
+              y: -34,
+              duration: 0.5,
+              ease: 'power3.out',
+              stagger: { amount: 0.6 },
+              start: 'top 85%'
+            });
+          };
+
+          if (scrolledDown) play();
+          else queued.push(play);
         }, 40);
       }).observe(shelf, { childList: true });
     });

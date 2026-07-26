@@ -7,9 +7,9 @@
     <title>Kanav's Arcade</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-<link rel="stylesheet" href="CSS/gamestyle.css?v=motion1">
-<link rel="stylesheet" href="CSS/motion.css">
-<link rel="stylesheet" href="CSS/gamestyle_mobile.css" media="screen and (max-width: 768px)">
+<link rel="stylesheet" href="CSS/gamestyle.css?v=n2">
+<link rel="stylesheet" href="CSS/motion.css?v=n2">
+<link rel="stylesheet" href="CSS/gamestyle_mobile.css?v=n2" media="screen and (max-width: 768px)">
 </head>
 <body>
 
@@ -134,14 +134,19 @@
     </div>
 </div>
 
-<script src="Javascript/papaparse.min.js"></script>
+<script src="Javascript/papaparse.min.js?v=n2"></script>
 <script src="https://www.youtube.com/iframe_api"></script>
-<script  src="Javascript/gamescript.js"></script>
+<script  src="Javascript/gamescript.js?v=n2"></script>
 <!-- Motion layer. gamescript.js exposes no globals, so this observes its DOM. -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="Javascript/motion.js"></script>
-<script src="Javascript/motion-games.js"></script>
+<script src="Javascript/motion.js?v=n2"></script>
+<script src="Javascript/motion-games.js?v=n2"></script>
 <!-- Second motion pass. Self-contained: remove this one line to revert it. -->
-<script src="Javascript/motion-games-extra.js"></script>
+<script src="Javascript/motion-games-extra.js?v=n2"></script>
+<!-- Vercel Web Analytics. The npm package + `import { Analytics }` snippet is
+     the Next.js/React integration; this site is static HTML with no bundler,
+     so it uses the plain-HTML equivalent. The script is served by Vercel at
+     deploy time and 404s harmlessly on a local static server. -->
+<script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>

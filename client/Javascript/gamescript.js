@@ -588,18 +588,47 @@
         // prevGamepadButtons['axis0_left'] and 'axis0_right'] are handled above
     }
     let scrollTimeout;
-    carouselSection.addEventListener('wheel', (e) => {
+
+    // The wheel drives the carousel from anywhere on the page, not only when the
+    // pointer happens to be over the carousel strip — on a dashboard that fills
+    // the screen, having to find a narrow band before scrolling works is a poor
+    // affordance.
+    //
+    // Anything that does its own scrolling has to opt out first, otherwise the
+    // library grid, the settings drawer and the search results become
+    // unscrollable, since this handler calls preventDefault().
+    function wheelBelongsElsewhere(target) {
+        const libraryOpen = document.getElementById('library-view')?.classList.contains('active');
+        if (libraryOpen) return true;
+
+        const settingsOpen = document.getElementById('settings-menu')?.classList.contains('open');
+        if (settingsOpen) return true;
+
+        const overlay = document.getElementById('detail-overlay');
+        if (overlay && getComputedStyle(overlay).display !== 'none') return true;
+
+        const results = document.getElementById('search-results');
+        if (results && results.children.length && results.contains(target)) return true;
+
+        return Array.from(document.querySelectorAll('.modal-bg'))
+            .some(m => getComputedStyle(m).display !== 'none');
+    }
+
+    // Not passive: the handler suppresses the page scroll it replaces.
+    window.addEventListener('wheel', (e) => {
+        if (wheelBelongsElsewhere(e.target)) return;
         e.preventDefault();
         clearTimeout(scrollTimeout);
+        const delta = e.deltaY;
         scrollTimeout = setTimeout(() => {
             // Unified movement for carousel
-            if (e.deltaY < 0) { // Scroll up (or wheel up)
+            if (delta < 0) { // Scroll up (or wheel up)
                 moveLeft();
             } else { // Scroll down (or wheel down)
                 moveRight();
             }
         }, 100); // Debounce time
-    });
+    }, { passive: false });
 
     // --- Touch/Swipe for Carousel ---
     let touchStartX = 0;

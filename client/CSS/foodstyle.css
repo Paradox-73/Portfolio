@@ -237,7 +237,7 @@ header {
 
 .item__desc {
   display: grid;
-  grid-template-columns: 1fr min-content;
+  grid-template-columns: minmax(0, 1fr) min-content;
   grid-column-gap: 8px;
 }
 .item__desc .item__name{
@@ -295,7 +295,7 @@ header {
   .menu {
     display: grid;
     width: 100%;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     align-items: stretch;
   }
   .menu .mains {
@@ -325,7 +325,7 @@ header {
 
 @media (min-width: 550px) {
   .mains {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     display: grid;
     grid-auto-flow: dense;
     align-items: flex-start;
@@ -354,25 +354,20 @@ header {
     padding-left: 1rem;
   }
   .mains .item__image {
-    flex: 0 0 180px;
+    flex: 0 1 clamp(6rem, 11vw, 11rem);
   }
 }
 .mains .item__image {
   position: relative;
-  max-width: 200px;
+  max-width: clamp(7rem, 14vw, 12.5rem);
 }
 .mains .item__image img {
   width: 100%;
 }
-.mains .item__image:after {
-  content: "";
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(to right, transparent, #e2dccc);
-}
+/* The right half of each dish used to be covered by a gradient fading to the
+   menu background. That existed for the old cut-out product PNGs, which had
+   transparent edges to blend away. The photographs are full-bleed, so the
+   gradient just washed out half of every plate. */
 
 .sides {
   padding-bottom: 1rem;
@@ -403,13 +398,13 @@ header {
   text-align: center;
 }
 .tarts .item img {
-  max-width: 170px;
+  max-width: clamp(6rem, 12vw, 10.6rem);
 }
 
 .latte {
   display: grid;
   grid-column-gap: 20px;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(16rem, 100%), 1fr));
   padding: 1rem;
 }
 .latte h3 {
@@ -420,7 +415,7 @@ header {
 }
 @media (min-width: 1500px) {
   .latte {
-    grid-template-columns: min-content repeat(4, 1fr);
+    grid-template-columns: min-content repeat(3, minmax(0, 1fr));
   }
   .latte h3 {
     grid-column: 1/2;
@@ -442,7 +437,7 @@ header {
 }
 .latte .item img {
   width: 90%;
-  max-width: 160px;
+  max-width: clamp(6rem, 11vw, 10rem);
 }
 
 
@@ -749,4 +744,188 @@ button:active {
   .item__description {
     font-size: 1.3rem;
   }
+}
+/* ---------------------------------------------------------------------------
+   Dishes photographed more than once
+
+   Some dishes have two photos (a plated slice and the whole tray, say). Rather
+   than pick one or list the dish twice, both are stacked in the same frame and
+   cross-faded, five seconds each — see the rotator in motion-food.js.
+
+   The first image stays in normal flow so it sets the frame's size; the extras
+   are laid over it and faded in. Without JS only the first is ever shown, which
+   is exactly the old single-photo behaviour.
+--------------------------------------------------------------------------- */
+.item__image { position: relative; }
+
+.item__image .item__alt {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.7s ease;
+}
+
+.item__image .item__alt.is-shown { opacity: 1; }
+
+/* The first photo fades out from under whichever alternate is showing, so the
+   two never double-expose through each other. */
+.item__image.has-alt > img:first-child {
+  transition: opacity 0.7s ease;
+}
+.item__image.has-alt.showing-alt > img:first-child { opacity: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .item__image .item__alt,
+  .item__image.has-alt > img:first-child { transition: none; }
+}
+
+/* The star row used float:right, so in a narrow column the fifth star wrapped
+   onto its own line — visible now that the breakfast section packs items into
+   auto-fit columns. Inline-block under the existing direction:rtl keeps the
+   same right-to-left order (and so the same [data-rating] nth-child colouring)
+   without floats, and nowrap keeps all five on one line. */
+.rating { white-space: nowrap; }
+.rating > label { float: none; display: inline-block; }
+
+/* ---------------------------------------------------------------------------
+   Grid items must be allowed to shrink
+
+   A grid or flex item defaults to min-width:auto, meaning it will not shrink
+   below its own content's minimum width. Combined with `1fr` tracks (which are
+   really minmax(auto, 1fr)) this made the Rise & Dine row overflow its column
+   by ~180px at wide viewports — the fifth and sixth dishes ran out past the
+   section border and under the neighbouring column.
+
+   Setting the floor to 0 on both the tracks and the items lets them compress as
+   intended. The photos are capped in relative units so they scale with the
+   column rather than pinning it open.
+--------------------------------------------------------------------------- */
+.menu .item,
+.mains .item,
+.latte .item,
+.tarts .item,
+.sides .item { min-width: 0; }
+
+.item__desc { min-width: 0; }
+
+/* Long single words (dish names, captions) must wrap rather than push the
+   column wider. */
+.item__name,
+.item__description { overflow-wrap: anywhere; }
+
+.item__image { max-width: 100%; }
+.item__image img { max-width: 100%; height: auto; }
+
+/* ---------------------------------------------------------------------------
+   Footer nav: the icon slides aside to uncover the page name
+
+   Each link is clipped to the width of its icon block, hiding the label behind
+   it. On hover the link widens and the label slides out into the space that
+   opens, pushing the neighbouring icons along.
+
+   The label is kept *in flow* inside the link, not absolutely positioned. An
+   overlay version never reflowed (so it was perfectly smooth) but the text then
+   sat on top of the next icons along, which is worse than the movement.
+
+   The timing is deliberately slow: 1.7s on an ease-in-out curve. Expanding one
+   link shifts every other icon along the row, so a fast or front-loaded curve
+   reads as jitter when the pointer slides from one icon to the next. Earlier
+   passes at 0.45s and 0.75s used easeOutQuart, which spends most of its speed
+   in the first few frames — exactly what makes the neighbouring icons appear to
+   snap away. cubic-bezier(0.65, 0, 0.35, 1) eases in *and* out, so the row
+   starts moving gently and settles gently, and expand and collapse share the
+   curve so travel is symmetrical whichever way the pointer goes.
+
+   Sizing is in rem/ch/em so the control scales with the root font size.
+--------------------------------------------------------------------------- */
+footer .social-item {
+  display: inline-flex;
+  align-items: center;
+  overflow: hidden;
+  max-width: 60px;                 /* the icon block, nothing more */
+  vertical-align: middle;
+  text-decoration: none;
+  transition: max-width 0.9s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* The icon must not compress as the link grows. */
+footer .social-item i.nav-icon { flex: 0 0 auto; }
+
+footer .nav-label {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  padding: 0 0.9rem;
+  font-size: 0.8em;
+  letter-spacing: 0.06em;
+  color: #04110f;
+  /* Tucked back under the icon. Slide and fade share the link's duration and
+     curve, with no delay, so opening and closing are mirror images of each
+     other — an asymmetric delay was what made the two directions feel like
+     different animations. */
+  transform: translateX(-1.2rem);
+  opacity: 0;
+  transition: transform 0.9s cubic-bezier(0.65, 0, 0.35, 1),
+              opacity 0.9s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* The reveal only runs where there is a hovering pointer and enough room for
+   the row to grow.
+ *
+ * The footer is a wrapping flex row. On a narrow viewport the ten icons already
+ * fill the line, so expanding one pushed the row over the edge and the icons
+ * re-wrapped onto a second line *during* the slide, so the animation appeared
+ * to break apart mid-travel. Below this width the labels simply never open,
+ * which costs nothing: there is no hover on a touch screen to trigger them.
+ *
+ * 1200px is measured, not guessed: opening each of the ten links in turn and
+ * counting footer rows, 1100px still tipped the row from 1 to 2. 1200px is
+ * the narrowest width where every link can open without re-wrapping.
+ */
+@media (hover: hover) and (pointer: fine) and (min-width: 1200px) {
+  footer .social-item:hover,
+  footer .social-item:focus-visible {
+    max-width: 22ch;               /* room for the longest name, in text units */
+  }
+
+  footer .social-item:hover .nav-label,
+  footer .social-item:focus-visible .nav-label {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Keyboard users still need the label, whatever the viewport. */
+footer .social-item:focus-visible {
+  max-width: 22ch;
+}
+footer .social-item:focus-visible .nav-label {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  footer .social-item,
+  footer .nav-label { transition: none; }
+}
+
+/* ---------------------------------------------------------------------------
+   Sugar Crash stacks vertically
+
+   .tarts was a wrapping flex row with items at flex: 1 1 50%, so its two
+   dishes sat side by side in a narrow column and were badly cramped. It now
+   reads as a single column, the same as Liquid Assets beside it.
+--------------------------------------------------------------------------- */
+.tarts {
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+}
+
+.tarts .item {
+  flex: 0 0 auto;
+  width: 100%;
+  min-width: 0;
 }

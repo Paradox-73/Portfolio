@@ -47,31 +47,66 @@
     // the pop. Note .rating is direction:rtl with floated labels, so the visual
     // order is the reverse of the DOM order — stagger from the end to make the
     // fill read left to right.
+    // Routed through M.reveal rather than a hand-rolled ScrollTrigger. The
+    // previous version hid the stars up front and only restored them from a
+    // tween's onEnter, so if the ticker stalled the rating silently disappeared
+    // from every dish — the score is content, and it must survive a missing
+    // animation. M.reveal carries the scroll-jump catch-up and the timer-based
+    // watchdog that guarantee it.
     M.toArray('.rating').forEach(function (rating) {
       var stars = rating.querySelectorAll('label');
-      if (!stars.length || M.skip || !window.ScrollTrigger) return;
+      if (!stars.length) return;
 
-      gsap.set(stars, { scale: 0, opacity: 0 });
-
-      ScrollTrigger.create({
-        trigger: rating,
+      M.reveal(stars, {
+        scale: 0,
+        y: 0,
+        duration: 0.4,
+        ease: 'back.out(2.2)',
         start: 'top 92%',
-        once: true,
-        onEnter: function () {
-          gsap.to(stars, {
-            scale: 1,
-            opacity: 1,
-            duration: 0.4,
-            ease: 'back.out(2.2)',
-            stagger: { each: 0.06, from: 'end' }
-          });
-        }
+        stagger: { each: 0.06, from: 'end' }
       });
+    });
+
+    /* --- dishes photographed more than once -------------------------------- */
+
+    // A few dishes have two photos of the same food — a plated portion and the
+    // whole tray. Both are shown in the same frame, five seconds each, so the
+    // dish gets one menu entry instead of two near-duplicates.
+    //
+    // This runs even under reduced motion: the alternate photo is content, not
+    // decoration, and withholding it would hide half the dish. Only the
+    // cross-fade is dropped there (see foodstyle.css), leaving a plain swap.
+    M.toArray('.item__image').forEach(function (frame) {
+      var alts = frame.querySelectorAll('.item__alt');
+      if (!alts.length) return;
+
+      frame.classList.add('has-alt');
+
+      var shots = [null].concat(Array.prototype.slice.call(alts)); // null = the base image
+      var index = 0;
+
+      setInterval(function () {
+        // Pause while the tab is hidden, otherwise the whole rotation is
+        // fast-forwarded the moment the visitor comes back.
+        if (document.visibilityState !== 'visible') return;
+
+        index = (index + 1) % shots.length;
+        alts.forEach(function (img) { img.classList.remove('is-shown'); });
+
+        if (shots[index]) {
+          shots[index].classList.add('is-shown');
+          frame.classList.add('showing-alt');
+        } else {
+          frame.classList.remove('showing-alt');
+        }
+      }, 5000);
     });
 
     /* --- dishes ---------------------------------------------------------- */
 
-    var dishes = M.toArray('.item__image img');
+    // Only the base photo of each dish floats; the stacked alternates are
+    // positioned over it and must not be given their own transform.
+    var dishes = M.toArray('.item__image > img:first-child');
 
     if (!M.skip) {
       dishes.forEach(function (img, i) {
@@ -90,15 +125,20 @@
 
     // Hover lifts the plate and tips it very slightly. Kept on a named tween so
     // repeated enter/leave never stacks conflicting transforms.
+    //
+    // The whole frame is scaled rather than the base <img>: on a dish with two
+    // photos the alternate sits stacked on top, so scaling only the base would
+    // do nothing visible while the alternate is the one showing. Drinks have no
+    // frame at all and are skipped.
     M.toArray('.item').forEach(function (item) {
-      var img = item.querySelector('.item__image img');
-      if (!img || M.skip) return;
+      var frame = item.querySelector('.item__image');
+      if (!frame || M.skip) return;
 
       item.addEventListener('mouseenter', function () {
-        gsap.to(img, { scale: 1.09, rotation: -3, duration: 0.35, ease: 'power2.out', overwrite: 'auto' });
+        gsap.to(frame, { scale: 1.09, rotation: -3, duration: 0.35, ease: 'power2.out', overwrite: 'auto' });
       });
       item.addEventListener('mouseleave', function () {
-        gsap.to(img, { scale: 1, rotation: 0, duration: 0.45, ease: 'power2.out', overwrite: 'auto' });
+        gsap.to(frame, { scale: 1, rotation: 0, duration: 0.45, ease: 'power2.out', overwrite: 'auto' });
       });
     });
 

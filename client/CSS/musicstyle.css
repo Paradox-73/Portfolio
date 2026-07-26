@@ -349,3 +349,33 @@ body {
    This page used to draw a styled 10px scrollbar. Scrollbars are now hidden
    site-wide from CSS/motion.css, so these rules are removed rather than left
    here to be silently overridden. */
+/* ---------------------------------------------------------------------------
+   Narrow-viewport turntable
+
+   #turntable-container carries a fixed w-[340px] from Tailwind. Below about
+   400px that is wider than the padded viewport, and the tonearm — absolutely
+   positioned against the container's right edge — was pushed past the screen,
+   giving the page a horizontal scrollbar (+30px at 390px, +51px at 360px).
+
+   Sizing the platter against the viewport keeps the whole assembly, tonearm
+   included, inside the screen at any width.
+--------------------------------------------------------------------------- */
+@media (max-width: 480px) {
+  #turntable-container {
+    width: min(340px, 88vw);
+    max-width: 88vw;
+  }
+}
+
+/* The turntable and crate are built from rotated, absolutely-positioned
+   ornaments — the tonearm is rotated -25deg with its own offset children, and
+   .crate-front is inset -10px on both sides. Their painted boxes reach past the
+   viewport on a narrow screen no matter how the containers are sized, so the
+   page is clipped horizontally instead of chasing each decoration.
+
+   `clip` rather than `hidden`: hidden on body still leaves <html> scrollable
+   (which is why body's existing overflow-x:hidden did not stop it), and clip
+   does not create a scroll container. */
+html, body {
+  overflow-x: clip;
+}

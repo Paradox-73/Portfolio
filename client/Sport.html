@@ -11,10 +11,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     
     <!-- Game CSS -->
-    <link rel="stylesheet" href="CSS/basketball.css">
-    <link rel="stylesheet" href="CSS/golf.css">
-    <link rel="stylesheet" href="CSS/martialarts.css">
-    <link rel="stylesheet" href="CSS/motion.css">
+    <link rel="stylesheet" href="CSS/basketball.css?v=n2">
+    <link rel="stylesheet" href="CSS/golf.css?v=n2">
+    <link rel="stylesheet" href="CSS/martialarts.css?v=n2">
+    <link rel="stylesheet" href="CSS/motion.css?v=n2">
     
     <!-- Global Menu CSS -->
     <style>
@@ -427,9 +427,9 @@
 
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="Javascript/basketball.js"></script>
-    <script src="Javascript/golf.js"></script>
-    <script src="Javascript/martialarts.js"></script>
+    <script src="Javascript/basketball.js?v=n2"></script>
+    <script src="Javascript/golf.js?v=n2"></script>
+    <script src="Javascript/martialarts.js?v=n2"></script>
     <script>
         const app = {
             currentGame: null,
@@ -558,5 +558,10 @@
         };
         TouchControls.init();
     </script>
+<!-- Vercel Web Analytics. The npm package + `import { Analytics }` snippet is
+     the Next.js/React integration; this site is static HTML with no bundler,
+     so it uses the plain-HTML equivalent. The script is served by Vercel at
+     deploy time and 404s harmlessly on a local static server. -->
+<script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>

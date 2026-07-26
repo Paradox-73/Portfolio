@@ -11,8 +11,8 @@
     <title>Kanav here</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link rel="stylesheet" href="CSS/indexstyle.css">
-    <link rel="stylesheet" href="CSS/motion.css">
+    <link rel="stylesheet" href="CSS/indexstyle.css?v=n2">
+    <link rel="stylesheet" href="CSS/motion.css?v=n2">
 </head>
 <body>
 
@@ -84,7 +84,7 @@
     <!-- YouTube IFrame API script -->
     <script src="https://www.youtube.com/iframe_api"></script>
 
-    <script src="Javascript/indexscript.js"></script>
+    <script src="Javascript/indexscript.js?v=n2"></script>
 
     <!-- Mobile only: browsers won't let a page hide the address bar on its own,
          but entering fullscreen on the user's first tap does. Desktop is untouched. -->
@@ -100,5 +100,10 @@
             window.addEventListener('pointerdown', goFullscreen, { once: true });
         })();
     </script>
+<!-- Vercel Web Analytics. The npm package + `import { Analytics }` snippet is
+     the Next.js/React integration; this site is static HTML with no bundler,
+     so it uses the plain-HTML equivalent. The script is served by Vercel at
+     deploy time and 404s harmlessly on a local static server. -->
+<script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
