@@ -1,0 +1,344 @@
+/* =======================================================================
+   CRT SCREEN SIMULATION — index.html
+   -----------------------------------------------------------------------
+   Makes the pixel-art room read as an old TV: phosphor scanlines, an
+   aperture-grille mask, a soft centre bloom, colour fringing and a little
+   optical fuzz so the sprites stop looking laser-crisp.
+
+   Every layer runs edge to edge. There is no vignette, no rounded bezel and
+   no border-radius on the room: anything that darkens or clips the edges
+   leaves corners where the filter visibly is not, and the page then reads as
+   an oval window pasted onto an ordinary rectangular screen.
+
+   Strength comes from data-crt, set on the <html> tag in index.html:
+     off     no filter at all
+     subtle  room only, light touch, loader stays clean
+     full    room AND loader, curved glass, roll bar + flicker
+     heavy   room AND loader, strongest phosphor glow and curvature  <- shipped
+
+   The static horizontal scanlines are separate, on data-scan (on / off).
+   They ship off: everything else — the centre bloom, colour fringing and
+   the rolling band — reads better on this pixel art without them. Both
+   attributes are edited by hand; there is no runtime switcher.
+
+   Every layer is pointer-events:none, so nothing here blocks the room's
+   click targets. Motion is dropped under prefers-reduced-motion.
+
+   NOTE ON STRUCTURE: #crt-overlay deliberately carries no z-index, opacity
+   or filter, so it does NOT open a stacking context. Its children do carry
+   z-index, which keeps them in the root stacking context — mix-blend-mode
+   then blends against the actual room behind them. Putting the z-index on
+   the wrapper instead would isolate the layers and they would blend with
+   nothing.
+   ======================================================================= */
+
+#crt-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+#crt-overlay > div {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    display: none;                 /* data-crt switches the layers on */
+}
+
+[data-crt]:not([data-crt="off"]) #crt-overlay > div {
+    display: block;
+}
+
+/* Room-only variants stay under #loader (z-index 9999). */
+.crt-darken  { z-index: 9000; }
+.crt-lighten { z-index: 9001; }
+.crt-roll    { z-index: 9002; }
+
+/* "full" and "heavy" escape the room box and cover the loading screen too, so
+   the tube is already on while the mini-game is playing — otherwise the game
+   runs clean and the room snaps into a filtered picture a second later.
+   Fixed positioning is safe here: no ancestor sets transform, filter or
+   contain, so nothing turns #room-container into a containing block. The
+   switcher buttons (10005) and the power-on flash (10006) stay above these. */
+[data-crt="full"] #crt-overlay > div,
+[data-crt="heavy"] #crt-overlay > div { position: fixed; }
+[data-crt="full"] .crt-darken,
+[data-crt="heavy"] .crt-darken  { z-index: 10001; }
+[data-crt="full"] .crt-lighten,
+[data-crt="heavy"] .crt-lighten { z-index: 10002; }
+[data-crt="full"] .crt-roll,
+[data-crt="heavy"] .crt-roll    { z-index: 10003; }
+
+/* -----------------------------------------------------------------------
+   1. Darkening pass — scanlines (horizontal phosphor gaps).
+
+   There is deliberately NO vignette here. A radial darkening reads as an
+   oval porthole rather than a screen, which fights the whole point of a
+   full-bleed room. Every layer in this file is uniform edge to edge.
+   ----------------------------------------------------------------------- */
+.crt-darken {
+    background-image:
+        repeating-linear-gradient(
+            to bottom,
+            rgba(0, 0, 0, var(--crt-scan-strength, 0.2)) 0,
+            rgba(0, 0, 0, var(--crt-scan-strength, 0.2)) 1px,
+            transparent 1px,
+            transparent var(--crt-scan-pitch, 3px)
+        );
+    mix-blend-mode: multiply;
+}
+
+/* -----------------------------------------------------------------------
+   2. Lightening pass — aperture-grille RGB triads + the centre bloom.
+
+   The bloom ellipse stays: it only ADDS light in the middle and fades to
+   nothing, so it never carves a visible edge. It is the darkening oval in
+   layer 1 and the rounded bezel that had to go.
+   ----------------------------------------------------------------------- */
+.crt-lighten {
+    background-image:
+        repeating-linear-gradient(
+            to right,
+            rgba(255, 0, 0, var(--crt-mask-strength, 0.045)) 0,
+            rgba(255, 0, 0, var(--crt-mask-strength, 0.045)) 1px,
+            rgba(0, 255, 0, var(--crt-mask-strength, 0.045)) 1px,
+            rgba(0, 255, 0, var(--crt-mask-strength, 0.045)) 2px,
+            rgba(0, 0, 255, var(--crt-mask-strength, 0.045)) 2px,
+            rgba(0, 0, 255, var(--crt-mask-strength, 0.045)) 3px
+        ),
+        radial-gradient(
+            ellipse at 50% 42%,
+            rgba(160, 220, 255, var(--crt-bloom, 0.05)) 0%,
+            rgba(160, 220, 255, 0) 58%
+        );
+    mix-blend-mode: screen;
+    animation: crt-flicker var(--crt-flicker-speed, 5.4s) steps(1, end) infinite;
+}
+
+/* Barely-there brightness wobble — a tube never sits perfectly still. */
+@keyframes crt-flicker {
+    0%, 100% { opacity: 1; }
+    47%      { opacity: 0.82; }
+    48%      { opacity: 1.0; }
+    49%      { opacity: 0.9; }
+    50%      { opacity: 1; }
+}
+
+/* -----------------------------------------------------------------------
+   3. Roll bar — the slow bright band that drifts down a mistuned CRT.
+   Off unless a variant switches it on.
+   ----------------------------------------------------------------------- */
+.crt-roll {
+    top: -30%;
+    bottom: auto;
+    height: 22%;
+    background: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.05) 45%,
+        rgba(255, 255, 255, 0.085) 55%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    mix-blend-mode: screen;
+    will-change: transform;
+}
+
+@keyframes crt-roll-down {
+    from { transform: translateY(0); }
+    to   { transform: translateY(620%); }
+}
+
+/* No bezel layer, and no border-radius on #room-container.
+
+   Both used to be here, to sell "curved tube glass". Both had to go: a
+   rounded picture leaves square corner slivers where the filter simply is
+   not, so the screen read as an oval window sitting on an ordinary
+   rectangular page. The effect now runs to all four corners. */
+
+/* Layers a variant does not use. */
+[data-crt="subtle"] .crt-roll { display: none; }
+
+/* -----------------------------------------------------------------------
+   Sprite treatment — the "fuzziness" pass.
+   A sub-pixel blur softens the hard pixel edges, and two opposed coloured
+   drop-shadows fake the chromatic fringing of a shadow-mask tube. Applied
+   to the images themselves, never to #room-container: a filter there would
+   make it a containing block and clip the fixed "full" overlay.
+   ----------------------------------------------------------------------- */
+[data-crt]:not([data-crt="off"]) .asset {
+    filter:
+        blur(var(--crt-fuzz, 0.35px))
+        saturate(var(--crt-sat, 1.08))
+        contrast(var(--crt-contrast, 1.04))
+        drop-shadow(var(--crt-fringe, 0.6px) 0 0 rgba(255, 40, 40, var(--crt-fringe-a, 0.18)))
+        drop-shadow(calc(var(--crt-fringe, 0.6px) * -1) 0 0 rgba(40, 220, 255, var(--crt-fringe-a, 0.18)));
+}
+
+/* ---- Hover, and why these overrides exist ---------------------------
+   `filter` is a single property, so every hover rule in indexstyle.css that
+   sets it REPLACES the CRT treatment rather than adding to it — the sprite
+   snaps to sharp, un-fringed pixels and visibly steps outside the screen
+   effect. Each of those rules therefore has to be restated here.
+
+   Two shapes of hover rule exist over there:
+     .asset:hover      adds a lift shadow           -> keep fuzz + that shadow
+     #some-id:hover    sets `filter: none` to opt
+                       out of the lift entirely     -> keep fuzz only
+
+   The second group needs an ID in the selector to win: `#dog:hover` scores
+   one ID, and no amount of attribute or class weight beats that. `:is()`
+   takes the specificity of its most specific argument, so one `:is(...)`
+   list carries the ID weight for all of them at once. Any new asset that
+   nulls its hover filter in indexstyle.css must be added to this list. */
+[data-crt]:not([data-crt="off"]) .asset:hover {
+    filter:
+        blur(var(--crt-fuzz, 0.35px))
+        saturate(var(--crt-sat, 1.08))
+        contrast(var(--crt-contrast, 1.04))
+        drop-shadow(0 5px 15px rgba(0, 0, 0, 0.3));
+}
+
+[data-crt]:not([data-crt="off"]) :is(
+    #night-sky,
+    #fan,
+    #whiteboard,
+    #desk,
+    #bean-bag,
+    #plant,
+    #dog,
+    #cabinet
+):hover {
+    filter:
+        blur(var(--crt-fuzz, 0.35px))
+        saturate(var(--crt-sat, 1.08))
+        contrast(var(--crt-contrast, 1.04))
+        drop-shadow(var(--crt-fringe, 0.6px) 0 0 rgba(255, 40, 40, var(--crt-fringe-a, 0.18)))
+        drop-shadow(calc(var(--crt-fringe, 0.6px) * -1) 0 0 rgba(40, 220, 255, var(--crt-fringe-a, 0.18)));
+}
+
+/* -----------------------------------------------------------------------
+   Text surfaces — the dialogue bubble, and the loading screen's own text.
+
+   These are not .asset elements, so nothing above reaches them and they sat
+   glass-sharp in front of a filtered room. They get a gentler treatment than
+   the sprites: --crt-text-fuzz instead of --crt-fuzz, and no chromatic
+   fringing at all. The bubble's copy renders at 0.7vw, where the sprites'
+   0.75px blur plus 1.1px colour fringe would cost real legibility. The
+   filter covers the whole element, so the pixel-art bubble artwork softens
+   along with the words on it.
+   ----------------------------------------------------------------------- */
+[data-crt]:not([data-crt="off"]) #dialogue-box {
+    filter:
+        blur(var(--crt-text-fuzz, 0.25px))
+        saturate(var(--crt-sat, 1.08))
+        contrast(var(--crt-contrast, 1.04));
+}
+
+/* =======================================================================
+   VARIANT TUNING
+   ======================================================================= */
+
+/* ---- SUBTLE: room only, light touch. --------------------------------- */
+[data-crt="subtle"] {
+    --crt-scan-strength: 0.20;
+    --crt-scan-pitch: 3px;
+    --crt-mask-strength: 0.045;
+    --crt-bloom: 0.05;
+    --crt-fuzz: 0.35px;
+    --crt-text-fuzz: 0.2px;
+    --crt-sat: 1.08;
+    --crt-contrast: 1.04;
+    --crt-fringe: 0.6px;
+    --crt-fringe-a: 0.16;
+}
+
+/* ---- FULL: room + loader, mid strength, roll bar. -------------------- */
+[data-crt="full"] {
+    --crt-scan-strength: 0.26;
+    --crt-scan-pitch: 3px;
+    --crt-mask-strength: 0.07;
+    --crt-bloom: 0.08;
+    --crt-fuzz: 0.45px;
+    --crt-text-fuzz: 0.3px;
+    --crt-sat: 1.12;
+    --crt-contrast: 1.06;
+    --crt-fringe: 0.75px;
+    --crt-fringe-a: 0.2;
+    --crt-flicker-speed: 4.8s;
+}
+[data-crt="full"] .crt-roll { animation: crt-roll-down 7.5s linear infinite; }
+
+/* Soften the loading screen's text too, so the effect does not "switch on"
+   late. Kept off the canvas itself: blurring a full-screen surface every
+   frame costs real GPU time on weak phones, and the mini-game already draws
+   its own glow. */
+[data-crt="full"] .loader-content,
+[data-crt="full"] #loader-hud,
+[data-crt="heavy"] .loader-content,
+[data-crt="heavy"] #loader-hud {
+    filter:
+        blur(var(--crt-text-fuzz, 0.3px))
+        saturate(var(--crt-sat, 1.1));
+}
+
+/* ---- HEAVY: room + loader, maximum retro TV. The shipped look. ------- */
+[data-crt="heavy"] {
+    --crt-scan-strength: 0.38;
+    --crt-scan-pitch: 3px;
+    --crt-mask-strength: 0.13;
+    --crt-bloom: 0.13;
+    --crt-fuzz: 0.75px;
+    --crt-text-fuzz: 0.45px;
+    --crt-sat: 1.20;
+    --crt-contrast: 1.12;
+    --crt-fringe: 1.1px;
+    --crt-fringe-a: 0.30;
+    --crt-flicker-speed: 6.2s;
+}
+[data-crt="heavy"] .crt-roll { animation: crt-roll-down 9s linear infinite; }
+
+/* ---- Independent scanline switch ------------------------------------
+   The static horizontal black lines are the most divisive part of the
+   effect, so they toggle on their own. Everything else — the centre bloom,
+   the colour fringing and the rolling band — is untouched.
+
+   This block must stay AFTER the variant blocks above: they set the same
+   custom property at equal specificity, so source order decides. */
+[data-scan="off"] {
+    --crt-scan-strength: 0;
+}
+/* The RGB aperture grid reads as part of the same "screen door", so it
+   eases back with the lines rather than staying at full strength alone. */
+[data-scan="off"][data-crt="full"] { --crt-mask-strength: 0.035; }
+[data-scan="off"][data-crt="heavy"] { --crt-mask-strength: 0.055; }
+
+/* -----------------------------------------------------------------------
+   Power-on flash when the loader lifts — a CRT waking up.
+   ----------------------------------------------------------------------- */
+#crt-flash {
+    position: fixed;
+    inset: 0;
+    z-index: 10006;
+    pointer-events: none;
+    background: #EAF6FF;
+    opacity: 0;
+}
+#crt-flash.is-firing {
+    animation: crt-power-on 620ms ease-out forwards;
+}
+@keyframes crt-power-on {
+    0%   { opacity: 0;    transform: scaleY(0.004); }
+    12%  { opacity: 0.85; transform: scaleY(0.004); }
+    30%  { opacity: 0.50; transform: scaleY(1); }
+    100% { opacity: 0;    transform: scaleY(1); }
+}
+
+/* -----------------------------------------------------------------------
+   Reduced motion: keep the static picture treatment, drop everything that
+   moves or pulses.
+   ----------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+    .crt-lighten { animation: none; }
+    .crt-roll { display: none !important; }
+    #crt-flash.is-firing { animation: none; }
+}

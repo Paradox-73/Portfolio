@@ -20,6 +20,10 @@ $(document).ready(function() {
     }
   });
 
+  // Held from before Turn.js builds the book, because it swaps far-away pages out
+  // of the DOM as you flip and a live selector would miss them. See sizeBook().
+  var $ownSize = $('#magazine .own-size');
+
   // Desktop = two-page spread, mobile = single page. Both keep the page-flip animation.
   $('#magazine').turn({
     display: mobile ? 'single' : 'double',
@@ -78,6 +82,12 @@ $(document).ready(function() {
     var isMobile = w <= 768;
     var W = Math.floor(w * (isMobile ? 0.92 : 0.95));
     var H = Math.floor(h * (isMobile ? 0.90 : 0.95));
+    // An `own-size` page keeps its own CSS box (45vw x 90vh), which Turn.js reads
+    // once and then writes back as an inline pixel size. On the next resize it
+    // re-reads that inline value, not the rule, so the pages would stay at their
+    // very first size for ever and drift out of the resized book. Clearing the
+    // inline size first makes them measure the rule again.
+    $ownSize.css({ width: '', height: '' });
     try { $('#magazine').turn('size', W, H); } catch (e) {}
   }
 
@@ -88,14 +98,31 @@ $(document).ready(function() {
   // Mobile keeps its own internal scroll (see travelstyle.css), so skip it there.
   function fitPages() {
     if (window.innerWidth <= 768) return;
+    // The layout editor drives .fit-inner itself while it is open.
+    if (document.documentElement.classList.contains('tl-edit')) return;
     $('#magazine .own-size.scrapbook').each(function () {
       var page = this;
       var inner = page.querySelector(':scope > .fit-inner');
       if (!inner) return;
+      var availW = page.clientWidth, avail = page.clientHeight;
+
+      // Frozen hand-placed layout (CSS/travel-layout.css): the content carries an
+      // explicit design box, so scale that box to fit the page and centre it,
+      // instead of measuring flowed content that no longer exists.
+      var cs = getComputedStyle(inner);
+      var dw = parseFloat(cs.getPropertyValue('--tl-w'));
+      var dh = parseFloat(cs.getPropertyValue('--tl-h'));
+      if (dw && dh && availW && avail) {
+        var s = Math.min(availW / dw, avail / dh);
+        inner.style.transformOrigin = 'top left';
+        inner.style.transform = 'translate(' + ((availW - dw * s) / 2) + 'px, ' +
+                                ((avail - dh * s) / 2) + 'px) scale(' + s + ')';
+        return;
+      }
+
       // Measure at natural scale first, then decide how much to shrink.
       inner.style.transform = '';
       inner.style.transformOrigin = 'top center';
-      var avail = page.clientHeight;       // the fixed 90vh page box
       var content = inner.scrollHeight;    // full natural content height
       if (!avail || !content) return;      // page not currently laid out by Turn.js
       if (content > avail + 1) {

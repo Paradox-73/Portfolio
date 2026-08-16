@@ -261,19 +261,24 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: #2a2a2a; /* Dark grey backdrop for the floating icons */
+            background: #10151E; /* Blue-black void the mini-game plays in */
             color: white;
             display: flex; /* Use flexbox for centering loader content */
-            justify-content: center;
+            /* Text and progress sit at the bottom so the middle of the screen
+               stays clear as the mini-game's playfield. */
+            justify-content: flex-end;
             align-items: center;
             z-index: 9999; /* Ensure it's on top of everything */
             transition: opacity 0.5s ease-out; /* Smooth fade-out */
             flex-direction: column; /* Stack content vertically */
             gap: 20px; /* Space between text and progress bar */
-            overflow: hidden; /* Clip the floating icon canvas */
+            padding-bottom: 5vh;
+            box-sizing: border-box;
+            overflow: hidden; /* Clip the mini-game canvas */
+            cursor: crosshair; /* You are aiming a turret */
         }
 
-        /* Floating page-icon background canvas */
+        /* Mini-game canvas ("Signal Breach", Javascript/loader-game.js) */
         #loader-bg {
             position: absolute;
             top: 0;
@@ -284,13 +289,89 @@
             display: block;
         }
 
+        /* Game HUD across the top of the loading screen */
+        #loader-hud {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 18px;
+            box-sizing: border-box;
+            font-size: 0.62em;
+            letter-spacing: 1px;
+            color: #6FC5EE;
+            pointer-events: none; /* Never eat a shot */
+            text-shadow: 0 0 8px rgba(63, 169, 224, 0.5);
+        }
+        #loader-hud #hud-lives {
+            color: #3FA9E0;
+            letter-spacing: 4px;
+            font-size: 1.1em;
+        }
+        @media (max-width: 768px) {
+            #loader-hud { font-size: 0.45em; padding: 10px 12px; }
+        }
+
         .loader-content {
             position: relative;
-            z-index: 1; /* Above the floating icon canvas */
+            z-index: 1; /* Above the mini-game canvas */
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 15px; /* Space between loading text and progress bar */
+            /* Clicks fall through to the canvas so the whole screen is playable;
+               the ENTER THE ROOM button opts itself back in below. */
+            pointer-events: none;
+        }
+
+        /* Game prompt above the loading text: controls, then game-over state */
+        #game-message {
+            margin: 0;
+            font-size: 0.7em;
+            letter-spacing: 2px;
+            color: #6A7788;
+            min-height: 1em;
+            transition: color 0.2s ease;
+        }
+        #game-message.is-alert {
+            color: #C6362F;
+            text-shadow: 0 0 10px rgba(198, 54, 47, 0.6);
+        }
+        @media (max-width: 768px) {
+            #game-message { font-size: 0.5em; letter-spacing: 1px; }
+        }
+
+        /* Offered instead of an auto-dismiss when the visitor is mid-game */
+        #enter-room {
+            pointer-events: auto;
+            margin-top: 4px;
+            padding: 12px 18px;
+            font-size: 0.72em;
+            letter-spacing: 2px;
+            color: #10151E;
+            background: #F6C453;
+            border: 0;
+            outline: 4px solid #10151E;
+            box-shadow: 0 4px 0 #B37A3E;
+            cursor: pointer;
+            image-rendering: pixelated;
+            transition: transform 0.12s ease, background-color 0.12s ease;
+        }
+        #enter-room:hover,
+        #enter-room:focus-visible {
+            background: #FCE29A;
+            transform: translateY(-2px);
+        }
+        #enter-room:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #B37A3E;
+        }
+        @media (max-width: 768px) {
+            #enter-room { font-size: 0.55em; padding: 10px 14px; }
         }
 
         .loading-text {

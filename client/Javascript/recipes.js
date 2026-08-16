@@ -793,5 +793,35 @@ const recipes = {
             "Crush the Oreos and chocolate over the top before the glaze sets.",
             "Enjoy."
         ]
+    },
+
+    "Mousse Impossible": {
+        ingredients: [
+            "Boiled eggs: 2 large, peeled and fully cooled",
+            "Paneer, fresh and soft: 100 g (½ cup, crumbled)",
+            "Chocolate whey protein powder: 30 g (1 scoop)",
+            "Cocoa powder, unsweetened: 8 g (1 tbsp)",
+            "Condensed milk (Milkmaid): 30 g (1½ tbsp)",
+            "Honey or caramel sauce: 15 g (2 tsp), plus more to drizzle",
+            "Milk, cold: 50–75 ml (¼–⅓ cup)",
+            "Vanilla: ½ tsp",
+            "Instant coffee: ½ tsp (optional, it makes the chocolate taste more like chocolate)",
+            "Salt: a pinch",
+            "Dark chocolate shavings: to finish",
+        ],
+        instructions: [
+            "This one serves 1. Double everything if someone else is watching you eat it.",
+            "Boil the eggs for 9 minutes, then drop them straight into cold water and peel once they are cold. Warm eggs make the mousse smell like an omelette.",
+            "Use both eggs whole if you do not mind the yolk, or 1 whole and 1 white only for a cleaner chocolate taste.",
+            "Crumble the paneer by hand. Hard supermarket paneer stays grainy, so soak it in hot water for 10 minutes first and squeeze it dry.",
+            "Blend the paneer, eggs, condensed milk, honey and 50 ml of the milk on high for 30 seconds, before any powder goes in. Get this smooth first and the rest follows.",
+            "Add the protein powder, cocoa, vanilla, coffee and salt. Blend 60–90 seconds more, scraping the sides twice, until no grain is left on your tongue.",
+            "Add the rest of the milk a spoon at a time only if it is too thick to fold. The powder keeps drinking liquid as it sits, so stop while it is slightly stiff.",
+            "Taste it now. Cold dulls sweetness, so if it is only just sweet enough warm, it will be flat later. Add honey now, not after chilling.",
+            "Spoon into a glass, cover, and chill for at least 2 hours. It sets soft, like a thick pudding, not like a whipped mousse.",
+            "Drizzle with caramel and scatter the chocolate shavings just before serving.",
+            "About 50 g of protein in the glass, which is the entire excuse for the boiled eggs.",
+            "Enjoy."
+        ]
     }
 };

@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
+<!-- CRT look is set here, once. data-crt: off | subtle | full | heavy.
+     data-scan toggles the static horizontal scanlines (see CSS/crt.css). -->
+<html lang="en" data-crt="heavy" data-scan="off">
 <head>
     <meta charset="UTF-8">
     <link rel="icon" type="image/x-icon" href="assets/profile.jpg">
@@ -13,20 +15,34 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="CSS/indexstyle.css?v=n2">
     <link rel="stylesheet" href="CSS/motion.css?v=n2">
+    <link rel="stylesheet" href="CSS/crt.css?v=n2">
 </head>
 <body>
 
     <div id="room-container">
         
-        <!-- Loader -->
+        <!-- Loader. The canvas behind it runs "Signal Breach" (Javascript/loader-game.js)
+             so there is something to do while the room's assets download. -->
         <div id="loader">
             <canvas id="loader-bg"></canvas>
+
+            <!-- Game HUD, pinned to the top of the loader -->
+            <div id="loader-hud" class="pixel-font" aria-hidden="true">
+                <span id="hud-score">SCORE 0</span>
+                <span id="hud-lives">SHIELD ###</span>
+                <span id="hud-best">BEST 0</span>
+            </div>
+
             <div class="loader-content">
+                <p id="game-message" class="pixel-font">AIM - CLICK TO FIRE</p>
                 <p class="loading-text pixel-font">Asking Kanav's Permission<span id="ellipsis">.</span></p>
                 <div class="progress-bar-container">
                     <div class="progress-bar-fill"></div>
                 </div>
                 <p id="busy-text" class="pixel-font"></p>
+                <!-- Always available: skips straight past the loader. Also the
+                     escape hatch when loading finishes while you are mid-game. -->
+                <button id="enter-room" class="pixel-font" type="button">ENTER ROOM NOW &#9654;</button>
             </div>
         </div>
 
@@ -79,11 +95,22 @@
         </div>
         <img src="assets/Home/speaker1.png" id="speaker" class="asset" alt="Speaker">
 
+        <!-- CRT screen simulation. Purely decorative and click-through; the
+             strength is driven by the data-crt attribute on <html>. -->
+        <div id="crt-overlay" aria-hidden="true">
+            <div class="crt-darken"></div>
+            <div class="crt-lighten"></div>
+            <div class="crt-roll"></div>
+        </div>
+
     </div>
+
 
     <!-- YouTube IFrame API script -->
     <script src="https://www.youtube.com/iframe_api"></script>
 
+    <script src="Javascript/loader-game.js?v=n2"></script>
+    <script src="Javascript/crt.js?v=n2"></script>
     <script src="Javascript/indexscript.js?v=n2"></script>
 
     <!-- Mobile only: browsers won't let a page hide the address bar on its own,

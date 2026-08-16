@@ -5,6 +5,10 @@
   <title>Kanav's Travelogue</title>
   <link rel="stylesheet" href="CSS/travelstyle.css?v=n2">
   <link rel="stylesheet" href="CSS/motion.css?v=n2">
+  <!-- Frozen hand-placed page layout. Empty until you arrange the pages with
+       Travel.html?layout — see Javascript/travel-layout-editor.js. Must load
+       after travelstyle.css so the placed positions win. -->
+  <link rel="stylesheet" href="CSS/travel-layout.css?v=n2">
   <!-- Load the outer cover first so the inside of the book never flashes before it -->
   <link rel="preload" as="image" href="assets/Travel/Cover.png">
   <link rel="icon" type="image/x-icon" href="assets/profile.jpg">
@@ -20,185 +24,185 @@
   </div>
   <div class="own-size scrapbook l">
     <div class="top-margin"></div>
-    <div class="trip-head">
+    <div data-tl="p1-1" class="trip-head">
       <i class="fa fa-train trip-ico" title="got there by train" aria-hidden="true"></i>
       <span class="trip-name">Pondicherry</span>
       <i class="fa fa-train trip-ico" title="came back by train" aria-hidden="true"></i>
     </div>
-    <p class="diary-date">March 2024</p>
-    <figure class="tphoto float-r skew-r" style="width:250px;">
+    <p data-tl="p1-2" class="diary-date">March 2024</p>
+    <figure data-tl="p1-3" class="tphoto float-r skew-r" style="width:250px;">
       <img src="assets/Travel/Pondi Train.jpeg" alt="Overnight train to Pondicherry">
       <figcaption>the overnight train up</figcaption>
     </figure>
-    <p>This was my <span class="hl">very first college trip</span>, and what a way to begin. Pondicherry promised sun, sand, and a clean escape from lectures. We boarded the overnight train, Modi got molested, but we don't talk about that.</p>
+    <p data-tl="p1-4">This was my <span class="hl">very first college trip</span>, and what a way to begin. Pondicherry promised sun, sand, and a clean escape from lectures. We boarded the overnight train, Modi got molested, but we don't talk about that.</p>
     <div class="clear"></div>
-    <figure class="tphoto float-l skew-l" style="width:250px;">
+    <figure data-tl="p1-5" class="tphoto float-l skew-l" style="width:250px;">
       <img src="assets/Travel/Pondi Streets.jpeg" alt="The French Quarter streets of Pondicherry">
       <figcaption>French Quarter mornings</figcaption>
     </figure>
-    <p>The French Quarter felt like a whole other country tucked into the coast: mustard walls, bougainvillea, and fresh bread down every single lane.</p>
-    <p class="scrap-note skew-r">sun, sand and zero responsibilities</p>
+    <p data-tl="p1-6">The French Quarter felt like a whole other country tucked into the coast: mustard walls, bougainvillea, and fresh bread down every single lane.</p>
+    <p data-tl="p1-7" class="scrap-note skew-r">sun, sand and zero responsibilities</p>
     <div class="clear"></div>
   </div>
   <div class="own-size scrapbook r">
     <div class="top-margin"></div>
-    <figure class="tphoto float-l skew-l" style="width:300px;">
+    <figure data-tl="p2-1" class="tphoto float-l skew-l" style="width:300px;">
       <img src="https://lh3.googleusercontent.com/pw/AP1GczORvYR4JZaCb7YHBka6ySaY9j237wgSAH8-ojHEPu8QyDhytbUb1W-WjgZ5p6oL21nDGNr_oOPKBS5oPfQ_3bqCS0cMLzfY5N_eP0vaheE8oUP9AejrRbGYGypviAeclZNadtwLRFayeyV49u614svP=w698-h927-s-no-gm?authuser=0" alt="The Pondicherry gang">
       <figcaption>the gang in Pondicherry</figcaption>
     </figure>
-    <p>Four scooters and exactly one license, thank you Harsh Gupta ji. Baker Street bread, fresh out of the oven, was pure magic.</p>
+    <p data-tl="p2-2">Four scooters and exactly one license, thank you Harsh Gupta ji. Baker Street bread, fresh out of the oven, was pure magic.</p>
     <div class="clear"></div>
-    <figure class="tphoto float-r skew-r" style="width:300px;">
+    <figure data-tl="p2-3" class="tphoto float-r skew-r" style="width:300px;">
       <img src="assets/Travel/Pondi food.jpeg" alt="The chicken we found in Pondicherry">
       <figcaption>the chicken (not from Baker Street)</figcaption>
     </figure>
-    <p>Then Serenity Beach struck. I had lent Aarpeet my spare glasses for the trip, and he fed them <span class="hl">straight to the waves</span>.</p>
-    <p>Clubbing dreams died at the dress code, shorts and slippers, so Pondy Cafe it was.</p>
-    <p class="scrap-note skew-l"><svg class="doodle-arrow" viewBox="0 0 64 40" width="50" height="32" style="transform:rotate(-6deg) scaleX(-1)" aria-hidden="true"><path d="M4 28 C 18 8, 42 8, 58 18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><path d="M58 18 L 48 14 M58 18 L 51 26" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg> RIP my spare glasses, lent and lost by Aarpeet (2024 to 2024)</p>
+    <p data-tl="p2-4">Then Serenity Beach struck. I had lent Aarpeet my spare glasses for the trip, and he fed them <span class="hl">straight to the waves</span>.</p>
+    <p data-tl="p2-5">Clubbing dreams died at the dress code, shorts and slippers, so Pondy Cafe it was.</p>
+    <p data-tl="p2-6" class="scrap-note skew-l"><svg class="doodle-arrow" viewBox="0 0 64 40" width="50" height="32" style="transform:rotate(-6deg) scaleX(-1)" aria-hidden="true"><path d="M4 28 C 18 8, 42 8, 58 18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><path d="M58 18 L 48 14 M58 18 L 51 26" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg> RIP my spare glasses, lent and lost by Aarpeet (2024 to 2024)</p>
     <div class="clear"></div>
   </div>
   <div class="own-size scrapbook l">
     <div class="top-margin"></div>
-    <div class="trip-head">
+    <div data-tl="p3-1" class="trip-head">
       <i class="fa fa-bus trip-ico" title="got there by bus" aria-hidden="true"></i>
       <span class="trip-name">Coorg</span>
       <i class="fa fa-bus trip-ico" title="came back by bus" aria-hidden="true"></i>
     </div>
-    <p class="diary-date">May 2024</p>
-    <figure class="tphoto float-r skew-r" style="width:235px;">
+    <p data-tl="p3-2" class="diary-date">May 2024</p>
+    <figure data-tl="p3-3" class="tphoto float-r skew-r" style="width:235px;">
       <img src="assets/Travel/Coorg Coffee.jpeg" alt="Fresh Coorg coffee">
       <figcaption>first brew of the morning</figcaption>
     </figure>
-    <p>Our homestay sat right in the coffee plantations, and every morning opened with the smell of fresh coffee, some of the best I have ever had.</p>
+    <p data-tl="p3-4">Our homestay sat right in the coffee plantations, and every morning opened with the smell of fresh coffee, some of the best I have ever had.</p>
     <div class="clear"></div>
-    <figure class="tphoto float-l skew-l" style="width:240px;">
+    <figure data-tl="p3-5" class="tphoto float-l skew-l" style="width:240px;">
       <img src="assets/Travel/Coorg plantations.jpeg" alt="Coffee plantations of Coorg">
       <figcaption>endless plantations</figcaption>
     </figure>
-    <p>A nice southern hill station, but honestly <span class="red-marker">nothing compared to the north</span>. Still, we lost whole afternoons in the rows, and Abbey Falls roared away nearby, all mist and rushing water.</p>
+    <p data-tl="p3-6">A nice southern hill station, but honestly <span class="red-marker">nothing compared to the north</span>. Still, we lost whole afternoons in the rows, and Abbey Falls roared away nearby, all mist and rushing water.</p>
     <div class="clear"></div>
   </div>
   <div class="own-size scrapbook r">
     <div class="top-margin"></div>
-    <figure class="tphoto float-l skew-l" style="width:255px;">
+    <figure data-tl="p4-1" class="tphoto float-l skew-l" style="width:255px;">
       <img src="assets/Travel/Coorg spicy food.jpeg" alt="The infamous spicy Coorg meal">
       <figcaption>the dish that broke us all</figcaption>
     </figure>
-    <p>Then the food that nearly ended us. One Coorgi meal <span class="hl">so spicy it brought every one of us to tears</span>. We downed every Coke in sight, chased it with ice cream, and still lost.</p>
+    <p data-tl="p4-2">Then the food that nearly ended us. One Coorgi meal <span class="hl">so spicy it brought every one of us to tears</span>. We downed every Coke in sight, chased it with ice cream, and still lost.</p>
     <div class="clear"></div>
-    <figure class="tphoto float-r skew-r" style="width:235px;">
+    <figure data-tl="p4-3" class="tphoto float-r skew-r" style="width:235px;">
       <img src="assets/Travel/coorg monastery.jpeg" alt="The golden monastery near Coorg">
       <figcaption>stillness at the monastery</figcaption>
     </figure>
-    <figure class="tphoto float-l skew-l" style="width:235px;">
+    <figure data-tl="p4-4" class="tphoto float-l skew-l" style="width:235px;">
       <img src="assets/Travel/Coorg Tree Climbing.jpeg" alt="Tree climbing in the Coorg canopy">
       <figcaption>up into the canopy</figcaption>
     </figure>
     <div class="clear"></div>
-    <p>The golden monastery was the antidote, cool and unhurried, and then we climbed straight into the trees like overgrown kids.</p>
-    <p class="scrap-note skew-l"><svg class="doodle-arrow" viewBox="0 0 64 40" width="50" height="32" style="transform:rotate(-10deg)" aria-hidden="true"><path d="M4 28 C 18 8, 42 8, 58 18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><path d="M58 18 L 48 14 M58 18 L 51 26" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg> late night Among Us, never forgetting it</p>
+    <p data-tl="p4-5">The golden monastery was the antidote, cool and unhurried, and then we climbed straight into the trees like overgrown kids.</p>
+    <p data-tl="p4-6" class="scrap-note skew-l"><svg class="doodle-arrow" viewBox="0 0 64 40" width="50" height="32" style="transform:rotate(-10deg)" aria-hidden="true"><path d="M4 28 C 18 8, 42 8, 58 18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><path d="M58 18 L 48 14 M58 18 L 51 26" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg> late night Among Us, never forgetting it</p>
   </div>
   <div class="own-size scrapbook l">
     <div class="top-margin"></div>
-    <div class="trip-head">
+    <div data-tl="p5-1" class="trip-head">
       <i class="fa fa-taxi trip-ico" title="got there by cab" aria-hidden="true"></i>
       <span class="trip-name">Shimla</span>
       <i class="fa fa-bus trip-ico" title="came back by bus" aria-hidden="true"></i>
     </div>
-    <p class="diary-date">June 2024</p>
-    <figure class="tphoto float-r skew-r" style="width:230px;">
+    <p data-tl="p5-2" class="diary-date">June 2024</p>
+    <figure data-tl="p5-3" class="tphoto float-r skew-r" style="width:230px;">
       <img src="assets/s2.jpg" alt="The Ridge, Shimla">
       <figcaption>the Ridge</figcaption>
     </figure>
-    <p>Up on Shimla's ridge with my coaching friends, the same crew from those long prep class days, just somewhere far better.</p>
-    <p>Pine clad hills and colonial charm, Mall Road, mist, and endless cups of chai until our legs flat out gave up.</p>
+    <p data-tl="p5-4">Up on Shimla's ridge with my coaching friends, the same crew from those long prep class days, just somewhere far better.</p>
+    <p data-tl="p5-5">Pine clad hills and colonial charm, Mall Road, mist, and endless cups of chai until our legs flat out gave up.</p>
     <div class="clear"></div>
   </div>
   <div class="own-size scrapbook r">
     <div class="top-margin"></div>
-    <figure class="tphoto float-l skew-l" style="width:290px;">
+    <figure data-tl="p6-1" class="tphoto float-l skew-l" style="width:290px;">
       <img src="assets/s1.jpg" alt="Colonial charm, Shimla">
       <figcaption>colonial charm</figcaption>
     </figure>
-    <p>We definitely did not fight the whole time, and Kush definitely did not double our journey getting there.</p>
+    <p data-tl="p6-2">We definitely did not fight the whole time, and Kush definitely did not double our journey getting there.</p>
     <div class="clear"></div>
-    <figure class="tphoto float-r skew-r" style="width:300px;">
+    <figure data-tl="p6-3" class="tphoto float-r skew-r" style="width:300px;">
       <img src="assets/s3.jpg" alt="Pine and mist, Shimla">
       <figcaption>pine and mist</figcaption>
     </figure>
-    <p>Somewhere between the deodars and the cold, it stopped being a trip and started being a reunion.</p>
-    <p class="scrap-note skew-l">navigator of the year, Kush, allegedly</p>
+    <p data-tl="p6-4">Somewhere between the deodars and the cold, it stopped being a trip and started being a reunion.</p>
+    <p data-tl="p6-5" class="scrap-note skew-l">navigator of the year, Kush, allegedly</p>
     <div class="clear"></div>
   </div>
    <div class="own-size scrapbook l">
              <div class="top-margin"></div>
-     <div class="trip-head">
+     <div data-tl="p7-1" class="trip-head">
        <i class="fa fa-plane trip-ico" title="flew there" aria-hidden="true"></i>
        <span class="trip-name">Singapore</span>
        <i class="fa fa-plane trip-ico" title="flew back" aria-hidden="true"></i>
      </div>
-     <p class="diary-date">July 2024</p>
-     <figure class="tphoto float-r skew-r" style="width:255px;">
+     <p data-tl="p7-2" class="diary-date">July 2024</p>
+     <figure data-tl="p7-3" class="tphoto float-r skew-r" style="width:255px;">
        <img src="assets/Travel/singpore 1.jpeg" alt="Marina Bay skyline, Singapore">
        <figcaption>Marina Bay, that skyline</figcaption>
      </figure>
-     <p>My <span class="hl">first time abroad</span>, and Singapore did not hold back. We lost ourselves in the city first: the roar of Universal Studios, the Marina Bay skyline, and the glowing Supertrees after dark.</p>
-     <p>I took every ride in Universal, lived on the roller coasters and the Mummy, and ate at a classic American diner, a proper hamburger and a thick milkshake.</p>
+     <p data-tl="p7-4">My <span class="hl">first time abroad</span>, and Singapore did not hold back. We lost ourselves in the city first: the roar of Universal Studios, the Marina Bay skyline, and the glowing Supertrees after dark.</p>
+     <p data-tl="p7-5">I took every ride in Universal, lived on the roller coasters and the Mummy, and ate at a classic American diner, a proper hamburger and a thick milkshake.</p>
      <div class="clear"></div>
   </div>
 
   <div class="own-size scrapbook r">
     <div class="top-margin"></div>
-    <figure class="tphoto float-l skew-l" style="width:255px;">
+    <figure data-tl="p8-1" class="tphoto float-l skew-l" style="width:255px;">
       <img src="assets/Travel/malaysia.jpeg" alt="By cruise to Malaysia">
       <figcaption>by cruise to Malaysia</figcaption>
     </figure>
-    <p>Lazy Sentosa afternoons, and the Jewel Changi waterfall that made an airport feel like a wonder. Then we sailed on by cruise to Malaysia, eating our way through land and sea every night.</p>
+    <p data-tl="p8-2">Lazy Sentosa afternoons, and the Jewel Changi waterfall that made an airport feel like a wonder. Then we sailed on by cruise to Malaysia, eating our way through land and sea every night.</p>
     <div class="clear"></div>
-    <figure class="tphoto float-r skew-r" style="width:228px;">
+    <figure data-tl="p8-3" class="tphoto float-r skew-r" style="width:228px;">
       <img src="assets/Travel/singapore 2.jpeg" alt="Singapore, the Lion City">
       <figcaption>the Lion City</figcaption>
     </figure>
-    <p>By the end I had tried more new dishes than I could count, and we finished, full and happy, back in Little India.</p>
-    <p class="scrap-note skew-l">first stamp in the passport</p>
+    <p data-tl="p8-4">By the end I had tried more new dishes than I could count, and we finished, full and happy, back in Little India.</p>
+    <p data-tl="p8-5" class="scrap-note skew-l">first stamp in the passport</p>
   </div>
 
   <div class="own-size scrapbook l">
     <div class="top-margin"></div>
-    <div class="trip-head">
+    <div data-tl="p9-1" class="trip-head">
       <i class="fa fa-bus trip-ico" title="got there by bus" aria-hidden="true"></i>
       <span class="trip-name">Goa</span>
       <i class="fa fa-train trip-ico" title="came back by train" aria-hidden="true"></i>
     </div>
-    <p class="diary-date">March 2025</p>
-    <p>Goa felt like a movie. I finished <i>The Perks of Being a Wallflower</i> on the sand, and ate the best pizza of my life at Southern Deck.</p>
-    <figure class="tphoto float-r skew-r" style="width:218px;">
+    <p data-tl="p9-2" class="diary-date">March 2025</p>
+    <p data-tl="p9-3">Goa felt like a movie. I finished <i>The Perks of Being a Wallflower</i> on the sand, and ate the best pizza of my life at Southern Deck.</p>
+    <figure data-tl="p9-4" class="tphoto float-r skew-r" style="width:218px;">
       <img src="assets/Travel/goa pizza.jpeg" alt="Pizza at Southern Deck, Goa">
       <figcaption>best pizza of my life, Southern Deck</figcaption>
     </figure>
-    <p>I was the <span class="red-marker">designated driver</span> and took us the whole coast, north to south, at two in the morning with the windows down. It was the first time I really drove, and it stuck.</p>
+    <p data-tl="p9-5">I was the <span class="red-marker">designated driver</span> and took us the whole coast, north to south, at two in the morning with the windows down. It was the first time I really drove, and it stuck.</p>
     <div class="clear"></div>
-    <figure class="tphoto float-l skew-l" style="width:258px;">
+    <figure data-tl="p9-6" class="tphoto float-l skew-l" style="width:258px;">
       <img src="assets/Travel/Goa pool.jpeg" alt="The Airbnb pool in Goa">
       <figcaption>never getting out of this pool</figcaption>
     </figure>
-    <p class="scrap-note skew-r">more hours in the pool than on the beach <svg class="doodle-arrow" viewBox="0 0 64 40" width="46" height="29" style="transform:rotate(150deg)" aria-hidden="true"><path d="M4 28 C 18 8, 42 8, 58 18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><path d="M58 18 L 48 14 M58 18 L 51 26" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></p>
+    <p data-tl="p9-7" class="scrap-note skew-r">more hours in the pool than on the beach <svg class="doodle-arrow" viewBox="0 0 64 40" width="46" height="29" style="transform:rotate(150deg)" aria-hidden="true"><path d="M4 28 C 18 8, 42 8, 58 18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><path d="M58 18 L 48 14 M58 18 L 51 26" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></p>
     <div class="clear"></div>
   </div>
 
   <div class="own-size scrapbook r">
     <div class="top-margin"></div>
-    <figure class="tphoto float-l skew-l" style="width:250px;">
+    <figure data-tl="p10-1" class="tphoto float-l skew-l" style="width:250px;">
       <img src="assets/Travel/Goa selfmade food.jpeg" alt="Food I cooked for the crew in Goa">
       <figcaption>chef Kanav, reporting for duty</figcaption>
     </figure>
-    <p>I also took over the kitchen and cooked for the whole crew. Turns out the chef's hat fits rather well. Feeding a hungry, half melted from the pool audience might be my villain origin story.</p>
+    <p data-tl="p10-2">I also took over the kitchen and cooked for the whole crew. Turns out the chef's hat fits rather well. Feeding a hungry, half melted from the pool audience might be my villain origin story.</p>
     <div class="clear"></div>
-    <figure class="tphoto float-l skew-l" style="width:250px;">
+    <figure data-tl="p10-3" class="tphoto float-l skew-l" style="width:250px;">
       <img src="assets/Travel/goa perks.jpeg" alt="The Perks of Being a Wallflower on the sand">
       <figcaption>Perks of having a Pina colada</figcaption>
     </figure>
-    <figure class="tphoto float-r skew-r" style="width:285px;">
+    <figure data-tl="p10-4" class="tphoto float-r skew-r" style="width:285px;">
       <img src="assets/Travel/goa group photo.jpeg" alt="The group in Goa">
       <figcaption>the crew</figcaption>
     </figure>
@@ -207,105 +211,105 @@
 
   <div class="own-size scrapbook l">
     <div class="top-margin"></div>
-    <div class="trip-head">
+    <div data-tl="p11-1" class="trip-head">
       <i class="fa fa-train trip-ico" title="got there by train" aria-hidden="true"></i>
       <span class="trip-name">Vaishno Devi</span>
       <i class="fa fa-train trip-ico" title="came back by train" aria-hidden="true"></i>
     </div>
-    <p class="diary-date">December 2025</p>
-    <figure class="tphoto float-r skew-r" style="width:235px;">
+    <p data-tl="p11-2" class="diary-date">December 2025</p>
+    <figure data-tl="p11-3" class="tphoto float-r skew-r" style="width:235px;">
       <img src="assets/Travel/vaishno single.jpeg" alt="On the trek to Vaishno Devi">
       <figcaption>13 km up, barely fit</figcaption>
     </figure>
-    <p>We took the Vande Bharat north. Modi, Batra and Garv famously missed the train, and honestly we almost did too. The 13&nbsp;km trek up was a quiet test of how fit we actually were, verdict: barely.</p>
-    <p>We stopped by Nikunj's home, ate an absurd amount of soya chaap, and I may have forced everyone, against their will, onto the Columbus ride at the fair. Entirely worth it.</p>
+    <p data-tl="p11-4">We took the Vande Bharat north. Modi, Batra and Garv famously missed the train, and honestly we almost did too. The 13&nbsp;km trek up was a quiet test of how fit we actually were, verdict: barely.</p>
+    <p data-tl="p11-5">We stopped by Nikunj's home, ate an absurd amount of soya chaap, and I may have forced everyone, against their will, onto the Columbus ride at the fair. Entirely worth it.</p>
     <div class="clear"></div>
   </div>
 
   <div class="own-size scrapbook r">
     <div class="top-margin"></div>
-    <figure class="tphoto skew-r" style="width:340px; display:block; margin: 6px auto 10px;">
+    <figure data-tl="p12-1" class="tphoto skew-r" style="width:340px; display:block; margin: 6px auto 10px;">
       <img src="assets/Travel/vaishno group.jpeg" alt="The group at Vaishno Devi">
       <figcaption>made it, 13 km later</figcaption>
     </figure>
-    <p class="scrap-note skew-l" style="display:block; text-align:center; font-size:1.15rem;">the legs have still not forgiven us, but the soya chaap was worth every step</p>
+    <p data-tl="p12-2" class="scrap-note skew-l" style="display:block; text-align:center; font-size:1.15rem;">the legs have still not forgiven us, but the soya chaap was worth every step</p>
     <div class="clear"></div>
   </div>
 
   <div class="own-size scrapbook l">
     <div class="top-margin"></div>
-    <div class="trip-head">
+    <div data-tl="p13-1" class="trip-head">
       <i class="fa fa-train trip-ico" title="got there by train" aria-hidden="true"></i>
       <span class="trip-name">Varkala</span>
       <i class="fa fa-train trip-ico" title="came back by train" aria-hidden="true"></i>
     </div>
-    <p class="diary-date">March 2026</p>
-    <p>Varkala by the cliffs. We saw Jatayu, I kayaked for the first time, and read <i>Call Me by Your Name</i> with the waves only a few feet away.</p>
-    <figure class="tphoto float-r skew-r" style="width:285px;">
+    <p data-tl="p13-2" class="diary-date">March 2026</p>
+    <p data-tl="p13-3">Varkala by the cliffs. We saw Jatayu, I kayaked for the first time, and read <i>Call Me by Your Name</i> with the waves only a few feet away.</p>
+    <figure data-tl="p13-4" class="tphoto float-r skew-r" style="width:285px;">
       <img src="assets/Travel/varkala jatayu.jpeg" alt="Jatayu Earth's Center, Varkala">
       <figcaption>Jatayu, Earth's Center</figcaption>
     </figure>
-    <p>And this time it was <span class="hl">me who lost my glasses</span> to the sea. I finally understand Aarpeet.</p>
+    <p data-tl="p13-5">And this time it was <span class="hl">me who lost my glasses</span> to the sea. I finally understand Aarpeet.</p>
     <div class="clear"></div>
-    <figure class="tphoto float-l skew-l" style="width:235px;">
+    <figure data-tl="p13-6" class="tphoto float-l skew-l" style="width:235px;">
       <img src="assets/Travel/varkala solo.jpeg" alt="Outside the cafe in Varkala">
       <figcaption>outside the cafe</figcaption>
     </figure>
-    <p>Once again I was on kitchen duty, though this batch of 'brownies' was strictly for grown ups. Let's just say they hit a little different, and I'll leave the recipe politely unwritten.</p>
+    <p data-tl="p13-7">Once again I was on kitchen duty, though this batch of 'brownies' was strictly for grown ups. Let's just say they hit a little different, and I'll leave the recipe politely unwritten.</p>
     <div class="clear"></div>
   </div>
 
   <div class="own-size scrapbook r">
     <div class="top-margin"></div>
-    <figure class="tphoto float-l skew-l" style="width:195px;">
+    <figure data-tl="p14-1" class="tphoto float-l skew-l" style="width:195px;">
       <img src="assets/Travel/varkala kayak.jpeg" alt="First time kayaking in Varkala">
       <figcaption>first time kayaking</figcaption>
     </figure>
-    <figure class="tphoto float-r skew-r" style="width:160px;">
+    <figure data-tl="p14-2" class="tphoto float-r skew-r" style="width:160px;">
       <img src="assets/Travel/varkala kayaking.jpeg" alt="Out on the Varkala backwaters">
       <figcaption>out on the water</figcaption>
     </figure>
     <div class="clear"></div>
-    <p>I drove again here too, my second time behind the wheel, in a brand new state.</p>
-    <figure class="tphoto float-l skew-l" style="width:130px;">
+    <p data-tl="p14-3">I drove again here too, my second time behind the wheel, in a brand new state.</p>
+    <figure data-tl="p14-4" class="tphoto float-l skew-l" style="width:130px;">
       <img src="assets/Travel/varkala call me by your name.jpeg" alt="Call Me by Your Name by the sea">
       <figcaption>CMBYN by the waves</figcaption>
     </figure>
-    <figure class="tphoto float-r skew-r" style="width:235px;">
+    <figure data-tl="p14-5" class="tphoto float-r skew-r" style="width:235px;">
       <img src="assets/Travel/varkala group.jpeg" alt="The group at Varkala">
       <figcaption>the Varkala crew</figcaption>
     </figure>
     <div class="clear"></div>
-    <p class="scrap-note skew-l">Inda Cafe's calzone and burger, still on my mind</p>
+    <p data-tl="p14-6" class="scrap-note skew-l">Inda Cafe's calzone and burger, still on my mind</p>
   </div>
 
   <div class="own-size scrapbook l">
     <div class="top-margin"></div>
-    <div class="trip-head">
+    <div data-tl="p15-1" class="trip-head">
       <i class="fa fa-train trip-ico" title="got there by train" aria-hidden="true"></i>
       <span class="trip-name">Pune</span>
       <i class="fa fa-train trip-ico" title="came back by train" aria-hidden="true"></i>
     </div>
-    <p class="diary-date">April 2025</p>
-    <p>Squeezed into mid semester, but a paper of mine got accepted at a conference and the college footed a hotel with a pool. We ate our way down FC Road, wandered Shaniwar Wada, and slowed down in the old Parsi cafes.</p>
+    <p data-tl="p15-2" class="diary-date">April 2025</p>
+    <p data-tl="p15-3">Squeezed into mid semester, but a paper of mine got accepted at a conference and the college footed a hotel with a pool. We ate our way down FC Road, wandered Shaniwar Wada, and slowed down in the old Parsi cafes.</p>
     <div class="clear"></div>
-    <figure class="tphoto float-l skew-l" style="width:315px;">
+    <figure data-tl="p15-4" class="tphoto float-l skew-l" style="width:315px;">
       <img src="assets/Travel/pune fort.jpeg" alt="Shaniwar Wada fort, Pune">
       <figcaption>Shaniwar Wada</figcaption>
     </figure>
-    <figure class="tphoto float-r skew-r" style="width:225px;">
+    <figure data-tl="p15-5" class="tphoto float-r skew-r" style="width:225px;">
       <img src="assets/Travel/pune parsi.jpeg" alt="An old Parsi cafe in Pune">
       <figcaption>old Parsi cafe</figcaption>
     </figure>
     <div class="clear"></div>
-    <p class="scrap-note skew-r">a working trip that did not feel like work</p>
+    <p data-tl="p15-6" class="scrap-note skew-r">a working trip that did not feel like work</p>
   </div>
 
   <div class="own-size scrapbook r">
                <div class="top-margin"></div>
-      <p class="scrap-note skew-r" style="font-size:1.2rem;">and that's the rest of me</p>
-      <p><b>The other pages</b></p><br>
-      <div class="grid-container">
+      <p data-tl="p16-1" class="scrap-note skew-r" style="font-size:1.2rem;">and that's the rest of me</p>
+      <p data-tl="p16-2"><b>The other pages</b></p><br data-tl="p16-3">
+      <div data-tl="p16-4" class="grid-container">
         <h3><span class="tooltip">
           <a href="index.html"><i class="fa fa-home"></i></a>
           <span class="tooltiptext">Home</span>
@@ -362,6 +366,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="Javascript/motion.js?v=n2"></script>
   <script src="Javascript/motion-travel.js?v=n2"></script>
+  <!-- Authoring tool. Dormant unless the URL carries ?layout -->
+  <script src="Javascript/travel-layout-editor.js?v=n2"></script>
 
 <!-- Vercel Web Analytics. The npm package + `import { Analytics }` snippet is
      the Next.js/React integration; this site is static HTML with no bundler,
